@@ -1,108 +1,283 @@
-#ifndef LiquidCrystal_h
-#define LiquidCrystal_h
+//  vi:ts=4
+// -------------------------------------------------------------------------
+//  hd44780.h - hd44780 base class library
+//  Copyright (c) 2014-2016  Bill Perry
+//  (Derivative work of arduino.cc IDE LiquidCrystal library)
+//  Note:
+//    Original Copyrights for LiquidCrystal are a mess as originally none were
+//    specified, but in Nov 2015 these have appeared so they are included:
+//
+//  Copyright (C) 2006-2008 Hans-Christoph Steiner. All rights reserved.
+//  Copyright (c) 2010 Arduino LLC. All right reserved.
+//
+//  See the license.txt file for a history of the copyrights of LiquidCrystal
+// --------------------------------------------------------------------------
+//
+//  This file is part of the hd44780 base class library
+//
+//  hd44780 is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation version 3 of the License.
+//
+//  hd44780 is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with hd44780.  If not, see <http://www.gnu.org/licenses/>.
+//
+// See the license.txt file for further licensing & copyright details.
+// -----------------------------------------------------------------------
+//
+// The API functionality provided by this library class is compatible
+// with the API functionality of the Arduino LiquidCrystal library.
+//
+// 2016-XX-XX  bperrybap - all future history in github repository
+//
+// 2016.06.08  bperrybap - removed pre 1.0 support
+// 2016.06.03  bperrybap - added smart execution delays
+// 2016.05.14  bperrybap - added LCD 1.0 API functions
+// 2016.05.05  bperrybap - added support for 8 bit mode
+// 2014.02.15  bperrybap - initial creation
+//
+// @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
+//
+// ------------------------------------------------------------------------
 
+
+#ifndef hd44780_h
+#define hd44780_h
+
+#if (ARDUINO <  100) && !defined(MPIDE)
+#error hd44780 library requires Arduino 1.0 or later
+#endif
+
+#include <Arduino.h>
 #include <inttypes.h>
-#include "Print.h"
+#include <Print.h>
 
-// commands
-#define LCD_CLEARDISPLAY 0x01
-#define LCD_RETURNHOME 0x02
-#define LCD_ENTRYMODESET 0x04
-#define LCD_DISPLAYCONTROL 0x08
-#define LCD_CURSORSHIFT 0x10
-#define LCD_FUNCTIONSET 0x20
-#define LCD_SETCGRAMADDR 0x40
-#define LCD_SETDDRAMADDR 0x80
-
-// flags for display entry mode
-#define LCD_ENTRYRIGHT 0x00
-#define LCD_ENTRYLEFT 0x02
-#define LCD_ENTRYSHIFTINCREMENT 0x01
-#define LCD_ENTRYSHIFTDECREMENT 0x00
-
-// flags for display on/off control
-#define LCD_DISPLAYON 0x04
-#define LCD_DISPLAYOFF 0x00
-#define LCD_CURSORON 0x02
-#define LCD_CURSOROFF 0x00
-#define LCD_BLINKON 0x01
-#define LCD_BLINKOFF 0x00
-
-// flags for display/cursor shift
-#define LCD_DISPLAYMOVE 0x08
-#define LCD_CURSORMOVE 0x00
-#define LCD_MOVERIGHT 0x04
-#define LCD_MOVELEFT 0x00
-
-// flags for function set
-#define LCD_8BITMODE 0x10
-#define LCD_4BITMODE 0x00
-#define LCD_2LINE 0x08
-#define LCD_1LINE 0x00
-#define LCD_5x10DOTS 0x04
-#define LCD_5x8DOTS 0x00
-
-class LiquidCrystal : public Print {
+class hd44780 : public Print
+{
 public:
-  LiquidCrystal(uint8_t rs, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-		uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-  LiquidCrystal(uint8_t rs, uint8_t rw, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-		uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-  LiquidCrystal(uint8_t rs, uint8_t rw, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
-  LiquidCrystal(uint8_t rs, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+	hd44780();
 
-  void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
+	// default execute times in us for clear/home and instructions/data
+	// The hd44780 spec uses 1520 and 37 in table 6 page 24
+	// note: the spec does not specify the time for Clear display
+	// these can be overridden using setExecTimes(chUs, insUs)
+	static const int HD44780_CHEXECTIME = 2000; // time in us for clear&home
+	static const int HD44780_INSEXECTIME = 37;
+
+	static const uint8_t BACKLIGHT_OFF = 0;
+	static const uint8_t BACKLIGHT_ON = 255;
+
+	// commands
+	static const uint8_t HD44780_CLEARDISPLAY = 0x01;
+	static const uint8_t HD44780_RETURNHOME = 0x02;
+	static const uint8_t HD44780_ENTRYMODESET = 0x04;
+	static const uint8_t HD44780_DISPLAYCONTROL = 0x08;
+	static const uint8_t HD44780_CURDISPSHIFT = 0x10;
+	static const uint8_t HD44780_FUNCTIONSET = 0x20;
+	static const uint8_t HD44780_SETCGRAMADDR = 0x40;
+	static const uint8_t HD44780_SETDDRAMADDR = 0x80;
+
+	// flags for entry mode set;
+	static const uint8_t HD44780_ENTRYRIGHT = 0x00;
+	static const uint8_t HD44780_ENTRYLEFT = 0x02;
+	static const uint8_t HD44780_ENTRYSHIFTINCREMENT = 0x01;
+	static const uint8_t HD44780_ENTRYSHIFTDECREMENT = 0x00;
+
+	// flags for display on/off control;
+	static const uint8_t HD44780_DISPLAYON = 0x04;
+	static const uint8_t HD44780_DISPLAYOFF = 0x00;
+	static const uint8_t HD44780_CURSORON = 0x02;
+	static const uint8_t HD44780_CURSOROFF = 0x00;
+	static const uint8_t HD44780_BLINKON = 0x01;
+	static const uint8_t HD44780_BLINKOFF = 0x00;
+
+	// flags for cursor/display shift;
+	static const uint8_t HD44780_DISPLAYMOVE = 0x08;
+	static const uint8_t HD44780_CURSORMOVE = 0x00;
+	static const uint8_t HD44780_MOVERIGHT = 0x04;
+	static const uint8_t HD44780_MOVELEFT = 0x00;
+
+	// flags for function set;
+	static const uint8_t HD44780_8BITMODE = 0x10;
+	static const uint8_t HD44780_4BITMODE = 0x00;
+	static const uint8_t HD44780_2LINE = 0x08;
+	static const uint8_t HD44780_1LINE = 0x00;
+	static const uint8_t HD44780_5x10DOTS = 0x04;
+	static const uint8_t HD44780_5x8DOTS  = 0x00;
+
+
+	// Arduino IDE LiquidCrystal lib functions
+	// =======================================
+
+	int begin(uint8_t cols, uint8_t rows, uint8_t charsize = HD44780_5x8DOTS);
+
+#if 0
+	// This will NEVER be implemented in this class as it is
+	// not conformant to LCD API 1.0 and is hardware i/o specific
+	void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
 	    uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
 	    uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-    
-  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
+#endif
+	
+	void clear();
+	void home();
+	void setCursor(uint8_t col, uint8_t row); 
+	size_t write(uint8_t value);
+	using Print::write; // for other Print Class write() functions
+	void cursor();
+	void noCursor();
+	void blink();
+	void noBlink();
+	void display();				// turn on LCD pixels
+	void noDisplay();			// turn off LCD pixels
+	void scrollDisplayLeft();
+	void scrollDisplayRight();
+	void autoscroll(); 			// auto horizontal scrolling
+	void noAutoscroll();		// no auto horizontal scrolling
+	void leftToRight();
+	void rightToLeft();
+	void createChar(uint8_t charval, uint8_t charmap[]);
+	void moveCursorLeft();
+	void moveCursorRight();
+	// sets memory address for each row, added in IDE 1.6.0
+	void setRowOffsets(int row0, int row1, int row2, int row3);
 
-  void clear();
-  void home();
+	// Mandatory LCD API 1.0 functions
+	// ================================
 
-  void noDisplay();
-  void display();
-  void noBlink();
-  void blink();
-  void noCursor();
-  void cursor();
-  void scrollDisplayLeft();
-  void scrollDisplayRight();
-  void leftToRight();
-  void rightToLeft();
-  void autoscroll();
-  void noAutoscroll();
+	// init(); // not implemented
+#if ( __GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
+	inline void __attribute__((deprecated("Use setExecTimes() instead"))) setDelay(uint32_t CmdDelay, uint32_t CharDelay)
+			 {setExecTimes(CmdDelay, CharDelay);}
+#else
+	inline void __attribute__((deprecated)) setDelay(uint32_t CmdDelay, uint32_t CharDelay)
+			 {setExecTimes(CmdDelay, CharDelay);}
+#endif
 
-  void setRowOffsets(int row1, int row2, int row3, int row4);
-  void createChar(uint8_t, uint8_t[]);
-  void setCursor(uint8_t, uint8_t); 
-  virtual size_t write(uint8_t);
-  void command(uint8_t);
-  
-  using Print::write;
+	void command(uint8_t);
+
+#if 0
+	// MAJOR PROBLEM:
+	// The LiquidCrystal API defines this as setCursor(col, row);
+	// This is fundamentally incompatible with this defintion.
+	// there is no way to fix this.
+	// The LiquidCrytal API is in wide spread use so it wins.
+	// any LCD API 1.0 code will have to be fixed to deal wth this.
+	// A quick and dirty way to work around this to define a macro
+	// to flip the parameters:
+	// #define setCursor(_row, _col) setCursor(_col, _row)
+	// and place it just after the #include for the library
+	void setCursor(uint8_t row, uint8_t col); 
+#endif
+
+	// These functions should be considered obsolete as LiquidCrytal API has
+	// api functions for these that are in wide spread use.
+	// note: only very new versions of gcc support setting warning message
+	// it breaks on on older versions that shipped with older 1.x IDEs
+	// so test for gcc 4.5 or greater for better deprecated messages
+#if ( __GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
+	inline void __attribute__((deprecated("Use cursor() instead"))) cursor_on() {cursor();}
+	inline void __attribute__((deprecated("Use noCursor() instead"))) cursor_off() {noCursor();}
+	inline void __attribute__((deprecated("Use blink() instead"))) blink_on() {blink();}
+	inline void __attribute__((deprecated("Use noBlink() instead"))) blink_off() { noBlink();}
+#else 
+
+	inline void __attribute__((deprecated)) cursor_on() {cursor();}
+	inline void __attribute__((deprecated)) cursor_off() {noCursor();}
+	inline void __attribute__((deprecated)) blink_on() {blink();}
+	inline void __attribute__((deprecated)) blink_off() { noBlink();}
+#endif
+
+	// optional LCD API 1.0 functions
+	// ==============================
+	inline void setBacklight(uint8_t dimvalue) {iosetBacklight(dimvalue);}
+	inline void setContrast(uint8_t contval) {iosetContrast(contval);}
+	void on(void);			// turn on LCD pixels and backlight
+	void off(void);			// turn off LCD pixels and backlight
+
+	// This function seems to be specific to  a particular h/w device.
+	// On that that device it returns some sort of fifo status.
+	// the documenation isn't clear what it should do on other h/w.
+	// This function will only be implemented if it can work the same on ALL h/w
+	// My opinion is libraries should be smarter and this should not be needed.
+	// int status(); // not implemented
+
+	// extended LCD API 1.0 functions
+	// ==============================
+
+	// this function should be considered obsolete as LiquidCrystal API has
+	// a createChar() function that is in wide spread use
+	// LCD API documentation for this call says 7 byte array
+	// but it is really 8 bytes per custom char
+	// note: only very new versions of gcc support setting warning message
+	// it breaks on on older versions that shipped with older 1.x IDEs
+	// so test for gcc 4.5 or greater for better deprecated messages
+#if ( __GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
+	inline void __attribute__((deprecated("Use createChar() instead")))
+	 load_custom_character(uint8_t Char_Num, uint8_t Rows[]) {createChar(Char_Num, Rows); }
+#else
+	inline void __attribute__((deprecated))
+	 load_custom_character(uint8_t Char_Num, uint8_t Rows[]) {createChar(Char_Num, Rows); }
+#endif
+
+#if 0
+	// This will NEVER be implemented in this class as it is very h/w specific
+	uint8_t keypad(); // not implemented
+#endif
+
+	// Additional API functions
+	// These are hd44780 lib extensions that are
+	// not part of LCD 1.0 or LiquidCrystal
+	// ==============================================
+	void backlight(void);		// turn on Backlight (max brightness)
+	void noBacklight(void);		// turn off Backlight
+
+	// set execution times for commmands to override defaults
+	inline void setExecTimes(uint32_t chExecTimeUs, uint32_t insExecTimeUs)
+		{ _chExecTime = chExecTimeUs; _insExecTime = insExecTimeUs;}
+
+protected:
+
+	// type of data being sent through iosend()
+	enum iosendtype {HD44780_IOcmd, HD44780_IOdata, HD44780_IOcmd4bit};
+
+	uint8_t _displayfunction;
+	uint8_t _displaycontrol;
+	uint8_t _displaymode;
+	uint8_t _cols;
+	uint8_t _rows;
+
+	// wait for lcd to be ready
+	inline void waitReady() {_waitReady((_startTime), _execTime);}
+	inline void waitReady(int32_t offsetUs) {_waitReady((_startTime+offsetUs), _execTime);}
+
+	inline void _waitReady(uint32_t _stime, uint32_t _etime)
+		{while(( ((uint32_t)micros()) - _stime) < _etime){}}
+
 private:
-  void send(uint8_t, uint8_t);
-  void write4bits(uint8_t);
-  void write8bits(uint8_t);
-  void pulseEnable();
 
-  uint8_t _rs_pin; // LOW: command.  HIGH: character.
-  uint8_t _rw_pin; // LOW: write to LCD.  HIGH: read from LCD.
-  uint8_t _enable_pin; // activated by a HIGH pulse.
-  uint8_t _data_pins[8];
+	// i/o class functions
+	virtual int ioinit() {return 0;}				// optional
 
-  uint8_t _displayfunction;
-  uint8_t _displaycontrol;
-  uint8_t _displaymode;
+	// FIXME, change iosend() to return a status 
+	virtual void iosend(uint8_t value, hd44780::iosendtype type)=0;// mandatory
+	virtual void iosetBacklight(uint8_t dimvalue){}	// optional
+	virtual void iosetContrast(uint8_t contval){}	// optional
 
-  uint8_t _initialized;
+	uint8_t _rowOffsets[4]; // memory address of start of each row/line
 
-  uint8_t _numlines;
-  uint8_t _row_offsets[4];
+	// stuff for tracking execution times
+	inline void markStart(uint32_t exectime) { _startTime = (uint32_t) micros(); _execTime = exectime;}
+	uint32_t _chExecTime;	// time in Us of execution time for clear/home
+	uint32_t _insExecTime;	// time in Us of execution time for instructions or data
+	uint32_t _startTime;	// 'start' time of last thing sent to LCD (cmd or data)
+	uint32_t _execTime;		// execution time in Us of last thing sent to LCD (cmd or data)
+
 };
 
 #endif
