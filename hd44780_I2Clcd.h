@@ -1,6 +1,6 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
-//  hd44780_I2Clcd.h - hd44780_I2Clcd library
+//  hd44780_I2Clcd.h - hd44780_I2Clcd i/o subclass for hd44780 library
 //  Copyright (c) 2013-2016  Bill Perry
 //
 // The API functionality provided by this library class is compatible
@@ -8,7 +8,7 @@
 //
 // ---------------------------------------------------------------------------
 //
-//  This file is part of the hd44780_I2Clcd library
+//  This file is part of the hd44780 library
 //
 //  hd44780_I2Clcd is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -61,6 +61,7 @@
 // Attempting to read from some of these devices will lockup the AVR Wire
 // library.
 //
+// 2017.07.20  bperrybap - merged into hd44780 library
 // 2016.06.09  bperrybap - changed name to hd44780_I2Clcd
 // 2016.06.08  bperrybap - removed pre IDE 1.0 support
 // 2016.06.03  bperrybap - added smart execution delays

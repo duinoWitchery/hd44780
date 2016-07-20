@@ -1,12 +1,26 @@
 ==============================================================================
-In terms of licensing, the hd44780 base class library is a derative work
+In terms of licensing, hd44780 consists of multiple comoponents.
+Library components:
+- The "hd44780 library"
+- hd44780 base class source files
+- multiple hd44780 i/o sub class source files
+
+Application components:
+- example sketches
+
+Every source file should contain its own explicitly licensing.
+Currently all library components above are licensed as GPL v3.0
+Some but not all application components are GPL v3.0.
+
+The hd44780 base class code is a derative work
 from the IDE LiquidCrystal library which is licensed as LGPL 2.1+,
-and this derative work (hd44780) is being licensed as GPL 3
+and this derative work (hd44780 base class) is being licensed as GPL 3
 ==============================================================================
 
-All of the files supplied with and comprising the Arduino hd44780 base class
-library are either licensed under the terms of the GNU General Public License
-or are compatible with this license.
+All of the files supplied with and comprising the hd44780 library, including,
+but not limited to: the Arduino hd44780 base class library, i/o subclasses,
+sketch/applications, are either licensed under the terms of the
+GNU General Public License or are compatible with this license.
 
 Files should have explicit licensing ageement statements in them.
 In the absence of of any licensing agreement statement,
@@ -26,13 +40,22 @@ the license below shall apply.
   You should have received a copy of the GNU General Public License
   along with hd44780.  If not, see <http://www.gnu.org/licenses/>.
 
+  (Sroll down below for a full copy of the GPL 3.0 license)
+
 ==============================================================================
-While hd44780 shares a common ancestry with the Arduino IDE
-LiquidCrystal library, hd44780 is a separate derivative work, licensed under
-GPLv3 whereas LiquidCrystal was licensed as LGPL v2.1 or later (LGPL 2.1+).
+
+While the hd44780 base class source files share a common ancestry with the
+Arduino IDE LiquidCrystal library source files, the hd44780 base class source
+files included in the hd44780 library are a separate derivative work,
+licensed under GPLv3 whereas LiquidCrystal was licensed as 
+LGPL v2.1 or later (LGPL 2.1+).
+
+Also, all the i/o subclass source files included in the hd44780 library
+are licensed GPLv3.
+
 As such, projects that use hd44780 that are conveyed (shared/distributed)
 to others must be open source licensed under the same terms
-and may only use other libraries that are fully compatible with GPLv3.
+and may only be used with other libraries that are fully compatible with GPLv3.
 
 For a full GPL/LGPL compatibilty matrix see:
 http://www.gnu.org/licenses/gpl-faq.html#AllCompatibility
@@ -47,6 +70,7 @@ licensing.
 
 ==============================================================================
 IMPORTANT Historical note about Arduino Library licensing:
+==============================================================================
 (with notes about LiquidCrystal and hd44780)
 The Arduino project has been VERY sloppy with respect to s/w licensing terms,
 especially for the IDE bundled libraries.
@@ -119,7 +143,7 @@ And still no mention of Adafruit other than in the .properties file
 where they are listed as an author.
 
 The hd44780 project was started in 2013.
-The hd44780 library project base class hd44780 library is, for the most part,
+The hd44780 library project hd44780 base class is, for the most part,
 a major refactoring re-write and enhancement of the IDE LiquidCrystal library.
 And while much of the code has been re-written, the primary author of hd44780
 still considers the hd44780 base class library to be a derative work of
@@ -151,6 +175,7 @@ So in terms of licensing, the hd44780 base class library is a derative work
 from the IDE LiquidCrystal library which is licensed as LGPL 2.1+,
 and this derative work (hd44780) is being licensed as GPL 3
 
+==============================================================================
 ==============================================================================
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007

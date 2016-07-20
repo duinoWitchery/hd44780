@@ -1,10 +1,10 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
-//  hd44780_I2Cexp.h - hd44780_I2Cexp library
+//  hd44780_I2Cexp.h - hd44780_I2Cexp i/o subclass for hd44780 library
 //  Copyright (c) 2013-2016  Bill Perry
 // ---------------------------------------------------------------------------
 //
-//  This file is part of the hd44780_I2Cexp library
+//  This file is part of the hd44780 library
 //
 //  hd44780_I2Cexp is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2016.07.20  bperrybap - merged into hd44780 library
 // 2016.06.13  bperrybap - added getProp properties
 // 2016.06.09  bperrybap - changed name from hd44780_IICexp to hd44780_I2Cexp
 // 2016.06.08  bperrybap - removed pre IDE 1.0 support

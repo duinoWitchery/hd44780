@@ -1,10 +1,10 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
-//  hd44780_I2Cexp.cpp - hd44780_I2Cexp library
+//  hd44780_I2Cexp.cpp - hd44780_I2Cexp i/o subclass for hd44780 library
 //  Copyright (c) 2013-2016  Bill Perry
 // ---------------------------------------------------------------------------
 //
-//  This file is part of the hd44780_I2Cexp library
+//  This file is part of the hd44780 library
 //
 //  hd44780_I2Cexp is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 // The API functionality provided by this library class is compatible
 // with the API functionality of the Arduino LiquidCrystal library.
 //
+// 2016.07.20  bperrybap - merged into hd44780 library
 // 2016.06.15  bperrybap - added getProp() diagnostic function
 // 2016.06.15  bperrybap - added i2c probing delay for chipkit i2c issue
 // 2016.06.09  bperrybap - changed name from hd44780_IICexp to hd44780_I2Cexp

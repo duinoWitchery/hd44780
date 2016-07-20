@@ -1,6 +1,6 @@
 //  vi:ts=4
 // -------------------------------------------------------------------------
-//  hd44780.h - hd44780 base class library
+//  hd44780.h - hd44780 base class
 //  Copyright (c) 2014-2016  Bill Perry
 //  (Derivative work of arduino.cc IDE LiquidCrystal library)
 //  Note:
@@ -13,7 +13,7 @@
 //  See the license.txt file for a history of the copyrights of LiquidCrystal
 // --------------------------------------------------------------------------
 //
-//  This file is part of the hd44780 base class library
+//  This file is part of the hd44780 library
 //
 //  hd44780 is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -30,8 +30,21 @@
 // See the license.txt file for further licensing & copyright details.
 // -----------------------------------------------------------------------
 //
-// The API functionality provided by this library class is compatible
-// with the API functionality of the Arduino LiquidCrystal library.
+// hd44780 is an extensible LCD library for hd44780 based LCD displays.
+// The library consists of a hd44780 base class combined with one or more
+// i/o subclasses to perform the i/o communication between the host and the
+// hd44780 display interface.
+//
+// The API functionality provided by the hd44780 base class, when combined
+// with an hd44780 library i/o subclass, is compatible with the API
+// functionality of the Arduino LiquidCrystal library as well as compatibilty
+// with most of the LCD API 1.0 Specification (nearly obsolete).
+//
+// The hd44780 API also provides some addtional extensions and all the API
+// functions provided by hd44780 are common across all i/o subclasses.
+//
+// 2016.07.20  bperrybap - merged hd44780 base class and i/o classes into a
+//                         single library.
 //
 // 2016.06.08  bperrybap - removed pre 1.0 support
 // 2016.06.03  bperrybap - added smart execution delays

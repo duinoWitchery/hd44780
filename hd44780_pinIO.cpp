@@ -1,10 +1,10 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
-//  hd44780_pinIO.cpp - hd44780_pinIO library
+//  hd44780_pinIO.cpp - hd44780_pinIO i/o subclass for hd44780 library
 //  Copyright (c) 2016  Bill Perry
 // ---------------------------------------------------------------------------
 //
-//  This file is part of the hd44780_pinIO library
+//  This file is part of the hd44780 library
 //
 //  hd44780_pinIO is free software: you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 // The API functionality provided by this library class is compatible
 // with the functionality of the Arduino LiquidCrystal library.
 //
+// 2016.07.20  bperrybap - merged into hd44780 library
 // 2016.06.03  bperrybap - added smart execution delays
 // 2016.04.01  bperrybap - initial creation
 //
