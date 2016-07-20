@@ -34,8 +34,6 @@
 // an i/o sub class library is compatible with the API functionality of the
 // Arduino LiquidCrystal library.
 //
-// 2016-XX-XX  bperrybap - all future history in github repository
-//
 // 2016.06.08  bperrybap - removed pre IDE 1.0 support
 // 2016.06.03  bperrybap - added smart execution delays
 // 2016.05.14  bperrybap - added LCD 1.0 API functions
