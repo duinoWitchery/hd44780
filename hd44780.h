@@ -291,4 +291,16 @@ private:
 
 };
 
+// LED_BUILTIN define fixups for Teensy and ChipKit
+#if !defined(LED_BUILTIN)
+#if defined(CORE_TEENSY)
+#define LED_BUILTIN CORE_LED0_PIN
+#else
+#if defined(PIN_LED1)
+#define LED_BUILTIN PIN_LED1
+#endif
+#endif
+#endif
+
+
 #endif
