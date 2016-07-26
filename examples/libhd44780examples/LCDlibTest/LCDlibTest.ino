@@ -69,23 +69,25 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 
 #ifndef HD44780_LCDOBJECT
 /*
- * You must pick a library/interface and add your own lcd object constructor.
- * the lcd object must be named "lcd"
+ * If not using a hd44780 library i/o class wrapper example sketch,
+ * you must pick a library/interface and add your own lcd object constructor.
+ * The lcd object must be named "lcd"
  * Add your includes and constructor.
  */
 
 // Examples
-
-//#include <hd44780.h>
-//#include <Wire.h>
-//#include <hd44780_IICexp.h>
-//hd44780_IICexp lcd; // just figure it all out for IIC i/o expander backpack
 
 // LiquidCrystal class is for 4 pin directly connected interface
 // initialize the library with the Arduino pin numbers of the LCD interface pins
 #include <LiquidCrystal.h>
 const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+// LiquidTWI 'faster' adafruit i2c library
+//#include <Wire.h>
+//#include <LiquidTWI.h>
+//LiquidTWI lcd(0); // Connect via i2c, default address #0 (A0-A2 not jumpered)
+//#define WIRECLOCK 400000
 
 // Adafruit I2C 
 //#include <Wire.h>
@@ -132,7 +134,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 
 // Turn on extra stuff for certain libraries
-// currenly only done for hd44780 library
+// currently only done for hd44780 library
 
 #if defined(hd44780_h)
 #define ONOFFCMDS	// If on() and off() commands exist
@@ -192,9 +194,11 @@ unsigned long stime, etime;
 	lcd.begin(LCD_COLS, LCD_ROWS);
 Serial.println("LCD initialized");
 
-#if (ARDUINO > 10507) && !defined(MPIDE)
 #ifdef WIRECLOCK
-	Wire.setClock(WIRECLOCK); // set i2c clock bit rate
+#if (ARDUINO >= 157) && !defined(MPIDE)
+	Wire.setClock(WIRECLOCK); // set i2c clock bit rate, if asked
+#else
+#error attempting to use Wire.setClock on IDE that does not support it
 #endif
 #endif
 
@@ -269,13 +273,11 @@ Serial.println("LCD initialized");
 	{
 		for(int x = 1; x < 16; x++)
 		{
-			//analogWrite(BACKLIGHT_PIN, 256-x * 16);
 			lcd.setBacklight(256-x * 16);
 			delay(45);
 		}
 		for(int x = 1; x < 16; x++)
 		{
-			//analogWrite(BACKLIGHT_PIN, x * 16);
 			lcd.setBacklight(x * 16);
 			delay(45);
 		}

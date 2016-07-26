@@ -72,19 +72,13 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 
 #ifndef HD44780_LCDOBJECT
 /*
- * You must pick a library/interface and add your own lcd object constructor.
- * the lcd object must be named "lcd"
+ * If not using a hd44780 library i/o class wrapper example sketch,
+ * you must pick a library/interface and add your own lcd object constructor.
+ * The lcd object must be named "lcd"
  * Add your includes and constructor.
  */
 
 // Examples
-
-//#include <hd44780.h>
-//#include <Wire.h>
-//#include <hd44780_I2Cexp.h>
-//hd44780_I2Cexp lcd; // just figure it all out for IIC i/o expander backpack
-//#define WIRECLOCK 400000L	// uncomment this to run at 400khz instead of 100khz
-							// NOTE: only works on IDE 1.5.7 and up
 
 // LiquidCrystal class is for 4 pin directly connected interface
 // initialize the library with the Arduino pin numbers of the LCD interface pins
@@ -150,9 +144,11 @@ void setup(void)
 {
 	// set up the LCD's number of columns and rows: 
 	lcd.begin(LCD_COLS, LCD_ROWS);
-#if (ARDUINO > 10507) && !defined(MPIDE)
 #ifdef WIRECLOCK
+#if (ARDUINO >= 157) && !defined(MPIDE)
 	Wire.setClock(WIRECLOCK); // set i2c clock bit rate, if asked
+#else
+#error attempting to use Wire.setClock on IDE that does not support it
 #endif
 #endif
 }
