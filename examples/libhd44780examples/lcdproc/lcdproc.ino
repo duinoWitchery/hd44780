@@ -32,6 +32,12 @@
 const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+// LiquidTWI 'faster' adafruit i2c library
+//#include <Wire.h>
+//#include <LiquidTWI.h>
+//LiquidTWI lcd(0); // Connect via i2c, default address #0 (A0-A2 not jumpered)
+//#define WIRECLOCK 400000
+
 // Adafruit_LiquidCrystal I2C 
 //#include <Wire.h>
 //#include <Adafruit_LiquidCrystal.h>
