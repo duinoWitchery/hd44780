@@ -9,6 +9,6 @@ IDE versions prior to 1.0
 
 IDE versions that should be avoided:
 ====================================
-IDE versions 1.5 to 1.55 (unecessary file name restrictions, breaks many libraries)
+IDE versions 1.5 to 1.55 (unnecessary file name restrictions, breaks many libraries)
 IDE version 1.6.6 (has function prototyping issues that can break some sketches)
 IDE version 1.6.8 (has serial port issues that breaks on certain boards)

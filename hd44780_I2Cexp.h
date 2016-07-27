@@ -455,6 +455,7 @@ uint8_t locinst = 0;
 		error = Wire.endTransmission();
 #ifdef ARDUINO_ARCH_PIC32
 		// chipkit stuff screws up if you do beginTransmission() too fast
+		// after an endTransmission()
 		// below 20us will cause it to fail, so we pad it out a bunch to provide margin
 		delayMicroseconds(100);
 #endif
@@ -478,6 +479,7 @@ uint8_t locinst = 0;
 		error = Wire.endTransmission();
 #ifdef ARDUINO_ARCH_PIC32
 		// chipkit stuff screws up if you do beginTransmission() too fast
+		// after an endTransmission()
 		// below 20us will cause it to fail, so we pad it out a bunch to provide margin
 		delayMicroseconds(20);
 #endif
