@@ -61,6 +61,10 @@ static const int dummyvar = 0;
 //	Currently supports PCF8574 or MCP32008 devices
 //
 // 3. compile and upload sketch
+//	note:
+//		if you have a slow display you may need to modify the
+//		execution times to be longer than the hd44780 defaults.
+//		Scroll down to modify the defines: LCD_CHEXECTIME, LCD_INSEXECTIME
 //
 // 4. Connect to the board using the serial monitor; set the baud rate to 9600
 //	While using the serial monitor is not required additional information
@@ -107,8 +111,12 @@ static const int dummyvar = 0;
 //  in future releases
 // -----------------------------------------------------------------------
 // 
+// History
+// 2016.07.27 bperrybap  - added defines for setting execution times
+// 2016.06.17 bperrybap  - initial creation
+//
 // @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
-// ---------------------------------------------------------------------------
+// -----------------------------------------------------------------------
 
 #define VERSION 100 // major.minor.point 120 is 1.2.0
  
@@ -123,6 +131,32 @@ static const int dummyvar = 0;
 #ifndef hd44780_I2Cexp_h
 #error Missing hd44780_I2Cexp.h header file
 #endif
+
+// ============================================================================
+// user configurable options below this point
+// ============================================================================
+
+// All displays will be assumed to be 16x2
+// Even if display is larger the sketch should still work correctly
+const int LCD_ROWS = 2;
+const int LCD_COLS = 16;
+
+// if you have slow displays uncomment these defines
+// to override the default execution times.
+//  CHEXECTIME is the execution time for clear and home commands
+// INSEXECTIME is the execution time for everything else; cmd/data
+// times are in Us 
+// NOTE: if using, you must enable both
+// Although each display can have seperate times, these values will be used
+// on all displays.
+
+//#define LCD_CHEXECTIME 2000
+//#define LCD_INSEXECTIME 37
+
+// ============================================================================
+// End of user configurable options
+// ============================================================================
+
 
 // for now create SDA and SCL defines for chipkit boards, as it is missing
 // note: this should continue to work if they eventually add these defines/const values
@@ -181,11 +215,6 @@ P(_hstar) =  "******************************************************************
 hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
 int NumLcd;		// number of LCD displays found.
 
-// All displays will be assumed to be 16x2
-// Even if display is larger the sketch should still work correctly
-const int LCD_ROWS = 2;
-const int LCD_COLS = 16;
-
 
 // convert a define to a string
 #define define2str(s) _str(s)
@@ -243,9 +272,12 @@ int nopullups;
 	 */
 	for(NumLcd = 0; NumLcd < 16; NumLcd++)
 	{
-		/*
-		 * If begin fails, then assume we have no more displays
-		 */
+		// set custom exectution times if configured
+#if defined(LCD_CHEXECTIME) && defined(LCD_INSEXECTIME)
+		lcd[NumLcd].setExecTimes(LCD_CHEXECTIME, LCD_INSEXECTIME);
+#endif
+
+		// If begin fails, then assume we have no more displays
 		if(lcd[NumLcd].begin(LCD_ROWS, LCD_COLS) != 0)
 			break;
 		Serial.print(F(" LCD device autoconfigured at address: "));
