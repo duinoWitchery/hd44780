@@ -29,6 +29,7 @@
 // with the functionality of the Arduino LiquidCrystal library.
 //
 //
+// 2016.07.27  bperrybap - added return status for iosend()
 // 2016.07.21  bperrybap - merged all class code into header
 // 2016.07.20  bperrybap - merged into hd44780 library
 // 2016.06.03  bperrybap - added smart execution delays
@@ -107,8 +108,10 @@ int ioinit()
 
 	return(0); // all is good
 }
+
 // iosend() - send either a command or data byte to lcd
-void iosend(uint8_t value, hd44780::iosendtype type)
+// returns zero on success, non zero on failure
+int iosend(uint8_t value, hd44780::iosendtype type)
 {
 	if(type == hd44780::HD44780_IOdata)
   		digitalWrite(_rs, HIGH);
@@ -138,6 +141,7 @@ void iosend(uint8_t value, hd44780::iosendtype type)
 		write4bits((value & 0x0F));// setup lower nibble on d4-d7 lcd pins
 		pulseEnable();				// send lower nibble to LCD
 	}
+	return(0); // it never fails
 }
 
 // iosetBacklight() - set backlight brightness

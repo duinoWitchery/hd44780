@@ -61,6 +61,7 @@
 // Attempting to read from some of these devices will lockup the AVR Wire
 // library.
 //
+// 2016.07.27  bperrybap - added return status for iosend()
 // 2017.07.21  bperrybap - merged all class code into header
 // 2017.07.20  bperrybap - merged into hd44780 library
 // 2016.06.09  bperrybap - changed name to hd44780_I2Clcd
@@ -145,7 +146,8 @@ int status = 0;
 
 //
 // iosend() - send either a command or data byte to lcd
-void iosend(uint8_t value, iosendtype type) 
+// returns zero on success, non zero on failure
+int iosend(uint8_t value, iosendtype type) 
 {
 uint8_t ctlbyte;
    
@@ -185,7 +187,8 @@ uint8_t ctlbyte;
 	Wire.beginTransmission(_Addr);
 	Wire.write(ctlbyte);	// send control byte
 	Wire.write(value);		// send data/cmd
-	Wire.endTransmission();
+
+	return(Wire.endTransmission());
 }
 
 }; // end of class definition

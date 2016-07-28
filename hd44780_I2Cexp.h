@@ -56,6 +56,7 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2016.07.27  bperrybap - added return status for iosend()
 // 2016.07.21  bperrybap - merged all class code into header
 // 2016.07.20  bperrybap - merged into hd44780 library
 // 2016.06.15  bperrybap - added i2c probing delay for chipkit i2c issue
@@ -336,11 +337,12 @@ int status = 0;
 }
 
 // iosend() - send either command or data byte to lcd
-void iosend(uint8_t value, hd44780::iosendtype type) 
+// returns zero on success, non zero on failure
+int iosend(uint8_t value, hd44780::iosendtype type) 
 {
 	// If address or expander type is unknown, then drop data
 	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
-		return;
+		return(-1);
 
 	/*
 	 * ensure that previous LCD instruction finished.
@@ -376,7 +378,7 @@ void iosend(uint8_t value, hd44780::iosendtype type)
 	{
 		write4bits( (value & 0x0F), type); // lower nibble, if not 4bit cmd
 	}
-	Wire.endTransmission();
+	return(Wire.endTransmission());
 }
 
 // iosetBacklight()  - set backlight brightness

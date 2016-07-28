@@ -46,6 +46,7 @@
 // 2016.07.20  bperrybap - merged hd44780 base class and i/o classes into a
 //                         single library.
 //
+// 2016.07.27  bperrybap - added return status for command() and iosend()
 // 2016.06.08  bperrybap - removed pre IDE 1.0 support
 // 2016.06.03  bperrybap - added smart execution delays
 // 2016.05.14  bperrybap - added LCD 1.0 API functions
@@ -80,6 +81,9 @@ hd44780::hd44780()
 //  library (hd44780) will continue using the term "row"
 //  rather than "line".
 //  Other than name, they are the same.
+//
+// Returns 0 on success, non zero on initialization failure
+//
 int hd44780::begin(uint8_t cols, uint8_t rows, uint8_t dotsize)
 {
 int rval = 0;
@@ -535,19 +539,30 @@ void hd44780::off ( void )
    noDisplay();
 }
 
-// send hd44780 command to lcd
-inline void hd44780::command(uint8_t value)
+// send hd44780 command byte to lcd
+//
+// Returns 0 on success, non zero if command failed
+//
+inline int hd44780::command(uint8_t value)
 {
-	iosend(value, HD44780_IOcmd);
+int status;
+
+	status = iosend(value, HD44780_IOcmd);
+
 	if((value == HD44780_CLEARDISPLAY) || (value == HD44780_RETURNHOME))
 		markStart(_chExecTime);
 	else
 		markStart(_insExecTime);
+
+	return(status);
 }
 
-// send data character to lcd
+// send data character byte to lcd
+// returns number of bytes successfully written to device
+// i.e. 1 if success or 0 if no character was processed (error)
 size_t hd44780::write(uint8_t value)
 {
+int status = 1; //assume success
 	/*
 	 * Since line endings are not yet supported,
 	 * toss carriage returns and linefeeds so niave users that
@@ -555,8 +570,9 @@ size_t hd44780::write(uint8_t value)
 	 */
 	if(value != '\r' && value != '\n')
 	{
-		iosend(value, HD44780_IOdata);
+		if(iosend(value, HD44780_IOdata))
+			status = 0; // send failed
 		markStart(_insExecTime);
 	}
-	return 1; // assume success
+	return status;
 }

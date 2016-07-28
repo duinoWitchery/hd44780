@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.07.27  bperrybap - added return status to command() and iosend()
 // 2016.07.20  bperrybap - merged hd44780 base class and i/o classes into a
 //                         single library.
 //
@@ -123,6 +124,7 @@ public:
 	// Arduino IDE LiquidCrystal lib functions
 	// =======================================
 
+	// returns 0 on success, non zero on initalization failure
 	int begin(uint8_t cols, uint8_t rows, uint8_t charsize = HD44780_5x8DOTS);
 
 #if 0
@@ -168,7 +170,8 @@ public:
 			 {setExecTimes(CmdDelay, CharDelay);}
 #endif
 
-	void command(uint8_t);
+	// returns 0 on success, non zero on command failure
+	int command(uint8_t);
 
 #if 0
 	// MAJOR PROBLEM:
@@ -270,11 +273,9 @@ protected:
 
 private:
 
-	// i/o class functions
+	// i/o subclass functions
 	virtual int ioinit() {return 0;}				// optional
-
-	// FIXME, change iosend() to return a status 
-	virtual void iosend(uint8_t value, hd44780::iosendtype type)=0;// mandatory
+	virtual int iosend(uint8_t value, hd44780::iosendtype type)=0;// mandatory
 	virtual void iosetBacklight(uint8_t dimvalue){}	// optional
 	virtual void iosetContrast(uint8_t contval){}	// optional
 
