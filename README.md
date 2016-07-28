@@ -5,7 +5,13 @@ Licensing
 =========
 ![GPLv3Logo](https://www.gnu.org/graphics/gplv3-127x51.png)
 
-hd44780 is an open source project for open source projects. Those wishing to create closed projects should seek an alternate solution. hd44780 is licensed under the terms of the GNU General Public License v3.0 as opposed to the more liberal licensing terms of the GNU Lesser General Public License (LGPL), MIT, modified BSD, Apache, etc..
+hd44780 is an open source project for open source projects. Those wishing to
+create closed projects should seek an alternate solution.
+hd44780 is licensed under the terms of the GNU General Public License v3.0
+as opposed to the more liberal licensing terms of the
+GNU Lesser General Public License (LGPL), MIT, modified BSD, Apache, etc..
+
+GPL licensing information can found here: https://www.gnu.org/licenses/
 
 For full details on the licensing of the hd44780 library and its components, see the included licensing file.
 
@@ -82,3 +88,61 @@ If you don't know where you sketchbook/libraries directory is simply click on:
 or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The loation of your sketchbook directory will be in the text box.
 The zip image must be installed in a directory called "libraries" under that directory.
+
+API Summary
+===========
+The table below is a summary of all the available API functions in the hd44780 library.
+
+Additional information about the API functions and how to use them
+can be found in the included examples.
+
+
+|Function                               | Description                           |
+| --------------------------------------| --------------------------------------|
+| **LiquidCrystal API**                 | https://www.arduino.cc/en/Reference/LiquidCrystal |
+| begin(cols, rows)                     | initialize communication interface and LCD<br> **hd44780 extension**: non zero return value is failure |
+| clear()                               | clear the display and home the cursor |
+| home()	                        | home the cursor |
+| setCursor(col, row)                   | set cursor position |
+| write(data)	                        | send data byte to the display |
+| write(*str)	                        | send C string to the display |
+| write(*buffer, size)                  | send size bytes to the display |
+| print(...)                            | print formatted data on the display (from Print class) |
+| cursor()                              | turn on underline cursor |
+| noCursor()                            | turn off/hide cursor |
+| blink()                               | enable blinking at cursor position |
+| noBlink()                             | disable blinking at cursor position |
+| display()                             | enable pixels on display |
+| noDisplay()                           | disable/hide pixels on display |
+| scrollDisplayLeft()                   | shift display contents left |
+| scrollDisplayRight()                  | shift display contents right |
+| autoscroll()                          | enable autoshifting left/right for new characters |
+| noAutoscroll()                        | disable autoscroll/autoshifting |
+| leftToRight()                         | write left to right, set autoshift to left |
+| rightToLeft()                         | write right to left, set autoshift to right |
+| createChar(charval, charmap[])        | create a custom character |
+| moveCursorLeft()                      | move cursor one space to right |
+| moveCursorRight()                     | move cursor one space to left |
+| setRowOffsets(row0, row1, row2, row3) | set address for start of each line                                        |
+| command(cmd)                          | send raw 8bit command to LCD<br> **hd44780 extension**: non zero return value is failure |
+|                                       ||
+| **hd44780 extensions**<br>These are part of hd44780 but not part of LiquidCrytal API ||
+| backlight()	                        | turn on backlight (max brightness) |
+| noBacklight()                         | turn off backlight    |
+| setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
+|                                       ||
+| **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
+| setBacklight(dimvalue)                | set backlight brightness (0-255) |
+| setcontrast(contval)                  | set contrast (0-255) |
+| on()                                  | turn on LCD pixels and backlight |
+| off()                                 | turn off LCD pixels and backlight |
+|                                       ||
+| **Deprecated LCD API 1.0 Functions**<br>These exist in hd44780 but are deprecated||
+| cmdDelay(CmdDelay, CharDelay)         | use setExecTimes() instead |
+| cursor_on()                           | use cursor() istead |
+| cursor_off()                          | use noCursor() instead |
+| blink_on()                            | use blink() instead |
+| blink_off()                           | use noBlink() instead |
+| load_custom_character(char_num, Rows[]) | use createChar() instead |
+| **BROKEN LCD API 1.0 Functions**      ||
+| setCursor(row, col)                   | row,col is backwards from Liquidcrystal;<br>therefore cannot be supported|
