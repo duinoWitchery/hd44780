@@ -29,7 +29,7 @@
 
 // with backlight control:
 const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7, bl=10, blLevel=HIGH;
-hd44780_pinIO lcd(rs, en, d4, d5, d6, d7, bl, blLEvel);
+hd44780_pinIO lcd(rs, en, d4, d5, d6, d7, bl, blLevel);
 
 // tell the hd44780 sketch the lcd object has been declared
 #define HD44780_LCDOBJECT
