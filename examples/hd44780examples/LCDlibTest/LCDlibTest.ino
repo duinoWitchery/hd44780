@@ -97,6 +97,10 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 #endif
 
+// ============================================================================
+// user configurable options below this point
+// ============================================================================
+
 
 /*
  * Define your LCD size
@@ -111,9 +115,21 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #define LCD_ROWS 2
 #endif
 
+// if you have a slow display uncomment these defines
+// to override the default execution times.
+//  CHEXECTIME is the execution time for clear and home commands
+// INSEXECTIME is the execution time for everything else; cmd/data
+// times are in Us 
+// NOTE: if using, you must enable both
+// Although each display can have seperate times, these values will be used
+// on all displays.
+
+//#define LCD_CHEXECTIME 2000
+//#define LCD_INSEXECTIME 37
+
 
 /*
- * Options
+ * LCDlibTest Options (normally shouldn not need to change these)
  */
 
 
@@ -131,6 +147,10 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 #define TRACKTIME	// turn on code that displays elapsed time
 #define STATUSBARS	// turn on status bars on left & right
+
+// ============================================================================
+// End of user configurable options
+// ============================================================================
 
 
 // Turn on extra stuff for certain libraries
@@ -170,11 +190,12 @@ const uint8_t charBitmap[][8] = {
 char animchar(int col, int iter);
 void showFPS(unsigned long etime, const char *type);
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
+void showByteXfer(unsigned long FPStime);
 
 void setup()
 {
 int charBitmapSize = (sizeof(charBitmap ) / sizeof (charBitmap[0]));
-unsigned long stime, etime;
+unsigned long etime;
 
 
 #ifdef DEBUGPRINT
@@ -191,7 +212,37 @@ unsigned long stime, etime;
 #endif
 
 	// set up the LCD's number of columns and rows: 
-	lcd.begin(LCD_COLS, LCD_ROWS);
+	// with hd44780 library,
+	// set execution times & check for initializatin failure
+#if defined(hd44780_h)
+
+		// set custom exectution times if configured
+#if defined(LCD_CHEXECTIME) && defined(LCD_INSEXECTIME)
+		lcd.setExecTimes(LCD_CHEXECTIME, LCD_INSEXECTIME);
+#endif
+
+
+	if(lcd.begin(LCD_COLS, LCD_ROWS))
+	{
+		// begin() failed so blink the onboard LED if possible
+#ifdef LED_BUILTIN
+		pinMode(LED_BUILTIN, OUTPUT);
+		while(1)
+		{
+			digitalWrite(LED_BUILTIN, HIGH);
+			delay(500);
+			digitalWrite(LED_BUILTIN, LOW);
+			delay(500);
+		}
+#else
+		while(1){} // spin and do nothing
+#endif
+
+	}
+#else
+	lcd.begin(LCD_COLS, LCD_ROWS); // can't check status on other libraries
+#endif
+
 Serial.println("LCD initialized");
 
 #ifdef WIRECLOCK
@@ -208,35 +259,25 @@ Serial.println("LCD initialized");
 		lcd.createChar ( i, (uint8_t *)charBitmap[i] );
 	}
 
-	// must reset cursor postion after defining chars
-	lcd.home();
+	// must do something like set cursor postion after defining chars
+	// on most libraries (not hd44780)
+	// to reset address back to display ram
+	lcd.setCursor(0,0);
 
+
+#if defined(TIMEBYTE) || defined(TIMEFPS)
+	delay(10);		// delay to ensure no previous commands still pending
+	etime = timeFPS(FPS_iter, LCD_COLS, LCD_ROWS);
+#endif
 
 #ifdef TIMEBYTE
-	/*
-	 * time a byte transfer
-	 */
-
-	delay(10);			// ensure any previous commands have completed
-
-	stime = micros();
-	lcd.write(' ');
-	etime = micros();
-	lcd.print("ByteTime:");
-	lcd.print((etime - stime));
-	lcd.print("uS");
-
-	delay(DELAY_TIME); // show it for a while
-	
+	// show the average single byte xfer time during the FPS test
+	showByteXfer(etime);
 	lcd.clear();
 #endif
 
 #ifdef TIMEFPS
-	/*
-	 * calculate Frame update time and FPS rate for this display
-	 */
-
-	etime = timeFPS(FPS_iter, LCD_COLS, LCD_ROWS);
+	// calculate Frame update time and FPS rate for this display
 	showFPS(etime, " ");
 
 	/*
@@ -591,4 +632,20 @@ float fps;
 	lcd.print("ms");
 
 	delay(DELAY_TIME);
+}
+void showByteXfer(unsigned long FPStime)
+{
+	lcd.clear();
+	lcd.print("ByteXfer:");
+
+	/*
+	 * Calculate average byte xfer time from time of FPS test
+	 * This takes into consideration the set cursor position commands (1 per row) which
+	 * are single byte commands and take the same amount of time as a data byte write.
+	 * The final result is rounded up to an integer.
+	 */
+	lcd.print((int) (FPStime / (FPS_iter * (10.0 * (LCD_COLS *  LCD_ROWS + LCD_ROWS)))+0.5));
+	lcd.print("uS");
+
+	delay(DELAY_TIME); // show it for a while
 }
