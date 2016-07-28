@@ -359,7 +359,7 @@ int rval = 0;
 	clear(); // clear display
 
 	// Initialize to default text direction (for romance languages)
-	_displaymode = HD44780_ENTRYLEFT | HD44780_ENTRYSHIFTDECREMENT;
+	_displaymode = HD44780_ENTRYLEFT2RIGHT;
 	// set the entry mode
 	command(HD44780_ENTRYMODESET | _displaymode);
 
@@ -458,14 +458,14 @@ void hd44780::scrollDisplayRight(void)
 // This is for text that flows Left to Right
 void hd44780::leftToRight(void)
 {
-	_displaymode |= HD44780_ENTRYLEFT;
+	_displaymode |= HD44780_ENTRYLEFT2RIGHT;
 	command(HD44780_ENTRYMODESET | _displaymode);
 }
 
 // This is for text that flows Right to Left
 void hd44780::rightToLeft(void)
 {
-	_displaymode &= ~HD44780_ENTRYLEFT;
+	_displaymode &= ~HD44780_ENTRYLEFT2RIGHT;
 	command(HD44780_ENTRYMODESET | _displaymode);
 }
 
@@ -481,17 +481,19 @@ void hd44780::moveCursorLeft(void)
 	command(HD44780_CURDISPSHIFT | HD44780_CURSORMOVE | HD44780_MOVELEFT);
 }
 
-// This will 'right justify' text from the cursor
+// This will enable autoshifting display as new characters are written.
+// If mode is left to right, shift is left
+// if mode is right to left, shift is right
 void hd44780::autoscroll(void)
 {
-	_displaymode |= HD44780_ENTRYSHIFTINCREMENT;
+	_displaymode |= HD44780_ENTRYAUTOSHIFT;
 	command(HD44780_ENTRYMODESET | _displaymode);
 }
 
-// This will 'left justify' text from the cursor
+// This will disable autoshifting when new characters are written
 void hd44780::noAutoscroll(void)
 {
-	_displaymode &= ~HD44780_ENTRYSHIFTINCREMENT;
+	_displaymode &= ~HD44780_ENTRYAUTOSHIFT;
 	command(HD44780_ENTRYMODESET | _displaymode);
 }
 

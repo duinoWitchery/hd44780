@@ -94,14 +94,12 @@ public:
 	static const uint8_t HD44780_SETDDRAMADDR = 0x80;
 
 	// flags for entry mode set;
-	static const uint8_t HD44780_ENTRYRIGHT = 0x00;
-	static const uint8_t HD44780_ENTRYLEFT = 0x02;
-	static const uint8_t HD44780_ENTRYSHIFTINCREMENT = 0x01;
-	static const uint8_t HD44780_ENTRYSHIFTDECREMENT = 0x00;
+	static const uint8_t HD44780_ENTRYLEFT2RIGHT = 0x02;
+	static const uint8_t HD44780_ENTRYAUTOSHIFT = 0x01;
 
 	// flags for display on/off control;
 	static const uint8_t HD44780_DISPLAYON = 0x04;
-	static const uint8_t HD44780_DISPLAYOFF = 0x00;
+//	static const uint8_t HD44780_DISPLAYOFF = 0x00;
 	static const uint8_t HD44780_CURSORON = 0x02;
 	static const uint8_t HD44780_CURSOROFF = 0x00;
 	static const uint8_t HD44780_BLINKON = 0x01;
