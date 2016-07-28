@@ -8,7 +8,7 @@ Library components:
 Application components:
 - example sketches
 
-Every source file should contain its own explicitly licensing.
+Every source file should contain its own explicit licensing.
 Currently all library components above are licensed as GPL v3.0
 Some but not all application components are GPL v3.0.
 
