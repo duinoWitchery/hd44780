@@ -1,5 +1,20 @@
-# hd44780
-Extensible hd44780 LCD library
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.5.0--a-yellow.svg?style=plastic)
+
+CurrentStatus
+=============
+The library is currently in an alpha state.
+
+While the API and underlying code is stable and has been tested, there are
+likely to be some changes in the constructors for the i/o subclasses that will
+not be backward compatible with the existing constructors, particuarly for the
+`hd44780_I2Cexp` i/o subclass.
+
+These constructor changes are not anticipated to affect lcd object definitions
+that use `hd44780_I2Cexp` autoconfiguration.
+
+After the constructors are finalized, the project will move to a beta state
+and should quickly move to a 1.0.0 release candidate followed by a
+1.0.0 release.
 
 Licensing
 =========
@@ -25,13 +40,16 @@ hd44780 display interface.
 The hd44780 library is not a direct drop in replacement for the the Arduino IDE LiquidCrystal library.
 
 The API functionality provided by the hd44780 base class, when combined
-with an hd44780 library i/o subclass, is compatible with the API
-functionality of the Arduino LiquidCrystal library as well as compatibilty
+with an hd44780 library i/o subclass, is compatible with most of the API
+functionality of the Arduino LiquidCrystal library as well as
 with most of the LCD API 1.0 Specification (some of which is nearly obsolete).
 
 The hd44780 API also provides some addtional extensions and all the API
 functions provided by hd44780 are common across all i/o subclasses.
-One of the most significant extensions being the ability to modify the libraries expected command execution times.
+The most most significant extensions being:
+- the ability to modify the libraries expected command execution times.
+- the ability to tell if lcd initialized failed
+- the ability to tell if sending a raw command to the LCD failed
 
 S/W requirements
 ================
