@@ -75,6 +75,7 @@
 #ifndef hd44780_I2Cexp_h
 #define hd44780_I2Cexp_h
 
+#include <Wire.h>
 #include <hd44780.h>
 // For STUPID versions of gcc that don't hard error on missing header files
 #ifndef hd44780_h

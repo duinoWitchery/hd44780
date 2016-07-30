@@ -43,10 +43,9 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.07.27  bperrybap - added return status for command() and iosend()
 // 2016.07.20  bperrybap - merged hd44780 base class and i/o classes into a
 //                         single library.
-//
-// 2016.07.27  bperrybap - added return status for command() and iosend()
 // 2016.06.08  bperrybap - removed pre IDE 1.0 support
 // 2016.06.03  bperrybap - added smart execution delays
 // 2016.05.14  bperrybap - added LCD 1.0 API functions
