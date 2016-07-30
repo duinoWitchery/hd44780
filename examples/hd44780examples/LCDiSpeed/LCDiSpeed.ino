@@ -100,6 +100,11 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 #endif
 
+// ============================================================================
+// user configurable options below this point
+// ============================================================================
+
+
 /*
  * Define your LCD size
  * 16x2 will work ok on larger displays but if you want the frame rate
@@ -112,6 +117,19 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 #ifndef LCD_ROWS
 #define LCD_ROWS 2
 #endif
+
+// if you have a slow display uncomment these defines
+// to override the default execution times.
+//  CHEXECTIME is the execution time for clear and home commands
+// INSEXECTIME is the execution time for everything else; cmd/data
+// times are in Us 
+// NOTE: if using, you must enable both
+// Although each display can have seperate times, these values will be used
+// on all displays.
+
+//#define LCD_CHEXECTIME 2000
+//#define LCD_INSEXECTIME 37
+
 
 /*----------------------------------------------------------------------------*
  * LCDiSpeed Options (normally should not need to change these)
@@ -136,6 +154,10 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 #define DELAY_TIME 3500 // delay time to see information on lcd
 
+// ============================================================================
+// End of user configurable options
+// ============================================================================
+
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
 void showFPS(unsigned long etime, const char *type);
 void showByteXfer(unsigned long FPStime);
@@ -143,7 +165,37 @@ void showByteXfer(unsigned long FPStime);
 void setup(void)
 {
 	// set up the LCD's number of columns and rows: 
-	lcd.begin(LCD_COLS, LCD_ROWS);
+	// with hd44780 library,
+	// set execution times & check for initializatin failure
+#if defined(hd44780_h)
+
+		// set custom exectution times if configured
+#if defined(LCD_CHEXECTIME) && defined(LCD_INSEXECTIME)
+		lcd.setExecTimes(LCD_CHEXECTIME, LCD_INSEXECTIME);
+#endif
+
+
+	if(lcd.begin(LCD_COLS, LCD_ROWS))
+	{
+		// begin() failed so blink the onboard LED if possible
+#ifdef LED_BUILTIN
+		pinMode(LED_BUILTIN, OUTPUT);
+		while(1)
+		{
+			digitalWrite(LED_BUILTIN, HIGH);
+			delay(500);
+			digitalWrite(LED_BUILTIN, LOW);
+			delay(500);
+		}
+#else
+		while(1){} // spin and do nothing
+#endif
+
+	}
+#else
+	lcd.begin(LCD_COLS, LCD_ROWS); // can't check status on other libraries
+#endif
+
 #ifdef WIRECLOCK
 #if (ARDUINO >= 157) && !defined(MPIDE)
 	Wire.setClock(WIRECLOCK); // set i2c clock bit rate, if asked
