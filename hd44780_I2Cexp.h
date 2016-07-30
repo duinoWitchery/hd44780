@@ -585,7 +585,7 @@ I2CexpType chiptype;
  * This code can auto detect 6 different 8574 backpack pin mappings.
  * This is all the known pin mappings.
  * Note: it does fail on the SYDZ bapack by incorrectly picking the backlight
- * active level because that backpack uses a pullup on the base.
+ * active level because that backpack uses a pullup on the backlight transistor base.
  * SYDZ backpacks will have to be manually configured.
  *
  * Overview of how this works:
@@ -596,7 +596,7 @@ I2CexpType chiptype;
  * Whereas the inputs with the d4-d7 connections will not.
  *
  * Also, 
- * When there is no pullup/pulldown resistor on the transistor base,
+ * When there is no pullup/pulldown resistor on the backlight transistor base,
  * the 8574 bl pin as an input will be pulled to the direction of the emitter.
  * for active low backlights, the bl input pin will be high
  * for active high backlights, the bl input pin will be low.
@@ -635,6 +635,7 @@ I2CexpType chiptype;
  * It requires cuting a trace and dead bugging
  * a new resistor to  connect to the base of the transistor.
  * 
+ * As a result the SYDZ backpack cannot use autoconfiguration.
  */
 
 int autocfg8574()

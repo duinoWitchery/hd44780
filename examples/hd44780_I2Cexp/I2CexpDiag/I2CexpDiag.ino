@@ -69,6 +69,12 @@ static const int dummyvar = 0;
 // 4. Connect to the board using the serial monitor; set the baud rate to 9600
 //	While using the serial monitor is not required additional information
 //	will be sent to the serial monitor.
+//	NOTE:
+//		When using recent IDEs, it is useful to connect to the serial
+//		monitor *before* you upload the sketch so that the serial monitor
+//		is reconnected as soon as the sketch is uploaded.
+//		This is particularly helpful on boards that use a USB virtual
+//		serial port like leonardo.
 // -----------------------------------------------------------------------
 // Expected behavior
 // -----------------------------------------------------------------------
@@ -118,8 +124,6 @@ static const int dummyvar = 0;
 // @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
 // -----------------------------------------------------------------------
 
-#define VERSION 100 // major.minor.point 120 is 1.2.0
- 
 #include <Wire.h>
 #include <hd44780.h>
 // For STUPID versions of gcc that don't hard error on missing header files
@@ -231,31 +235,31 @@ int nopullups;
 #if (ARDUINO > 101)
 	do
 	{
-	// wait on serial port to be ready but timout out after 3 seconds
+	// wait on serial port to be ready but timout out after 5 seconds
 	// this is for sytems that use virtual serial over USB.
-		if(millis() > 3000) // millis starts at 0 after reset
+		if(millis() > 5000) // millis starts at 0 after reset
 			break;
 	} while(!Serial);
 #endif
 
 	Serial.println(hstar);
 	Serial.println(F("Serial Initialized"));
-	Serial.println(hline);
-	Serial.print(F("I2CexpDiag v"));
-	Serial.print(VERSION/100);
-	Serial.print('.');
-	Serial.print((VERSION%100)/10);
-	Serial.print('.');
-	Serial.print((VERSION%100)%10);
-	Serial.println(F(" - i2c LCD i/o expander backpack diagnostic tool"));
-	Serial.println(hline);
 
+	Serial.println(hline);
+	Serial.println(F("I2CexpDiag - i2c LCD i/o expander backpack diagnostic tool"));
+#ifdef HD44780_VERSIONSTR
+	Serial.println(hline);
+	Serial.print(F("hd44780 lib version: "));
+	Serial.println(HD44780_VERSIONSTR);
+#endif
+
+	Serial.println(hline);
 	showSystemConfig();
-	Serial.println(hline);
 
+	Serial.println(hline);
 	nopullups = i2cpulluptest();
-	Serial.println(hline);
 
+	Serial.println(hline);
 	Wire.begin();
 	if(!showI2Cdevices()) // show all i2c devices on bus
 	{
@@ -497,6 +501,7 @@ uint8_t hr, mins, sec;
  */
 void showSystemConfig(void)
 {
+
 #ifdef ARDUINO
 	Serial.print(F("Reported Arduino Revision: "));
 #if ARDUINO > 158 // ARDUINO rev format changed after 1.5.8 to #.##.## (breaks after 3.x.x for 16 int bit calc)
@@ -521,6 +526,9 @@ void showSystemConfig(void)
 	Serial.print(F("F_CPU: "));
 	Serial.println(F_CPU);
 
+
+
+	Serial.println(hline);
 	Serial.print(F("SDA: digital pin: "));
 	Serial.println(SDA);
 
@@ -588,16 +596,27 @@ int nopullups = 0;
 #ifdef LATER
 // i2cexpPinsTest - test for shorts on expander port pins
 // FIXME currenly only works with PCF8574
+// Also, the pin with the backlight can fail as the backlight
+// circuitry can pull the pin low on active HIGH backlight circuits.
+// so not sure that test can ever be made to work as desired.
 int i2cexpPinsTest(uint8_t addr)
 {
 int bitdiffs = 0;
 int rval;
 uint8_t wdata, rdata;
 
-	// to test for shorted/broken/stuck pin,
-	// it turns on a single bit and then reads back the port register.
-	// r/w will be low even if En goes high the port should read back
+	// to test for shorted/broken/stuck pin:
+	// - set all pins but one to outputs and low
+	// - set single pin an input with pullup enabled
+	// - read back the port register. (all 8 pins)
+	//
+	// If the input pin is not a high there is an issue
+	// note:
+	// r/w will be low even if En goes high, so the port should read back
 	// what was written.
+	// An active high backlight curcuit will create false positives since
+	// the backlight transistor will pull the input pin low.
+	//
 
 	for(int pin = 0; pin < 8; pin++)
 	{
