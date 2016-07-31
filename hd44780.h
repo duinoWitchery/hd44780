@@ -211,7 +211,7 @@ public:
 	// optional LCD API 1.0 functions
 	// ==============================
 	inline void setBacklight(uint8_t dimvalue) {iosetBacklight(dimvalue);}
-	inline void setContrast(uint8_t contval) {iosetContrast(contval);}
+	inline void setContrast(uint8_t contvalue) {iosetContrast(contvalue);}
 	void on(void);			// turn on LCD pixels and backlight
 	void off(void);			// turn off LCD pixels and backlight
 
@@ -279,8 +279,8 @@ private:
 	// i/o subclass functions
 	virtual int ioinit() {return 0;}				// optional
 	virtual int iosend(uint8_t value, hd44780::iosendtype type)=0;// mandatory
-	virtual void iosetBacklight(uint8_t dimvalue){}	// optional
-	virtual void iosetContrast(uint8_t contval){}	// optional
+	virtual void iosetBacklight(uint8_t dimvalue){if(dimvalue) return;}	// optional
+	virtual void iosetContrast(uint8_t contvalue){if(contvalue) return;}// optional
 
 	uint8_t _rowOffsets[4]; // memory address of start of each row/line
 

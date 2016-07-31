@@ -151,7 +151,7 @@ can be found in the included examples.
 |                                       ||
 | **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
 | setBacklight(dimvalue)                | set backlight brightness (0-255) |
-| setcontrast(contval)                  | set contrast (0-255) |
+| setcontrast(contvalue)                | set contrast (0-255) |
 | on()                                  | turn on LCD pixels and backlight |
 | off()                                 | turn off LCD pixels and backlight |
 |                                       ||
