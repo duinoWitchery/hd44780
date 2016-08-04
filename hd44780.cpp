@@ -146,23 +146,48 @@ int rval = 0;
 	 * code authors don't really understand what it is actually doing.
 	 * Adding to the confusion is that the hitachi HD44780 datasheet does
 	 * a very poor job explaining this sequence. 
+	 * Also, adding to the confusion is the note about FunctionSet on page 27:
+	 *  ----------------------------------------------------------------------
+	 *	Note: Perform the function at the head of the program before executing
+	 *	any instructions (except for the read busy flag and address instruction)
+	 *	From this point, the function set instruction cannot be executed unless
+	 *	the interface data length is changed.
+	 *  ----------------------------------------------------------------------
 	 *
-	 * When using 4 bit mode, the LCD expects the nibbles on d4-d7 and
+	 * It isn't clear what information this note is trying to convey.
+	 *
+	 * It appears to be implying that FunctionSet must be done first and that it
+	 * cannot be executed later unless the data length is changed.
+	 * If that is what it saying...
+	 * This is in direct conflict with the comand sequence in the
+	 * Initialize by Instruction in figures 23 & 24, particulary in
+	 * figure 23 as the 4th command sent will be a FunctionSet command
+	 * setting data length to 8 bits as well as the prefered the N and F bits
+	 * when the data length is guaranteed to already be 8 bits. 
+	 *
+	 * But since sending a FunctionSet command with DL=1 along with setting N
+	 * and F bits works when the display is already in 8 bit mode, my conclusion
+	 * is that the note on page 27 is obviously incorrect and can be ignored.
+	 *
+	 * --
+	 *
+	 * When using 4 bit length mode, the LCD expects the nibbles on d4-d7 and
 	 * expects the upper nibble of the 8 bits first.
 	 * Therefore, when using 4 bit mode, it is critical that the host and
 	 * the LCD are in sync on the nibbles.
 	 *
 	 * The command sequences in figures 23 and 24 are not simple retries and
 	 * there is nothing magical about the timing.
-	 * They are specifically designed to to ensure that after completion,
+	 * They are specifically chosen to ensure that after completion,
 	 * the LCD is in the desired interface mode (8 bit or 4 bit).
-	 * The two sequences start off with an identical 3 command sequence which
-	 * is used to reliably put the LCD into 8 bit mode regardless of what mode
-	 * or state it happends to be in and regardless of whether the host is
-	 * controlling all 8 data signals or just d4-d7.
+	 * The two sequences start off with an identical 3 command sequence of
+	 * FunctionSet commands which are used to reliably put the LCD into
+	 * 8 bit length mode regardless of what mode or state the LCD happends
+	 * to be in and regardless of whether the host is controlling all 8 data
+	 * pin signals or just d4-d7.
 	 * The only difference between the two sequences is that the 4 bit
-	 * initializaion puts the LCD interface into 4 bit mode after the LCD is
-	 * assured to be in 8 bit mode.
+	 * initializaion (figure 24) puts the LCD interface into 4 bit mode
+	 * after the LCD is assured to be in 8 bit mode.
 	 *
 	 * 
 	 * Below is a detailed explanation of the hd44780 initalization sequence
@@ -185,15 +210,31 @@ int rval = 0;
 	 * 4 bit mode.
 	 * Also, if the LCD is in 4 bit mode, the LCD could be in the middle of
 	 * receiving nibbles. i.e. the system was reset after only a single
-	 * nibble was sent to the LCD. In this case the LCD has received
-	 * the upper/1st nibble of a command/data byte and is waiting for the
-	 * lower/2nd nibble.
+	 * nibble was sent to the LCD.
+	 * When the LCD is in 4 bit mode and out of nibble sync with the host:
+	 * 	the LCD has received the upper/1st nibble of a command/data byte and
+	 *	is waiting for the lower/2nd nibble.
+	 *	After the 2nd nibble is recieved, the LCD will go off and execute an
+	 *	unknown command. This is why the firt delay is so long. The host has to
+	 *  accomodate the longest possible command execution time.
+	 *	The next two FunctionSet commands will be interpreted
+	 *	as a single FunctionSet command by the LCD to put the display back into 
+	 *	8 bit mode.
 	 *
-	 * In each of the 3 steps, EN is strobed once.
+	 * It appears that all delays specified in figures 23 & 24 are 2.7x the
+	 * execution times in table 6. It appears that these values were chosen to
+	 * accomodate LCDs that are running chips clocked slower than the 270kHz
+	 * reference used in table 6
+	 * A 2.7x factor would allow the Initialize by Instruction sequence to work
+	 * with chips clocked down to 100Khz.
+	 *
+	 * In each of the 3 steps, EN is strobed once as the host will be
+	 * treating the LCD h/w interface as if it is 8 bits wide regardless of
+	 * whether the actual h/w interface to the LCD may only be 4 bits.
 	 * d4-d7 signals on the hd44780 interface are set for 
 	 * a function set "goto 8bit mode" command.
 	 * Also, d0-d3 signals on the physical hd44780 interface are either set to
-	 * low, or not driven in the case of 4 bit only host interfaces.
+	 * low, or not driven in the case of 4 bit only h/w host interfaces.
 	 *
 	 * Here is the command sequence shown seperately for each of 3 states the
 	 * LCD can be in. 
@@ -263,8 +304,9 @@ int rval = 0;
 	 *		is because there is no telling what command might now be executing
 	 *		and BUSY cannot be used yet.
 	 *		Therefore, the host must blind wait the worst case amount of time.
-	 *		A 4.1ms delay appears to be about 2.7x the worst case instruction
-	 *		execution time for the typical 270Khz LCD clock rate.
+	 *		A 4.1ms delay appears to be 2.7x the worst case instruction
+	 *		execution time (clear & home are 1.52ms) at a 270kHz LCD clock rate.
+	 *		(4.1ms would accomodate a chip clocked at 100kHz instead of 270 kHz)
 	 *
 	 * 2) Set the upper 4 bits (d4-d7) of Functionset: FUNCTION_SET|8BIT = 0x3
 	 *		If LCD happened to go into 8BIT mode in step 1
@@ -302,7 +344,11 @@ int rval = 0;
 	 * The initialization sequence below uses special hd44780 internal API
 	 * 4 bit commands.
 	 * Internal 4 bit commands are commands that are sent to the LCD using
-	 * only a single strobe of EN even if the host interface is 4 bit only.
+	 * only a single strobe of EN even if the host h/w interface is 4 bit only.
+	 * In other words it is indicating that only the upper 4 bits need to be
+	 * sent to the display - so effectively the host must ensure that the
+	 * upper four bits are placed on D4-d7 and that EN is stobed only once
+	 * including if the host h/w interface is only 4 bits wide.
 	 *
 	 * 8bit only i/o interface libraries can ignore this as the bits for these
 	 * special commands are in the proper d4-d7 bit locations so the full
@@ -312,18 +358,26 @@ int rval = 0;
 	 *  - 4 bit only interfaces will send just the upper 4 bits (d4-d7)
 	 *
 	 * Additional Note:
-	 *	The hitachi spec seems to use delays that are 2.7x the specified
-	 *  instruction times based on a 270khz clock
+	 *	The Initiatlization by Instruction figures 23 & 24 of the hitachi spec
+	 *	seems to use delays that are 2.7x the specified instruction times based
+	 *	on a 270khz clock from table 6
 	 *  i.e. 4.1ms is 2.7x 1.52ms of clear/home commands
 	 *	and 100us is 2.7x 37us for all the other instructions (cmd & data)
-	 *  This appears to be for added safety margin.
-	 *	This library will wait a little bit longer in case LCD is slower.
-	 *	But since iosend() honors execution times, 
-	 *  the delays here are in addition to the execution times
+	 *  The delay values appear to be accomodating LCDs clocked down to 100kHz
+	 *	rather than at the 270Khz reference.
+	 *	This library will wait a little bit longer given the delay functions
+	 *	used. However, since iosend() honors execution times, 
+	 *  the delays here are in addition to the configured execution times
 	 *	and technically should not be needed.
-	 *  And if the application called setExecTimes() with excution
-	 *  values prior to begin() those will be an addition to these
+	 *  So if the application called setExecTimes() with excution
+	 *  values prior to begin() those will be in addition to these
 	 *  delays so everthing should work no matter how slow the LCD is.
+	 *
+	 * Note that delay() is used here vs delayMicroSeconds() as delay()
+	 * on later versions of Arduino core code calls some scheduling functions
+	 * to potentially allow other code to execute during this time period.
+	 *
+	 * delay() can be used because this code is never called from a constructor
 	 */
 	iosend(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
 	delay(5); // wait 5ms vs 4.1ms, some are slower than spec

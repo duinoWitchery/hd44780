@@ -259,6 +259,10 @@ public:
 protected:
 
 	// type of data being sent through iosend()
+	//    IOcmd  - send an 8 bit command to display
+	//    IOdata - send 8 bits of data to display
+	// IOcmd4bit - send D4-d7 cmd bits to display using a single EN strobe
+	//             8 bit host interfaces can treate this same as IOcmd
 	enum iosendtype {HD44780_IOcmd, HD44780_IOdata, HD44780_IOcmd4bit};
 
 	uint8_t _displayfunction;
