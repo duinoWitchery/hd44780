@@ -56,6 +56,8 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2016.08.06  bperrybap - changed iosend() to iowrite()
+// 2016.08.06  bperrybap - added ioread()
 // 2016.07.27  bperrybap - added return status for iosend()
 // 2016.07.21  bperrybap - merged all class code into header
 // 2016.07.20  bperrybap - merged into hd44780 library
@@ -114,10 +116,14 @@
 
 // MCP23008 based boards
 #define I2Cexp_BOARD_ADAFRUIT292   I2Cexp_MCP23008,1,2,3,4,5,6,7,HIGH // Adafruit #292 i2c/SPI backpack in i2c mode (lcd RW grounded)
-																			// GP0 not connected
+                                                                      // GP0 not connected to r/w so no ability to do LCD reads
+
 #define I2Cexp_BOARD_WIDEHK        I2Cexp_MCP23008,4,7,0,1,2,3,6,HIGH // WIDE.HK mini backpack (lcd r/w hooked to GP5)
+
 #define I2Cexp_BOARD_LCDPLUG       I2Cexp_MCP23008,4,6,0,1,2,3,7,HIGH // JeeLabs LCDPLUG (NOTE: NEVER use the SW jumper)
-																			// GP5 is hooked to s/w JP1 jumper, LCD RW is hardwired to gnd
+                                                                      // GP5 is hooked to s/w JP1 jumper, LCD RW is hardwired to gnd
+                                                                      // cannot do LCD reads.
+
 #define I2Cexp_BOARD_XXX           I2Cexp_MCP23008,7,6,5,4,3,2,1,HIGH // unknown backpack brand
 
 #define I2Cexp_BOARD_MLTBLUE       I2Cexp_MCP23008,1,3,4,5,6,7,0,HIGH // MLT-group "blueboard" backpack
@@ -152,7 +158,7 @@ hd44780_I2Cexp(uint8_t addr){ _addr = addr; _expType = I2Cexp_UNKNOWN;}
 hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t en,
 			 uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7 )
 {
-   config(i2c_addr, type, rs, en, d4, d5, d6, d7, 0xff, HIGH);
+   config(i2c_addr, type, rs, 0xff, en, d4, d5, d6, d7, 0xff, HIGH);
 }
 
 // Constructor with backlight control
@@ -160,7 +166,7 @@ hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t en,
 				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
 				uint8_t bl, uint8_t blLevel)
 {
-   config(i2c_addr, type, rs, en, d4, d5, d6, d7, bl, blLevel);
+   config(i2c_addr, type, rs, 0xff, en, d4, d5, d6, d7, bl, blLevel);
 }
 
 
@@ -173,6 +179,7 @@ enum I2CexpProp
 	Prop_addr,
 	Prop_expType,
 	Prop_rs,
+	Prop_rw,
 	Prop_en,
 	Prop_d4,
 	Prop_d5,
@@ -202,6 +209,8 @@ int getProp(I2CexpProp propID)
 			return((int)_expType);
 		case Prop_rs:
 			return(mask2bit(_rs));
+		case Prop_rw:
+			return(mask2bit(_rw));
 		case Prop_en:
 			return(mask2bit(_en));
 		case Prop_d4:
@@ -234,7 +243,7 @@ static uint8_t AutoInst; // declaration only, definition is outside class
 uint8_t _addr;			// I2C Address of the IO expander
 I2CexpType _expType;	// I2C chip type used on the IO expander
 uint8_t _rs;			// I2C chip IO pin mask for Register Select pin
-// note: Rw pin is not used
+uint8_t _rw;			// I2C chip IO pin mask for r/w pin
 uint8_t _en;			// I2C chip IO pin mask for enable pin
 uint8_t _d4;			// I2C chip IO pin mask for data d4 pin
 uint8_t _d5;			// I2C chip IO pin mask for data d5 pin
@@ -337,9 +346,124 @@ int status = 0;
 	return ( status );
 }
 
-// iosend() - send either command or data byte to lcd
+// ioread(type) - read a byte from LCD DDRAM
+//
+// returns:
+// 	success:  8 bit value read
+// 	failure: negative value: error or read not supported
+int ioread(hd44780::iotype type) 
+{
+uint8_t gpioValue =  _blCurState;
+uint8_t data = 0;
+uint8_t iodata;
+
+	// If address or expander type is unknown, then abort read w/error
+	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
+		return(-1);
+
+	// reads for MCP23008 not yet supported
+	if(_expType == I2Cexp_MCP23008)
+	{
+		return(-1);
+	}
+
+	// check if reads supported
+	if(!_rw)
+		return(-1);
+
+	/*
+	 * ensure that previous LCD instruction finished.
+	 * There is a 45us offset since there will be at least 2 bytes
+	 * (the i2c address and the i/o expander data)  transmitted over i2c
+	 * before the i/o expander i/o pins could be seen by the LCD.
+	 * (3 bytes on the MCP23008)
+	 * At 400Khz (max rate supported by the i/o expanders) 16 bits plus start
+	 * and stop bits is 45us.
+	 * So there is at least 45us of time overhead in the physical interface.
+	 */
+
+	waitReady(-45);
+   
+	// put all the expander LCD data pins into input mode.
+	// PCF8574 psuedo inputs use pullups so setting them to 1
+	// makes them suitible for inputs.
+
+	gpioValue |= _d4|_d5|_d6|_d7;
+
+	// set RS based on type of read (data or status/cmd)
+	if(type == hd44780::HD44780_IOdata) 
+	{
+		gpioValue |= _rs; // RS high to read data reg
+	}
+
+	gpioValue |= _rw; // r/w high for reading
+
+	// write all the bits to the expander port
+	
+	Wire.beginTransmission(_addr);
+	Wire.write(gpioValue);		// d4-d7 are inputs, RS, r/w high, E LOW
+	Wire.endTransmission();
+
+
+	// raise E to read the data.
+	Wire.beginTransmission(_addr);
+	Wire.write(gpioValue | _en); // Raises E 
+	Wire.endTransmission();
+
+	// read the expander port to get the upper nibble of the byte
+	Wire.requestFrom((int)_addr, 1);
+	iodata = Wire.read();
+
+	Wire.beginTransmission(_addr);
+	Wire.write(gpioValue); // lower E after reading nibble
+	Wire.endTransmission();
+
+	// map i/o expander port bits into upper nibble of byte
+	if(iodata & _d4)
+		data |= (1 << 4);
+
+	if(iodata & _d5)
+		data |= (1 << 5);
+
+	if(iodata & _d6)
+		data |= (1 << 6);
+
+	if(iodata & _d7)
+		data |= (1 << 7);
+	
+	Wire.beginTransmission(_addr);
+	Wire.write(gpioValue | _en); // Raise E to read next nibble
+	Wire.endTransmission();
+
+	// read the expander port to get the upper lower of the byte
+	Wire.requestFrom((int)_addr, 1);
+	iodata = Wire.read();
+
+	// map i/o expander port bits into lower nibble of byte
+	if(iodata & _d4)
+		data |= (1 << 0);
+
+	if(iodata & _d5)
+		data |= (1 << 1);
+
+	if(iodata & _d6)
+		data |= (1 << 2);
+
+	if(iodata & _d7)
+		data |= (1 << 3);
+
+   
+	// put gpio port back to all outputs state with WR signal low for writes
+	Wire.beginTransmission(_addr);
+	Wire.write(_blCurState);		// with E LOW
+	Wire.endTransmission();
+
+	return(data);
+}
+
+// iowrite(value, type) - send either command or data byte to lcd
 // returns zero on success, non zero on failure
-int iosend(uint8_t value, hd44780::iosendtype type) 
+int iowrite(uint8_t value, hd44780::iotype type) 
 {
 	// If address or expander type is unknown, then drop data
 	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
@@ -415,7 +539,7 @@ void iosetBacklight(uint8_t dimvalue)
 // ================================
 
 // config() - save constructor parameters
-void config(uint8_t i2c_addr, I2CexpType i2c_type, uint8_t rs, uint8_t en, 
+void config(uint8_t i2c_addr, I2CexpType i2c_type, uint8_t rs, uint8_t rw, uint8_t en, 
 						uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
 						uint8_t bl, uint8_t blLevel )
 {
@@ -424,6 +548,12 @@ void config(uint8_t i2c_addr, I2CexpType i2c_type, uint8_t rs, uint8_t en,
 	_addr = i2c_addr;
    
 	_rs = ( 1 << rs );
+
+	if(rw < 8)
+		_rw = (1 << rw);
+	else
+		_rw = 0; // no r/w control
+
 	_en = ( 1 << en );
    
 	// Initialise pin mapping
@@ -642,7 +772,7 @@ I2CexpType chiptype;
 int autocfg8574()
 {
 uint8_t data;
-uint8_t rs, en, d4, d5, d6, d7, bl, blLevel;
+uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 
 	/*
 	 * First put a 0xff in the output port
@@ -661,7 +791,7 @@ uint8_t rs, en, d4, d5, d6, d7, bl, blLevel;
 	if((data & 0x7) == 7)
 	{
 		rs = 0;
-		// rw = 1; //not used
+		rw = 1;
 		en = 2;
 		d4 = 4;
 		d5 = 5;
@@ -705,7 +835,7 @@ uint8_t rs, en, d4, d5, d6, d7, bl, blLevel;
 		{
 			// mjkdz
 			rs = 6;
-			// rw = 5; // not used
+			rw = 5;
 			en = 4;
 			d4 = 0;
 			d5 = 1;
@@ -717,7 +847,7 @@ uint8_t rs, en, d4, d5, d6, d7, bl, blLevel;
 		{
 			// electrofun LCDXIO
 			rs = 4;
-			// rw = 5; // not used
+			rw = 5;
 			en = 6;
 			d4 = 0;
 			d5 = 1;
@@ -739,7 +869,7 @@ uint8_t rs, en, d4, d5, d6, d7, bl, blLevel;
 		// couldn't figure it out
 		return(-1);
 	}
-	config(_addr, _expType, rs, en, d4, d5, d6, d7, bl, blLevel);
+	config(_addr, _expType, rs, rw, en, d4, d5, d6, d7, bl, blLevel);
 	return(0);
 }
 
@@ -865,13 +995,13 @@ uint8_t blLevel;
 	{
 		return(-1); // could not identify board
 	}
-	config(_addr, _expType, rs, en, d4, d5, d6, d7, bl, blLevel);
+	config(_addr, _expType, rs, 0xff, en, d4, d5, d6, d7, bl, blLevel);
 	return(0);
 }
 
 
 // write4bits - send a nibble to the LCD through i/o expander port
-void write4bits ( uint8_t value, hd44780::iosendtype type ) 
+void write4bits(uint8_t value, hd44780::iotype type ) 
 {
 uint8_t gpioValue =  _blCurState;
    

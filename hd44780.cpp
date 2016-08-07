@@ -43,6 +43,8 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.08.06  bperrybap - changed iosend() to iowrite()
+// 2016.08.06  bperrybap - added status() and read()
 // 2016.07.27  bperrybap - added return status for command() and iosend()
 // 2016.07.20  bperrybap - merged hd44780 base class and i/o classes into a
 //                         single library.
@@ -366,7 +368,7 @@ int rval = 0;
 	 *  The delay values appear to be accomodating LCDs clocked down to 100kHz
 	 *	rather than at the 270Khz reference.
 	 *	This library will wait a little bit longer given the delay functions
-	 *	used. However, since iosend() honors execution times, 
+	 *	used. However, since iowrite() honors execution times, 
 	 *  the delays here are in addition to the configured execution times
 	 *	and technically should not be needed.
 	 *  So if the application called setExecTimes() with excution
@@ -379,13 +381,13 @@ int rval = 0;
 	 *
 	 * delay() can be used because this code is never called from a constructor
 	 */
-	iosend(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
+	iowrite(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
 	delay(5); // wait 5ms vs 4.1ms, some are slower than spec
 
-	iosend(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
+	iowrite(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
 	delay(1); // wait 1ms vs 100us
     
-	iosend(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
+	iowrite(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
 	delay(1); // wait 1ms vs 100us
 
 	/*
@@ -397,7 +399,7 @@ int rval = 0;
 	 * isn't in 4 bit mode yet.
 	 */
 	if(!(_displayfunction & HD44780_8BITMODE))
-		iosend(HD44780_FUNCTIONSET|HD44780_4BITMODE, HD44780_IOcmd4bit);
+		iowrite(HD44780_FUNCTIONSET|HD44780_4BITMODE, HD44780_IOcmd4bit);
 
 	/*
 	 * At this point the LCD is in 8 bit mode for 8 bit host interfaces,
@@ -592,7 +594,7 @@ void hd44780::off ( void )
    noDisplay();
 }
 
-// send hd44780 command byte to lcd
+// command() - send hd44780 command byte to lcd
 //
 // Returns 0 on success, non zero if command failed
 //
@@ -600,8 +602,9 @@ inline int hd44780::command(uint8_t value)
 {
 int status;
 
-	status = iosend(value, HD44780_IOcmd);
+	status = iowrite(value, HD44780_IOcmd);
 
+	// executime time depends on command
 	if((value == HD44780_CLEARDISPLAY) || (value == HD44780_RETURNHOME))
 		markStart(_chExecTime);
 	else
@@ -610,7 +613,30 @@ int status;
 	return(status);
 }
 
-// send data character byte to lcd
+// status() - read status byte from LCD
+// returns:
+// 	success: 8 bit hd44780 status byte (busy flag & address)
+//	failure: neagative value (error or read/status not supported by i/o subclass
+int hd44780::status()
+{
+int rvalue = ioread(HD44780_IOcmd);
+	markStart(0); // status reads do not require execution time
+	return(rvalue);
+}
+
+// read() - read a data byte from LCD
+// returns:
+// 	success: 8 bit value read
+//	failure: neagative value (error or read not supported by i/o subclass
+int hd44780::read()
+{
+int rvalue = ioread(HD44780_IOdata);
+	markStart(_insExecTime);
+	return(rvalue);
+}
+
+
+// write() - send data character byte to lcd
 // returns number of bytes successfully written to device
 // i.e. 1 if success or 0 if no character was processed (error)
 size_t hd44780::write(uint8_t value)
@@ -623,7 +649,7 @@ int status = 1; //assume success
 	 */
 	if(value != '\r' && value != '\n')
 	{
-		if(iosend(value, HD44780_IOdata))
+		if(iowrite(value, HD44780_IOdata))
 			status = 0; // send failed
 		markStart(_insExecTime);
 	}

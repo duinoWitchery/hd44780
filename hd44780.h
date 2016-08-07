@@ -43,6 +43,8 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.08.06  bperrybap - changed iosend() to iowrite()
+// 2016.08.06  bperrybap - added status() and read()
 // 2016.07.27  bperrybap - added return status to command() and iosend()
 // 2016.07.20  bperrybap - merged hd44780 base class and i/o classes into a
 //                         single library.
@@ -127,10 +129,12 @@ public:
 	// Arduino IDE LiquidCrystal lib functions
 	// =======================================
 
+	// begin()
 	// returns 0 on success, non zero on initalization failure
 	int begin(uint8_t cols, uint8_t rows, uint8_t charsize = HD44780_5x8DOTS);
 
 #if 0
+	// init ()
 	// This will NEVER be implemented in this class as it is
 	// not conformant to LCD API 1.0 and is hardware i/o specific
 	void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
@@ -173,10 +177,12 @@ public:
 			 {setExecTimes(CmdDelay, CharDelay);}
 #endif
 
+	// command()
 	// returns 0 on success, non zero on command failure
 	int command(uint8_t);
 
 #if 0
+	// setCursor()
 	// MAJOR PROBLEM:
 	// The LiquidCrystal API defines this as setCursor(col, row);
 	// This is fundamentally incompatible with this defintion.
@@ -190,6 +196,10 @@ public:
 	void setCursor(uint8_t row, uint8_t col); 
 #endif
 
+	// cursor_on()
+	// cursor_off()
+	// blink_on()
+	// blink_off()
 	// These functions should be considered obsolete as LiquidCrytal API has
 	// api functions for these that are in wide spread use.
 	// note: only very new versions of gcc support setting warning message
@@ -215,16 +225,23 @@ public:
 	void on(void);			// turn on LCD pixels and backlight
 	void off(void);			// turn off LCD pixels and backlight
 
-	// This function seems to be specific to  a particular h/w device.
-	// On that that device it returns some sort of fifo status.
+	// status();
+	// The LCD API 1.0 documenation says it does not work the same
+	// on all devices.
+	// On one device it returns some sort of fifo status.
 	// the documenation isn't clear what it should do on other h/w.
-	// This function will only be implemented if it can work the same on ALL h/w
-	// My opinion is libraries should be smarter and this should not be needed.
-	// int status(); // not implemented
+	// hd44780 mandates that all API functions work the same for all
+	// i/o subclasses.
+	//
+	// returns:
+	//	success: 8 bit hd44780 status byte read from LCD (busy flag & address)
+	//	failure: negataive value (error or read/status not supported)
+	int status();
 
 	// extended LCD API 1.0 functions
 	// ==============================
 
+	// load_custom_character()
 	// this function should be considered obsolete as LiquidCrystal API has
 	// a createChar() function that is in wide spread use
 	// LCD API documentation for this call says 7 byte array
@@ -248,9 +265,13 @@ public:
 	// Additional API functions
 	// These are hd44780 lib extensions that are
 	// not part of LCD 1.0 or LiquidCrystal
-	// ==============================================
+	// note:
+	// status() is exists in LCD 1.0 API but is different
+	// This status() function will be consistent across all i/o subclasses
+	// ===================================================================
 	void backlight(void);		// turn on Backlight (max brightness)
 	void noBacklight(void);		// turn off Backlight
+	int read(void);
 
 	// set execution times for commmands to override defaults
 	inline void setExecTimes(uint32_t chExecTimeUs, uint32_t insExecTimeUs)
@@ -258,12 +279,12 @@ public:
 
 protected:
 
-	// type of data being sent through iosend()
-	//    IOcmd  - send an 8 bit command to display
-	//    IOdata - send 8 bits of data to display
-	// IOcmd4bit - send D4-d7 cmd bits to display using a single EN strobe
+	// type of data being sent through ioread()/iowrite()
+	//    IOcmd  - read/write an 8 bit status/command to/from display
+	//    IOdata - read/writes 8 bits of data to/from display
+	// IOcmd4bit - write D4-d7 cmd bits to display using a single EN strobe
 	//             8 bit host interfaces can treate this same as IOcmd
-	enum iosendtype {HD44780_IOcmd, HD44780_IOdata, HD44780_IOcmd4bit};
+	enum iotype {HD44780_IOcmd, HD44780_IOdata, HD44780_IOcmd4bit};
 
 	uint8_t _displayfunction;
 	uint8_t _displaycontrol;
@@ -281,8 +302,9 @@ protected:
 private:
 
 	// i/o subclass functions
-	virtual int ioinit() {return 0;}				// optional
-	virtual int iosend(uint8_t value, hd44780::iosendtype type)=0;// mandatory
+	virtual int ioinit() {return 0;}	// optional
+	virtual int ioread(hd44780::iotype type) {if(type) return -1;else return -1;}	// optional, return fail if not implemented
+	virtual int iowrite(uint8_t value, hd44780::iotype type)=0;// mandatory
 	virtual void iosetBacklight(uint8_t dimvalue){if(dimvalue) return;}	// optional
 	virtual void iosetContrast(uint8_t contvalue){if(contvalue) return;}// optional
 

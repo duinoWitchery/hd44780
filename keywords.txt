@@ -18,7 +18,7 @@ hd44780	KEYWORD1
 hd44780_I2Cexp	KEYWORD1
 hd44780_I2Clcd	KEYWORD1
 hd44780_pinIO	KEYWORD1
-iosendtype	KEYWORD1
+iotype	KEYWORD1
 
 ###########################################
 # Methods and Functions (KEYWORD2)
@@ -65,13 +65,16 @@ load_custom_char	KEYWORD2
 setDelay	KEYWORD2
 
 # hd44780 extensions
+read	KEYWORD2
+status	KEYWORD2
 backlight	KEYWORD2
 noBacklight	KEYWORD2
 setExecTimes	KEYWORD2
 
 # hd44780 internal virtual functions
 ioinit	KEYWORD2
-iosend	KEYWORD2
+ioread	KEYWORD2
+ioswrite	KEYWORD2
 iosetBacklight	KEYWORD2
 iosetContrast	KEYWORD2
 

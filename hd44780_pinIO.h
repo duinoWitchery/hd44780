@@ -29,6 +29,8 @@
 // with the functionality of the Arduino LiquidCrystal library.
 //
 //
+// 2016.08.06  bperrybap - added ioread()
+// 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.07.27  bperrybap - added return status for iosend()
 // 2016.07.21  bperrybap - merged all class code into header
 // 2016.07.20  bperrybap - merged into hd44780 library
@@ -55,13 +57,61 @@ public:
 // === constructors ===
 // ====================
 
-// 4 bit mode constructor with optional backlight control
+// 4 bit mode constructor without r/w control, without backlight control
 hd44780_pinIO(uint8_t rs,  uint8_t en,
-			uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
-			uint8_t bl=0xff, uint8_t blLevel=0xff)
+			uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
 {
 	_rs = rs;
 	_en = en;
+	_rw = 0xff; // not used
+	_d4 = d4;
+	_d5 = d5;
+	_d6 = d6;
+	_d7 = d7;
+	_bl = 0xff; // not used
+	_blLevel = 0xff; // not used
+}
+
+// 4 bit mode constructor without r/w control, with backlight control
+hd44780_pinIO(uint8_t rs,  uint8_t en,
+			uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+			uint8_t bl, uint8_t blLevel)
+{
+	_rs = rs;
+	_en = en;
+	_rw = 0xff; // not used
+	_d4 = d4;
+	_d5 = d5;
+	_d6 = d6;
+	_d7 = d7;
+	_bl = bl;
+	_blLevel = blLevel;
+}
+
+
+// 4 bit mode constructor with r/w control, without backlight control
+hd44780_pinIO(uint8_t rs,  uint8_t rw, uint8_t en,
+			uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
+{
+	_rs = rs;
+	_en = en;
+	_rw = rw;
+	_d4 = d4;
+	_d5 = d5;
+	_d6 = d6;
+	_d7 = d7;
+	_bl = 0xff; // not used
+	_blLevel = 0xff; // not used
+}
+
+// 4 bit mode constructor with w/2 control, with backlight control
+hd44780_pinIO(uint8_t rs,  uint8_t rw, uint8_t en,
+			uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+			uint8_t bl, uint8_t blLevel)
+{
+	_rs = rs;
+	_en = en;
+	_rw = rw;
 	_d4 = d4;
 	_d5 = d5;
 	_d6 = d6;
@@ -96,8 +146,29 @@ uint8_t _blLevel;	// backlight active control level HIGH/LOW
 int ioinit()
 {
 	// initialize Arduino pins used for hd44780 signals
+	// NOTE:
+	// _rw and _en pins are set to low even though they should
+	// default to this from a an initial reset.
+	// the reason is it is possible initilization is called without
+	// without resetting the processor. In that case the state of the
+	// bit in the port register would be unknown, so it is safest to set
+	// to the desired state (LOW).
+
 	pinMode(_rs, OUTPUT);
+
+	if(_rw != 0xff)
+	{
+		pinMode(_rw, OUTPUT);
+		// if r/w is used it be will set to be low,
+		// it will only be turned hi during a read and
+		// then set back to low. This offers a slight boost
+		// for writes since normally reads are not done very often
+		digitalWrite(_rw, LOW);
+	}
+
 	pinMode(_en, OUTPUT);
+	digitalWrite(_en, LOW);
+
 	pinMode(_d4, OUTPUT);
 	pinMode(_d5, OUTPUT);
 	pinMode(_d6, OUTPUT);
@@ -109,9 +180,114 @@ int ioinit()
 	return(0); // all is good
 }
 
-// iosend() - send either a command or data byte to lcd
+// ioread(type) - read a byte from LCD DDRAM
+//
+// returns:
+// 	success:  8 bit value read
+// 	failure: negative value: reading not supported
+//
+int ioread(hd44780::iotype type) 
+{
+uint8_t data = 0;
+
+	// check if r/w control supported
+	if(!_rw)
+		return(-1);
+
+	waitReady();		// ensure previous instruction finished
+
+	// put all the LCD data pins into input mode.
+	pinMode(_d4, INPUT);
+	pinMode(_d5, INPUT);
+	pinMode(_d6, INPUT);
+	pinMode(_d7, INPUT);
+
+	// set RS based on type of read (data or status/cmd)
+	if(type == hd44780::HD44780_IOdata) 
+	{
+		digitalWrite(_rs, HIGH); // RS high to access data reg
+	}
+	else
+	{
+		digitalWrite(_rs, LOW); // RS LOW to access status/cmd reg
+	}
+
+	// r/w  HIGH for reading
+	digitalWrite(_rw, HIGH);
+
+	// raise E to allow reading the data.
+	digitalWrite(_en, HIGH);
+
+	// allow for hd44780 tDDR (Data delay time) before reading data
+	// this could be much shorter but this is portable for all CPUs.
+	// and it will ensure that hd44780 PWEH timing is honored as well.
+	delayMicroseconds(1);
+
+	// read pins for d4-d7 into upper nibble of byte
+	if(digitalRead(_d4) == HIGH)
+		data |= (1 << 4);
+
+	if(digitalRead(_d5) == HIGH)
+		data |= (1 << 5);
+
+	if(digitalRead(_d6) == HIGH)
+		data |= (1 << 6);
+
+	if(digitalRead(_d7) == HIGH)
+		data |= (1 << 7);
+
+	// lower E after reading nibble
+	digitalWrite(_en, LOW);
+
+	// allow for hd44780 1/2 of tcycE (Enable cycle time)
+	// this could be much shorter but this is portable for all CPUs.
+	delayMicroseconds(1);
+	
+	// raise E to allow reading the lower nibbly of the byte
+	digitalWrite(_en, HIGH);
+
+	// allow for hd44780 tDDR (Data delay time) before reading data
+	// this could be shorter but this is portable for all CPUs.
+	// and it will ensure that hd44780 PWEH timing is honored as well.
+	delayMicroseconds(1);
+
+	// read pins for d4-d7 into upper nibble of byte
+	if(digitalRead(_d4) == HIGH)
+		data |= (1 << 0);
+
+	if(digitalRead(_d5) == HIGH)
+		data |= (1 << 1);
+
+	if(digitalRead(_d6) == HIGH)
+		data |= (1 << 2);
+
+	if(digitalRead(_d7) == HIGH)
+		data |= (1 << 3);
+
+   
+	// lower E after reading nibble
+	digitalWrite(_en, LOW);
+
+	//
+	// put all pins back into state for writing to LCD
+	//
+
+	// put all the LCD data pins into input mode.
+	pinMode(_d4, OUTPUT);
+	pinMode(_d5, OUTPUT);
+	pinMode(_d6, OUTPUT);
+	pinMode(_d7, OUTPUT);
+
+	// r/w  LOW for Writing
+	digitalWrite(_rw, LOW);
+
+	return(data);
+}
+
+
+// iowrite() - send either a command or data byte to lcd
 // returns zero on success, non zero on failure
-int iosend(uint8_t value, hd44780::iosendtype type)
+int iowrite(uint8_t value, hd44780::iotype type)
 {
 	if(type == hd44780::HD44780_IOdata)
   		digitalWrite(_rs, HIGH);

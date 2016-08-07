@@ -47,13 +47,14 @@ with most of the LCD API 1.0 Specification (some of which is nearly obsolete).
 The hd44780 API also provides some addtional extensions and all the API
 functions provided by hd44780 are common across all i/o subclasses.
 The most most significant extensions being:
-- the ability to modify the libraries expected command execution times.
-- the ability to tell if lcd initialized failed
-- the ability to tell if sending a raw command to the LCD failed
+- ability to modify the libraries expected command execution times.
+- ability to tell if lcd initialized failed
+- ability to read data or status from the LCD (requires r/w control)
+- ability to tell if sending a raw command to the LCD failed
 
 S/W requirements
 ================
-- ### IDE versions 1.0 and later
+- ### IDE version 1.0 or later
 
 - ### IDE versions that should be avoided:
 	- IDE versions 1.5 to 1.55 (unnecessary file name restrictions, breaks many libraries)
@@ -67,11 +68,11 @@ Library should work on all Arduino boards.
 
 The library currenly comes with the following i/o subclasses:
 
-* hd44780_pinIO control LCD using direct Arduino Pin connections
+* `hd44780_pinIO` control LCD using direct Arduino Pin connections
 
-* hd44780_I2Cexp control LCD using i2c i/o exapander backpack (PCF8574 or MCP23008)
+* `hd44780_I2Cexp` control LCD using i2c i/o exapander backpack (PCF8574 or MCP23008)
 
-* hd44780_I2Clcd control LCD with native i2c interface
+* `hd44780_I2Clcd` control LCD with native i2c interface
 
 
 Installation
@@ -134,19 +135,20 @@ can be found in the included examples.
 | noDisplay()                           | disable/hide pixels on display |
 | scrollDisplayLeft()                   | shift display contents left |
 | scrollDisplayRight()                  | shift display contents right |
-| autoscroll()                          | enable autoshifting left/right for new characters |
-| noAutoscroll()                        | disable autoscroll/autoshifting |
+| autoscroll()                          | enable left/right autoshifting for new characters |
+| noAutoscroll()                        | disable left/right autoshifting |
 | leftToRight()                         | write left to right, set autoshift to left |
 | rightToLeft()                         | write right to left, set autoshift to right |
 | createChar(charval, charmap[])        | create a custom character |
 | moveCursorLeft()                      | move cursor one space to right |
 | moveCursorRight()                     | move cursor one space to left |
 | setRowOffsets(row0, row1, row2, row3) | set address for start of each line                                        |
-| command(cmd)                          | send raw 8bit command to LCD<br> **hd44780 extension**: non zero return value is failure |
+| command(cmd)                          | send raw 8bit hd44780 command to LCD<br> **hd44780 extension**: non zero return value is failure |
 |                                       ||
-| **hd44780 extensions**<br>These are part of hd44780 but not part of LiquidCrytal API ||
+| **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
 | backlight()	                        | turn on backlight (max brightness) |
 | noBacklight()                         | turn off backlight    |
+| read()                                | read data byte from LCD<br>returns negative value on failure<br>(requires r/w signal)|
 | setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
 |                                       ||
 | **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
@@ -154,6 +156,7 @@ can be found in the included examples.
 | setcontrast(contvalue)                | set contrast (0-255) |
 | on()                                  | turn on LCD pixels and backlight |
 | off()                                 | turn off LCD pixels and backlight |
+| status()                              | read hd44780 status byte (busy flag & address)<br> returns negative value on failure<br>(requires r/w signal) |
 |                                       ||
 | **Deprecated LCD API 1.0 Functions**<br>These exist in hd44780 but are deprecated||
 | cmdDelay(CmdDelay, CharDelay)         | use setExecTimes() instead |

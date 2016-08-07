@@ -302,6 +302,8 @@ int nopullups;
 
 	for(int n = 0; n < NumLcd; n++)
 	{
+	int rw;
+
 		//showLCDconfig(Serial, lcd[n]);
 
 		/*
@@ -322,6 +324,9 @@ int nopullups;
 		lcd[n].print("0x");
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_addr), HEX);
 		lcd[n].print(",");
+
+
+	
 #if 1
 		switch(lcd[n].getProp(hd44780_I2Cexp::Prop_expType))
 		{
@@ -340,6 +345,11 @@ int nopullups;
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_expType), DEC);
 #endif
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_rs), DEC);
+
+		// r/w support may or may not be enabled.
+		rw = lcd[n].getProp(hd44780_I2Cexp::Prop_rw);
+		if((unsigned int) rw <= 7) // check if r/w is supported
+			lcd[n].print(rw, DEC);
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_en), DEC);
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_d4), DEC);
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_d5), DEC);
