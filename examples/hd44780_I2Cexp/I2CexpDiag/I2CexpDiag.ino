@@ -59,6 +59,7 @@ static const int dummyvar = 0;
 //
 // 2. Hookup up i2c i/o expander backpack based LCD devices.
 //	Currently supports PCF8574 or MCP32008 devices
+//	(can test more than one LCD at a time)
 //
 // 3. compile and upload sketch
 //	note:
@@ -85,8 +86,12 @@ static const int dummyvar = 0;
 //	- attempt to initalize all LCD devices detected
 //	- display information about each each initialized LCD device
 //		this includes i2c address and configuration information
+//		and information about missing pullups.
+//	- test display memory
+//		 LCD expander must be able to control r/w line
 //	- perform a backlight blink test
 //	- drop into a loop and display the system uptime on each display
+//    *P on the display indicates missing external pullups
 //
 //	If the sketch cannot determine any usable LCD devices 
 //	the code will fall into a fatal error and blink out an error code:
@@ -118,6 +123,7 @@ static const int dummyvar = 0;
 // -----------------------------------------------------------------------
 // 
 // History
+// 2016.08.07 bperrybap  - added lcd memory tests
 // 2016.07.27 bperrybap  - added defines for setting execution times
 // 2016.06.17 bperrybap  - initial creation
 //
@@ -203,16 +209,23 @@ const int LCD_COLS = 16;
  */
 P(_hline) =  "--------------------------------------------------------------------";
 P(_hstar) =  "********************************************************************";
+P(_PASSED) = "PASSED";
+P(_FAILED) = "FAILED";
 
 #ifdef __AVR__
 #define hline (const __FlashStringHelper *)_hline
 #define hstar (const __FlashStringHelper *)_hstar
+#define PASSED (const __FlashStringHelper *)_PASSED
+#define FAILED (const __FlashStringHelper *)_FAILED
 #else
 #define hline _hline
 #define hstar _hstar
+#define hstar _PASSED
+#define hstar _FAILED
 #endif
 
 
+#define MAX_ERRORS 16
 
 #define DEFPROMPT ((const char *) 0)
 
@@ -285,8 +298,15 @@ int nopullups;
 		if(lcd[NumLcd].begin(LCD_ROWS, LCD_COLS) != 0)
 			break;
 		Serial.print(F(" LCD device autoconfigured at address: "));
-		Serial.print("0x");
-		Serial.println(lcd[NumLcd].getProp(hd44780_I2Cexp::Prop_addr), HEX);
+		Serial.print(F("0x"));
+		Serial.print(lcd[NumLcd].getProp(hd44780_I2Cexp::Prop_addr), HEX);
+		Serial.print(F(" | R/W control: "));
+		if(lcd[NumLcd].status() < 0)
+			Serial.print(F("No"));
+		else
+			Serial.print(F("Yes"));
+		Serial.println();
+		
 	}
 
 	if(!NumLcd)
@@ -298,7 +318,72 @@ int nopullups;
 	Serial.println(NumLcd);
 	Serial.println(hline);
 
-	
+	Serial.println(F("LCD Display Memory Test"));
+	for(int n = 0; n < NumLcd; n++)
+	{
+	int errors;
+
+		Serial.print(F("Display: "));
+		Serial.println(n);
+
+		// check for r/w control
+		// attempting to read lcd status
+		if(lcd[n].status() >= 0)
+		{
+			Serial.print(F(" Walking 1s data test: "));
+			// try a few different locations which also tests addressing
+			errors = lcdw1test(lcd[n], 0);
+			errors += lcdw1test(lcd[n], 0x40);
+			errors += lcdw1test(lcd[n], 0x10);
+			errors += lcdw1test(lcd[n], 0x50);
+			if(errors)
+				Serial.print(FAILED);
+			else
+				Serial.print(PASSED);
+
+			Serial.println();
+
+			Serial.print(F("    Address line test: "));
+			errors = lcdAddrLineTest(lcd[n], 0x00, 0x27); // 1st block of memory
+			errors += lcdAddrLineTest(lcd[n], 0x40, 0x67); // 2nd block of memory
+			if(errors)
+				Serial.print(FAILED);
+			else
+				Serial.print(PASSED);
+
+		
+#if 0
+			Serial.println();
+
+			// quick/short test of DDRAM
+			// note: avoid  <CR> and <LF> in value range since those
+			// are currently dropped by write()
+			// Also, the hd44780 has 80 bytes of ram but it is not contiguous.
+			// The 1st 40 bytes is 0x00 - 0x27
+			// the 2nd 40 bytes is 0x40 - 0x67
+			// attempting to use 0x28 - 0x3f or 0x68-0x7f will fail as there
+			// technically is no memory there so it maps internally to other
+			// locations and a memory test would fail.
+			//
+			// this quick test will test a few values on the 2nd chunk of memory.
+			// 
+			Serial.print(F(" Quick DDRAM memory test: "));
+			errors = lcdDDRAMtest(lcd[n], 0x40, 0x67, '0', '9');
+
+			if(errors)
+				Serial.print(FAILED);
+			else
+				Serial.print(PASSED);
+#endif
+		
+		}
+		else
+		{
+			Serial.print(F(" (R/W control not supported)"));
+		}
+		Serial.println();
+	}
+	Serial.println(hline);
 
 	for(int n = 0; n < NumLcd; n++)
 	{
@@ -310,8 +395,9 @@ int nopullups;
 		 * Label the display with its instance number
 		 * i2c address and config info on 2nd line
 		 */
+		lcd[n].clear();
 		lcd[n].setCursor(0, 0);
-		lcd[n].print("LCD:");
+		lcd[n].print(F("LCD:"));
 		lcd[n].print(n);
 		if(nopullups)
 		{
@@ -321,9 +407,9 @@ int nopullups;
 
 
 		lcd[n].setCursor(0, 1);
-		lcd[n].print("0x");
+		lcd[n].print(F("0x"));
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_addr), HEX);
-		lcd[n].print(",");
+		lcd[n].print(',');
 
 
 	
@@ -331,13 +417,13 @@ int nopullups;
 		switch(lcd[n].getProp(hd44780_I2Cexp::Prop_expType))
 		{
 			case I2Cexp_PCF8574:
-				lcd[n].print("P");
+				lcd[n].print('P');
 				break;
 			case I2Cexp_MCP23008:
-				lcd[n].print("M");
+				lcd[n].print('M');
 				break;
 			default:
-				lcd[n].print("U");
+				lcd[n].print('U');
 			
 		}
 #else
@@ -358,14 +444,14 @@ int nopullups;
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_bl), DEC);
 #if 1
 		if(lcd[n].getProp(hd44780_I2Cexp::Prop_blLevel) == HIGH)
-			lcd[n].print("H");
+			lcd[n].print('H');
 		else
-			lcd[n].print("L");
+			lcd[n].print('L');
 #else
 		if(lcd[n].getProp(hd44780_I2Cexp::Prop_blLevel) == HIGH)
-			lcd[n].print("0");
+			lcd[n].print('0');
 		else
-			lcd[n].print("1");
+			lcd[n].print('1');
 
 #endif
 
@@ -373,11 +459,12 @@ int nopullups;
 	Serial.println(F("Each display should be displaying its #, address, and config information"));
 	Serial.println(F("If display is blank, but backlight is on, try adjusting contrast pot"));
 	Serial.println(F("If backlight is off, wait for next test"));
-	delay(8000);
+	delay(10000);
 	Serial.println(hline);
 
 	Serial.println(F("Blinking backlight test: to verify BL level autodetection"));
-	Serial.println(F("If you see \"BL Off\" on display with backlight on,"));
+	Serial.println(F("If backlight is mostly off but"));
+	Serial.println(F("you briefly see \"BL Off\" on display with backlight on,"));
 	Serial.println(F("then the library autodetected incorrect BL level"));
 	Serial.println(F("and the library cannot autoconfigure the device"));
 	delay(2000);
@@ -646,13 +733,13 @@ uint8_t wdata, rdata;
 	}
 	if(bitdiffs)
 	{
-		Serial.print("i2cExpander port error: ");
-		Serial.print("Pins/Bits:");
+		Serial.print(F("i2cExpander port error: "));
+		Serial.print(F("Pins/Bits:"));
 		for(uint8_t bit=0; bit < 8; bit++)
 		{
 			if(bitdiffs & (1<< bit))
 			{
-				Serial.print(" ");
+				Serial.print(' ');
 				Serial.print(bit);
 			}
 		}
@@ -673,7 +760,7 @@ int showI2Cdevices(void)
 uint8_t error, address;
 int devcount = 0;
  
-	Serial.println("Scanning i2c bus for devices..");
+	Serial.println(F("Scanning i2c bus for devices.."));
  
 	/*
  	 * Note: 
@@ -689,14 +776,14 @@ int devcount = 0;
 			devcount++;
 			Serial.print(F(" i2c device found at address 0x"));
 			if (address<16)
-				Serial.print("0");
+				Serial.print('0');
 			Serial.println(address,HEX);
 		}
 		else if (error==4)
 		{
 			Serial.print(F(" Unknown error at address 0x"));
 			if (address<16)
-				Serial.print("0");
+				Serial.print('0');
 			Serial.println(address,HEX);
 		}   
 #ifdef ARDUINO_ARCH_PIC32
@@ -711,6 +798,208 @@ int devcount = 0;
 	Serial.println(devcount);
 
 	return(devcount);
+}
+
+/*
+ * lcdw1est()
+ * Walk a bit through a single memory location to see if
+ * basic reads/writes work.
+ */
+
+uint8_t lcdw1test(hd44780 &lcd, uint8_t addr)
+{
+uint8_t errors = 0;
+int rdata;
+
+	for(uint8_t pat = 1;  pat != 0; pat <<= 1)
+	{
+		lcd.setCursor(addr,0);
+		lcd.write(pat);
+		lcd.setCursor(addr,0);
+		rdata = lcd.read();
+
+		if(rdata < 0)
+		{
+			Serial.print(F(" Read Error after writing "));
+			Serial.println((unsigned int)pat, HEX);
+			errors++;
+		}
+		else if((rdata != pat))
+		{
+			Serial.print(F(" Compare error: addr: "));
+			Serial.print(addr, HEX);
+			Serial.print(F(" read "));
+			Serial.print((unsigned int)rdata, HEX);
+			Serial.print(F(" != wrote "));
+			Serial.println((unsigned int)pat, HEX);
+
+			errors++;
+		}
+	}
+	return(errors);
+}
+
+/*
+ * lcdAddrLineTest() - address line test
+ * writes the memory addres to each locaton and verifies contents.
+ *
+ * This will verify that all memory is being addressed correctly.
+ */
+int lcdAddrLineTest(hd44780 &lcd, uint8_t saddr, uint8_t eaddr)
+{
+int errors = 0;
+int rdata;
+
+	// first write to all the memory locations
+	for(uint8_t addr = saddr;  addr <= eaddr; addr++)
+	{
+		// ugly hack, skip over addresses of codes for  <CR> and <NL> 
+		// since write() currently drops <cr> and <nl> characters
+		if(addr == '\n' || addr == '\r')
+			continue;
+		lcd.setCursor(addr,0);
+		if(lcd.write(addr) != 1)
+		{
+			Serial.print(F(" Read Error addr: "));
+			Serial.println((unsigned int)addr, HEX);
+			errors++;
+		}
+	}
+
+	// now go back and verify that each memory location has the
+	// proper contents.
+	for(uint8_t addr = saddr;  addr <= eaddr; addr++)
+	{
+		// ugly hack, skip over addresses of codes for <CR> and <NL> 
+		// since write() currently drops <cr> and <nl> characters
+		if(addr == '\n' || addr == '\r')
+			continue;
+
+		lcd.setCursor(addr,0);
+		rdata = lcd.read();
+
+		if(rdata < 0)
+		{
+			Serial.print(F(" Read Error addr: "));
+			Serial.println((unsigned int)addr, HEX);
+			errors++;
+		}
+		else if((rdata != addr))
+		{
+			Serial.print(F(" Compare error: addr: "));
+			Serial.print(addr, HEX);
+			Serial.print(F(" read "));
+			Serial.print((unsigned int)rdata, HEX);
+			Serial.print(F(" != wrote "));
+			Serial.println((unsigned int)addr, HEX);
+
+			errors++;
+		}
+	}
+	return(errors);
+}
+
+
+/*
+ * Walk incrementing values through incrementing memory locations.
+ *
+ * A value starting at sval ending at eval will be walked through memory.
+ * The starting address will be filled in with sval and the value will
+ * incremented through all locations to be tested. Values are written through
+ * incrementing addresses.
+ *
+ * All the values are read and compared to expected values.
+ *
+ * Then process starts over again by incrementing the starting value.
+ * This repeats until the starting value reaches the ending value.
+ *
+ * Each memory location will tested with an incrementing value
+ * eval-sval+1 times.
+ *
+ * If sval is 0 and eval is 255,
+ * every memory location will be tested for every value.
+ *
+ */
+
+int lcdDDRAMtest(hd44780 &lcd, uint8_t saddr, uint8_t eaddr,
+	 	uint8_t sval, uint8_t eval)
+{
+uint8_t addr;
+int data;
+int rdata;
+uint8_t errors = 0;
+uint8_t lval = sval;
+
+	/*
+	 * perform each interation of test across memory with
+	 * an incrementing pattern
+	 * starting at sval and bumping sval each iteration.
+	 */
+	do
+	{
+		/*
+		 * write sequentially through all addresses
+		 */
+
+		data = lval;
+
+		// use serCursor to set initial DDRAM address
+		// writes will bump it
+		lcd.setCursor(saddr, 0);
+		for(addr = saddr; addr <= eaddr; addr++)
+		{
+
+			lcd.write((uint8_t)data);
+
+			if(++data > eval)
+				data = sval;
+		}
+
+		/*
+		 * Now go back and verify the pages
+		 */
+
+		data = lval;
+
+		// use serCursor to set initial DDRAM address
+		// reads will bump it
+		lcd.setCursor(saddr, 0);
+		for(addr = saddr; addr <= eaddr; addr++)
+		{
+			rdata = lcd.read();
+
+			if(rdata < 0)
+			{
+				Serial.print(F(" Read Error, addr: "));
+				Serial.print((unsigned int)addr, HEX);
+				Serial.print(F(" sval: "));
+				Serial.print(sval);
+				Serial.print(F(" expected data: "));
+				Serial.print(data);
+				Serial.println();
+
+				if(++errors > MAX_ERRORS)
+					return(errors);
+		
+			} else if(data != rdata)
+			{
+				Serial.print(F(" Verify error: ("));
+				Serial.print((unsigned int) addr);
+				Serial.print(F(") read "));
+				Serial.print((unsigned int)rdata, HEX);
+				Serial.print(F(" != wrote "));
+				Serial.print((unsigned int)data, HEX);
+				Serial.println();
+
+				if(++errors > MAX_ERRORS)
+					return(errors);
+			}
+			if(++data > eval)
+				data = sval;
+		}
+	} while(lval++ != eval);
+
+	return(errors);
 }
 
 void fatalError(int ecode)
@@ -743,7 +1032,7 @@ void waitinput(const char *prompt)
 	if(prompt)
 		Serial.print(prompt);
 	else
-		Serial.print("<Press <ENTER> or click [Send] to Continue>");
+		Serial.print(F("<Press <ENTER> or click [Send] to Continue>"));
 
 	while(Serial.available())
 		Serial.read(); // swallow all input
