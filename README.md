@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.5.0--a-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.6.0-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -167,3 +167,17 @@ can be found in the included examples.
 | load_custom_character(char_num, Rows[]) | use createChar() instead |
 | **BROKEN LCD API 1.0 Functions**      ||
 | setCursor(row, col)                   | row,col is backwards from Liquidcrystal;<br>therefore cannot be supported|
+
+
+CHANGELOG
+----------------------
+
+[0.6.0] - 2016-08-08
+ * I2Cexp constructors optionally support r/w control. PCF8474 canned entries enable r/w
+ * I2CexpDIag displays pin configuration on serial port
+ * added lcd display memory test to I2CexpDiag
+ * added ability to read from display (data & status)
+ * better documented hd44780 initialization and iosend() IOcmd4bit commands
+ * removed warnings when i/o functions setBacklight() or setContrast() are not used.
+
+[0.5.0-a] - 2016-07-30
