@@ -89,32 +89,40 @@
 // hd44780_I2Cexp lcd({i2c_address}, I2Cexp_BOARD_XXX);
 // instead of specifying all individual parameters.
 // Note: some boards tie the LCD r/w line directly to ground
+// boards that have control of the LCD r/w line will be able to do reads from lcd.
+//
+// The underlying hd4480_I2Cexp constructors support
+// with or without r/w control, and with and without backlight control.
+// - If r/w control is not desired, simply leave off the r/w pin from the constructor.
+// - If backlight control is not desired/supported, simply leave off backlight pin and active level
+//
 // Since the library has to drive all 8 output pins, the boards that have
-// r/w tied to ground will be assigned an unused output pin for the r/w signal
+// r/w tied to ground should use an unused output pin for the r/w signal
 // which will be set to LOW but ignored by the LCD on those boards.
 // This means that the unused pin on the i/o expander cannot be used as an input
 //
-//									expType, rs,en,d4,d5,d6,d7,bl, blpol
-#define I2Cexp_BOARD_LCDXIO        I2Cexp_PCF8574, 4,6,0,1,2,3 // ElectroFun default (no backlight control)
-#define I2Cexp_BOARD_LCDXIOnBL     I2Cexp_PCF8574, 4,6,0,1,2,3,7,LOW // Electrofun & PNP transistor for BL
+//									expType, rs[,rw],en,d4,d5,d6,d7[,bl, blpol]
+#define I2Cexp_BOARD_LCDXIO        I2Cexp_PCF8574, 4,5,6,0,1,2,3 // ElectroFun default (no backlight control)
+#define I2Cexp_BOARD_LCDXIOnBL     I2Cexp_PCF8574, 4,5,6,0,1,2,3,7,LOW // Electrofun & PNP transistor for BL
 
-#define I2Cexp_BOARD_MJKDZ         I2Cexp_PCF8574, 6,4,0,1,2,3,7,LOW // mjkdz backpack
-#define I2Cexp_BOARD_GYI2CLCD      I2Cexp_PCF8574, 6,4,0,1,2,3,7,LOW // GY-I2CLCD backpack
+#define I2Cexp_BOARD_MJKDZ         I2Cexp_PCF8574, 6,5,4,0,1,2,3,7,LOW // mjkdz backpack
+#define I2Cexp_BOARD_GYI2CLCD      I2Cexp_PCF8574, 6,5,4,0,1,2,3,7,LOW // GY-I2CLCD backpack
 
-#define I2Cexp_BOARD_LCM1602       I2Cexp_PCF8574, 0,2,4,5,6,7,3,LOW // Robot Arduino LCM1602 backpack
-                                                                     // (jumper forces backlight on)
+#define I2Cexp_BOARD_LCM1602       I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,LOW // Robot Arduino LCM1602 backpack
+                                                                       // (jumper forces backlight on)
 
 // these boards are all the same
 // and match/work with the hardcoded Arduino LiquidCrystal_I2C class
-#define I2Cexp_BOARD_YWROBOT       I2Cexp_PCF8574, 0,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
-#define I2Cexp_BOARD_DFROBOT       I2Cexp_PCF8574, 0,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
-#define I2Cexp_BOARD_SAINSMART     I2Cexp_PCF8574, 0,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
-#define I2Cexp_BOARD_FUNDUINO      I2Cexp_PCF8574, 0,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
-#define I2Cexp_BOARD_SYDZ          I2Cexp_PCF8574, 0,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack 
-																			// SYDZ backpack uses a pullup
-																			// because of the pullup, backlight active level can't be auto detected
+#define I2Cexp_BOARD_YWROBOT       I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
+#define I2Cexp_BOARD_DFROBOT       I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
+#define I2Cexp_BOARD_SAINSMART     I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
+#define I2Cexp_BOARD_FUNDUINO      I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
+#define I2Cexp_BOARD_SYDZ          I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack 
+                                                                        // SYDZ backpack uses a pullup because of the pullup,
+                                                                        // backlight active level can not be auto detected
 
 // MCP23008 based boards
+// Currently r/w control is disabled since most boards either can't do it, or have it disabled.
 #define I2Cexp_BOARD_ADAFRUIT292   I2Cexp_MCP23008,1,2,3,4,5,6,7,HIGH // Adafruit #292 i2c/SPI backpack in i2c mode (lcd RW grounded)
                                                                       // GP0 not connected to r/w so no ability to do LCD reads
 
@@ -122,11 +130,18 @@
 
 #define I2Cexp_BOARD_LCDPLUG       I2Cexp_MCP23008,4,6,0,1,2,3,7,HIGH // JeeLabs LCDPLUG (NOTE: NEVER use the SW jumper)
                                                                       // GP5 is hooked to s/w JP1 jumper, LCD RW is hardwired to gnd
-                                                                      // cannot do LCD reads.
+                                                                      // So no ability to do LCD reads.
 
 #define I2Cexp_BOARD_XXX           I2Cexp_MCP23008,7,6,5,4,3,2,1,HIGH // unknown backpack brand
 
-#define I2Cexp_BOARD_MLTBLUE       I2Cexp_MCP23008,1,3,4,5,6,7,0,HIGH // MLT-group "blueboard" backpack
+#define I2Cexp_BOARD_MLTBLUE       I2Cexp_MCP23008,1,3,4,5,6,7,0,HIGH // i2c LCD MLT group "Blue Board" backpack
+                                                                      // http://www.mlt-group.com/I2C-LCD-Blue-Board-for-Arduino
+                                                                      // There is jumper on the board jp6 that controls how the
+                                                                      // the board drives r/w.
+                                                                      // It looks like by defualt r/w is wired to gnd and
+                                                                      // can be changed by changing the solder jumper jp6.
+                                                                      // however it isn't clear if that changes to GP2 or to Vcc.
+                                                                      // It sounds like it changes to vcc with is REALLY dumb!
 
 
 //FIXME these can't go in the class unless they are referenced using the classname
@@ -152,22 +167,38 @@ hd44780_I2Cexp(){ _addr = AutoInst++; _expType = I2Cexp_UNKNOWN;}
 hd44780_I2Cexp(uint8_t addr){ _addr = addr; _expType = I2Cexp_UNKNOWN;}
 
 
-// -- Explicit constructors, that specifify everything --
+// -- Explicit constructors, specify address & pin mapping information --
 
-// Constructor without backlight control
+// constructor with r/w control without backlight control
+hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t rw, uint8_t en,
+			 uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7 )
+{
+   config(i2c_addr, type, rs, rw, en, d4, d5, d6, d7);
+}
+
+// Constructor with r/w control with backlight control
+hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t rw, uint8_t en,
+				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+				uint8_t bl, uint8_t blLevel)
+{
+   config(i2c_addr, type, rs, rw, en, d4, d5, d6, d7, bl, blLevel);
+}
+
+// Constructor without r/w control without backlight control
 hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t en,
 			 uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7 )
 {
-   config(i2c_addr, type, rs, 0xff, en, d4, d5, d6, d7, 0xff, HIGH);
+   config(i2c_addr, type, rs, 0xff, en, d4, d5, d6, d7);
 }
 
-// Constructor with backlight control
+// Constructor without r/w control with backlight control
 hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t en,
 				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
 				uint8_t bl, uint8_t blLevel)
 {
    config(i2c_addr, type, rs, 0xff, en, d4, d5, d6, d7, bl, blLevel);
 }
+
 
 
 // ============================================
@@ -541,7 +572,7 @@ void iosetBacklight(uint8_t dimvalue)
 // config() - save constructor parameters
 void config(uint8_t i2c_addr, I2CexpType i2c_type, uint8_t rs, uint8_t rw, uint8_t en, 
 						uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
-						uint8_t bl, uint8_t blLevel )
+						uint8_t bl=0xff, uint8_t blLevel=0xff )
 {
 	// Save away config data into object
 	_expType = i2c_type;
@@ -569,7 +600,11 @@ void config(uint8_t i2c_addr, I2CexpType i2c_type, uint8_t rs, uint8_t rw, uint8
 	_blLevel = blLevel;
 
 	// set default bl state to backlight on
-	if(blLevel == HIGH)
+	// if no _bl control, the _blCurState values will also be set to zero
+	// so it doesn't turn on any other pins.
+	// 
+	
+	if(_bl && (blLevel == HIGH))
 		_blCurState = _bl;
 	else
 		_blCurState = 0;
