@@ -146,6 +146,10 @@ static const int dummyvar = 0;
 // user configurable options below this point
 // ============================================================================
 
+// Uncomment and use this line instead of the one below if you have a SYDZ backpack
+//hd44780_I2Cexp lcd[1]={{I2Cexp_ADDR_UNKNOWN, I2Cexp_BOARD_SYDZ}}; // to run on a single SYDZ based backpack
+hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
+
 // All displays will be assumed to be 16x2
 // Even if display is larger the sketch should still work correctly
 const int LCD_ROWS = 2;
@@ -220,8 +224,8 @@ P(_FAILED) = "FAILED";
 #else
 #define hline _hline
 #define hstar _hstar
-#define hstar _PASSED
-#define hstar _FAILED
+#define PASSED _PASSED
+#define FAILED _FAILED
 #endif
 
 
@@ -229,7 +233,6 @@ P(_FAILED) = "FAILED";
 
 #define DEFPROMPT ((const char *) 0)
 
-hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
 int NumLcd;		// number of LCD displays found.
 
 
@@ -287,8 +290,9 @@ int nopullups;
 	/*
 	 * Locate all the displays by attempting to intialize each one
 	 */
-	for(NumLcd = 0; NumLcd < 16; NumLcd++)
+	for(NumLcd = 0; NumLcd < (int) (sizeof(lcd)/sizeof(hd44780_I2Cexp)); NumLcd++)
 	{
+	char buf[16];
 		// set custom exectution times if configured
 #if defined(LCD_CHEXECTIME) && defined(LCD_INSEXECTIME)
 		lcd[NumLcd].setExecTimes(LCD_CHEXECTIME, LCD_INSEXECTIME);
@@ -297,14 +301,21 @@ int nopullups;
 		// If begin fails, then assume we have no more displays
 		if(lcd[NumLcd].begin(LCD_ROWS, LCD_COLS) != 0)
 			break;
-		Serial.print(F(" LCD device autoconfigured at address: "));
+		Serial.print(F(" LCD at address: "));
 		Serial.print(F("0x"));
 		Serial.print(lcd[NumLcd].getProp(hd44780_I2Cexp::Prop_addr), HEX);
+
+		Serial.print(F(" | config: "));
+		Serial.print(lcdConfigStr(buf, lcd[NumLcd]));
+
 		Serial.print(F(" | R/W control: "));
+		// it takes r/w control to read LCD status
+		// assume if reading status fails, no r/w control
 		if(lcd[NumLcd].status() < 0)
 			Serial.print(F("No"));
 		else
 			Serial.print(F("Yes"));
+
 		Serial.println();
 		
 	}
@@ -327,7 +338,7 @@ int nopullups;
 		Serial.println(n);
 
 		// check for r/w control
-		// attempting to read lcd status
+		// by attempting to read lcd status
 		if(lcd[n].status() >= 0)
 		{
 			Serial.print(F(" Walking 1s data test: "));
@@ -387,7 +398,7 @@ int nopullups;
 
 	for(int n = 0; n < NumLcd; n++)
 	{
-	int rw;
+	char buf[16];
 
 		//showLCDconfig(Serial, lcd[n]);
 
@@ -410,50 +421,7 @@ int nopullups;
 		lcd[n].print(F("0x"));
 		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_addr), HEX);
 		lcd[n].print(',');
-
-
-	
-#if 1
-		switch(lcd[n].getProp(hd44780_I2Cexp::Prop_expType))
-		{
-			case I2Cexp_PCF8574:
-				lcd[n].print('P');
-				break;
-			case I2Cexp_MCP23008:
-				lcd[n].print('M');
-				break;
-			default:
-				lcd[n].print('U');
-			
-		}
-#else
-		lcd[n].print(0, DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_expType), DEC);
-#endif
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_rs), DEC);
-
-		// r/w support may or may not be enabled.
-		rw = lcd[n].getProp(hd44780_I2Cexp::Prop_rw);
-		if((unsigned int) rw <= 7) // check if r/w is supported
-			lcd[n].print(rw, DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_en), DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_d4), DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_d5), DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_d6), DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_d7), DEC);
-		lcd[n].print(lcd[n].getProp(hd44780_I2Cexp::Prop_bl), DEC);
-#if 1
-		if(lcd[n].getProp(hd44780_I2Cexp::Prop_blLevel) == HIGH)
-			lcd[n].print('H');
-		else
-			lcd[n].print('L');
-#else
-		if(lcd[n].getProp(hd44780_I2Cexp::Prop_blLevel) == HIGH)
-			lcd[n].print('0');
-		else
-			lcd[n].print('1');
-
-#endif
+		lcd[n].print(lcdConfigStr(buf, lcd[n]));
 
 	}
 	Serial.println(F("Each display should be displaying its #, address, and config information"));
@@ -1002,6 +970,63 @@ uint8_t lval = sval;
 	return(errors);
 }
 
+// create a LCD configuration string
+// requires being handed a 16 byte buffer to hold the string
+// returns the original buffer pointer for convenience.
+char * lcdConfigStr(char *str, hd44780_I2Cexp &lcd)
+{
+int rv;
+char *p = str;
+#if 1
+	switch(lcd.getProp(hd44780_I2Cexp::Prop_expType))
+	{
+		case I2Cexp_PCF8574:
+			*p++ = 'P';
+			break;
+		case I2Cexp_MCP23008:
+			*p++ = 'M';
+			break;
+		default:
+			*p++ = 'U';
+	}
+#else
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_expType + '0';
+#endif
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_rs) + '0';
+
+	// r/w support may or may not be enabled.
+	rv = lcd.getProp(hd44780_I2Cexp::Prop_rw);
+	if((unsigned int) rv <= 7) // check if r/w is supported
+		*p++ = rv + '0';
+
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_en) + '0';
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_d4) + '0';
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_d5) + '0';
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_d6) + '0';
+	*p++ = lcd.getProp(hd44780_I2Cexp::Prop_d7) + '0';
+	rv = lcd.getProp(hd44780_I2Cexp::Prop_bl);
+	if((unsigned int) rv <= 7) // check if bl control is supported
+	{
+		*p++ = rv + '0';
+#if 1
+		if(lcd.getProp(hd44780_I2Cexp::Prop_blLevel) == HIGH)
+			*p++ = 'H';
+		else
+			*p++ = 'L';
+#else
+		if(lcd.getProp(hd44780_I2Cexp::Prop_blLevel) == HIGH)
+			*p++ = '1';
+		else
+			*p++ = '0';
+#endif
+	}
+
+	*p = 0; // terminate string
+
+	return(str);
+}
+
+// fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
 	Serial.print(F("FATAL ERROR: "));
