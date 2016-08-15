@@ -28,6 +28,12 @@ const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7;
 hd44780_pinIO lcd(rs, en, d4, d5, d6, d7);
 
 //with backlight control:
+//	backlight control requires two additional parameters
+//	- an additional pin to contro the backlight
+//	- backlight active level which tells the library the level
+//		needed to turn on the backlight.
+//		note: If the backlight control pin supports PWM, dimming can be done
+//
 //const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7, bl=10, blLevel=HIGH;
 //hd44780_pinIO lcd(rs, en, d4, d5, d6, d7, bl, blLEvel);
 
@@ -37,6 +43,25 @@ const int LCD_COLS = 16;
 
 void setup()
 {
+	// -----------------------------------------------------------------------
+	// hd44780 API function: setExecTimes
+	//
+	// setExecTimes(chExecTimeus, insExecTimeUs)
+	// chExecTimeUs  - time in microseconds of clear & home commands
+	// insExecTimeUs - time in microseconds of all other instructions
+	//
+	// configures execution times in Us for clear/home commands and all other
+	// command or data instructions.
+	// if the lcd module needs more execution time for operations.
+	// NOTE: These execution times are not global so when using multiple
+	// lcd objects, each lcd object can have its own seperate execution times.
+	//
+	// The execution times can be set before calling begin() to ensure that
+	// the initialization code in begin() uses the proper execution times.
+	// -----------------------------------------------------------------------
+
+	// lcd.setExecTimes(2000, 37);  // uncomment this to use custom times
+
 	// initialize LCD with number of columns and rows: 
 	if( lcd.begin(LCD_COLS, LCD_ROWS))
 	{
@@ -87,7 +112,7 @@ unsigned long secs;
 //   secs - the total number of seconds uptime
 void PrintUpTime(Print &outdev, unsigned long secs)
 {
-uint8_t hr, mins, sec;
+unsigned int hr, mins, sec;
 
 	// convert total seconds to hours, mins, seconds
 	mins =  secs / 60;	// how many total minutes
