@@ -536,7 +536,7 @@ unsigned long secs;
 //   secs - the total number of seconds uptime
 void PrintUpTime(Print &outdev, unsigned long secs)
 {
-uint8_t hr, mins, sec;
+unsigned int hr, mins, sec;
 
 	// convert total seconds to hours, mins, seconds
 	mins =  secs / 60;	// how many total minutes
