@@ -86,9 +86,6 @@ public:
 	static const int HD44780_CHEXECTIME = 2000; // time in us for clear&home
 	static const int HD44780_INSEXECTIME = 37;
 
-	static const uint8_t BACKLIGHT_OFF = 0;
-	static const uint8_t BACKLIGHT_ON = 255;
-
 	// commands
 	static const uint8_t HD44780_CLEARDISPLAY = 0x01;
 	static const uint8_t HD44780_RETURNHOME = 0x02;

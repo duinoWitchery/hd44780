@@ -571,13 +571,13 @@ void hd44780::createChar(uint8_t location, uint8_t charmap[])
 // turn on backlight at full intensity
 void hd44780::backlight(void)
 {
-	iosetBacklight(BACKLIGHT_ON);
+	iosetBacklight(-1); // max brightness
 }
 
 // turn off backlight
 void hd44780::noBacklight(void)
 {
-	iosetBacklight(BACKLIGHT_OFF);
+	iosetBacklight(0);
 }
 
 // turn on pixels and backlight

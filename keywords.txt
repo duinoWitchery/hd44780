@@ -74,13 +74,10 @@ setExecTimes	KEYWORD2
 # hd44780 internal virtual functions
 ioinit	KEYWORD2
 ioread	KEYWORD2
-ioswrite	KEYWORD2
+iowrite	KEYWORD2
 iosetBacklight	KEYWORD2
 iosetContrast	KEYWORD2
 
 ###########################################
 # Constants (LITERAL1)
 ###########################################
-BACKLIGHT_ON	LITERAL1
-BACKLIGHT_OFF	LITERAL1
-
