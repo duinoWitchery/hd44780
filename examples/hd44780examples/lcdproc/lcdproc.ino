@@ -5,6 +5,7 @@
 // lcdproc is the linux equivilent of Windows LCD Smartie
 // Information on how to set this up and use it can be found here:
 // https://milesburton.com/USD_LCD_Display_(HD44780)_Running_on_Linux_via_Arduino
+// http://lcdproc.omnipotent.net/
 //
 // This sketch implments a serial hd44780 interface device which can be
 // used by lcdproc
