@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.6.0-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.0-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -172,7 +172,15 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.7.0] - 2016-08-19
+ * added automation scripts to aid in building releases and generating changelog
+ * a few more tweaks to PrintUpTime
+ * added ReadWrite example
+ * removed BACKLIGHT_OFF and BACKLIGHT_ON defines
+ * updated PrintUpTime() to not rollover as soon.
+
 [0.6.0] - 2016-08-08
+ * update version info for 0.6.0 release
  * I2Cexp constructors optionally support r/w control. PCF8474 canned entries enable r/w
  * I2CexpDIag displays pin configuration on serial port
  * added lcd display memory test to I2CexpDiag
