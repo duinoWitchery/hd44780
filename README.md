@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.0-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.1-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -172,7 +172,10 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
-[0.7.0] - 2016-08-19
+[0.7.1] - 2016-08-20
+ * removed build tools for library manager compability
+ * added lcdproc examples
+ * update version info for 0.7.0 release
  * added automation scripts to aid in building releases and generating changelog
  * a few more tweaks to PrintUpTime
  * added ReadWrite example
