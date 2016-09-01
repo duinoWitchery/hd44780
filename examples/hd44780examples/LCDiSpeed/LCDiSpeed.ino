@@ -159,7 +159,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 // ============================================================================
 
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
-void showFPS(unsigned long etime, const char *type);
+void showFPS(unsigned long etime, const char *fpstype, const char *fttype);
 void showByteXfer(unsigned long FPStime);
 
 void setup(void)
@@ -228,7 +228,7 @@ char buf[8];
 	 */
 
 	sprintf(buf, "%dx%d", LCD_COLS, LCD_ROWS);
-	showFPS(etime, buf);
+	showFPS(etime, buf, 0);
 
 #ifdef iLCD
 	/*
@@ -239,7 +239,7 @@ char buf[8];
 	 * ratio of the display sizes.
 	 */
 
-	if((iLCD_COLS != LCD_COLS) && (iLCD_ROWS != LCD_ROWS))
+	if((iLCD_COLS != LCD_COLS) || (iLCD_ROWS != LCD_ROWS))
 	{
 		etime = etime *iLCD_ROWS * iLCD_COLS / LCD_ROWS / LCD_COLS;
 
@@ -247,7 +247,7 @@ char buf[8];
 		 * show independent FPS rate & Frame update time
 		 */
 		sprintf(buf, "%dx%di", iLCD_COLS, iLCD_ROWS);
-		showFPS(etime, buf);
+		showFPS(etime, buf, "i");
 	}
 #endif
 
@@ -276,7 +276,7 @@ unsigned long stime, etime;
 	etime = micros();
 	return((etime-stime));
 }
-void showFPS(unsigned long etime, const char *type)
+void showFPS(unsigned long etime, const char *fpstype, const char* fttype)
 {
 float fps;
 
@@ -291,9 +291,11 @@ float fps;
 
 
 	lcd.clear();
-	lcd.print(type);
-	lcd.print("FPS: ");
-	lcd.print(fps);
+	lcd.print(fpstype);
+	lcd.print("FPS:");
+	if(fps < 1000)
+		lcd.print(" ");
+	lcd.print(fps, 2);
 
 	if(LCD_ROWS > 1)
 	{
@@ -304,6 +306,8 @@ float fps;
 		delay(DELAY_TIME);
 		lcd.clear();
 	}
+	if(fttype)
+		lcd.print(fttype);
 	lcd.print("Ftime: ");
 	lcd.print((etime)/10.0/FPS_iter/1000);
 	lcd.print("ms");
