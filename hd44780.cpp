@@ -635,23 +635,16 @@ int rvalue = ioread(HD44780_IOdata);
 	return(rvalue);
 }
 
-
 // write() - send data character byte to lcd
 // returns number of bytes successfully written to device
 // i.e. 1 if success or 0 if no character was processed (error)
 size_t hd44780::write(uint8_t value)
 {
 int status = 1; //assume success
-	/*
-	 * Since line endings are not yet supported,
-	 * toss carriage returns and linefeeds so niave users that
-	 * use lcd.println() don't get garbage characters.
-	 */
-	if(value != '\r' && value != '\n')
-	{
-		if(iowrite(value, HD44780_IOdata))
-			status = 0; // send failed
-		markStart(_insExecTime);
-	}
+
+	if(iowrite(value, HD44780_IOdata))
+		status = 0; // send failed
+	markStart(_insExecTime);
+	
 	return status;
 }

@@ -122,6 +122,21 @@ public:
 	static const uint8_t HD44780_5x10DOTS = 0x04;
 	static const uint8_t HD44780_5x8DOTS  = 0x00;
 
+	// Print class println() function is not supported
+	// catch it and print an error
+	size_t __attribute__ ((error("println() is not supported"))) println(const __FlashStringHelper *);
+	size_t __attribute__ ((error("println() is not supported"))) println(const String &s);
+	size_t __attribute__ ((error("println() is not supported"))) println(const char[]);
+	size_t __attribute__ ((error("println() is not supported"))) println(char);
+	size_t __attribute__ ((error("println() is not supported"))) println(unsigned char, int = DEC);
+	size_t __attribute__ ((error("println() is not supported"))) println(int, int = DEC);
+	size_t __attribute__ ((error("println() is not supported"))) println(unsigned int, int = DEC);
+	size_t __attribute__ ((error("println() is not supported"))) println(long, int = DEC);
+	size_t __attribute__ ((error("println() is not supported"))) println(unsigned long, int = DEC);
+	size_t __attribute__ ((error("println() is not supported"))) println(double, int = 2);
+	size_t __attribute__ ((error("println() is not supported"))) println(const Printable&);
+	size_t __attribute__ ((error("println() is not supported"))) println(void);
+
 
 	// Arduino IDE LiquidCrystal lib functions
 	// =======================================
