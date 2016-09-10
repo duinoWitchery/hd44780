@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.08.06  bperrybap - added status() and read()
 // 2016.07.27  bperrybap - added return status to command() and iosend()
@@ -316,7 +317,7 @@ private:
 	// i/o subclass functions
 	virtual int ioinit() {return 0;}	// optional
 	virtual int ioread(hd44780::iotype type) {if(type) return -1;else return -1;}	// optional, return fail if not implemented
-	virtual int iowrite(uint8_t value, hd44780::iotype type)=0;// mandatory
+	virtual int iowrite(hd44780::iotype type, uint8_t value)=0;// mandatory
 	virtual void iosetBacklight(uint8_t dimvalue){if(dimvalue) return;}	// optional
 	virtual void iosetContrast(uint8_t contvalue){if(contvalue) return;}// optional
 

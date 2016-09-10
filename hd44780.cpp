@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.08.06  bperrybap - added status() and read()
 // 2016.07.27  bperrybap - added return status for command() and iosend()
@@ -381,13 +382,13 @@ int rval = 0;
 	 *
 	 * delay() can be used because this code is never called from a constructor
 	 */
-	iowrite(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
+	iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_8BITMODE);
 	delay(5); // wait 5ms vs 4.1ms, some are slower than spec
 
-	iowrite(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
+	iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_8BITMODE);
 	delay(1); // wait 1ms vs 100us
     
-	iowrite(HD44780_FUNCTIONSET|HD44780_8BITMODE, HD44780_IOcmd4bit);
+	iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_8BITMODE);
 	delay(1); // wait 1ms vs 100us
 
 	/*
@@ -399,7 +400,7 @@ int rval = 0;
 	 * isn't in 4 bit mode yet.
 	 */
 	if(!(_displayfunction & HD44780_8BITMODE))
-		iowrite(HD44780_FUNCTIONSET|HD44780_4BITMODE, HD44780_IOcmd4bit);
+		iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_4BITMODE);
 
 	/*
 	 * At this point the LCD is in 8 bit mode for 8 bit host interfaces,
@@ -602,7 +603,7 @@ inline int hd44780::command(uint8_t value)
 {
 int status;
 
-	status = iowrite(value, HD44780_IOcmd);
+	status = iowrite(HD44780_IOcmd, value);
 
 	// executime time depends on command
 	if((value == HD44780_CLEARDISPLAY) || (value == HD44780_RETURNHOME))
@@ -642,7 +643,7 @@ size_t hd44780::write(uint8_t value)
 {
 int status = 1; //assume success
 
-	if(iowrite(value, HD44780_IOdata))
+	if(iowrite(HD44780_IOdata, value))
 		status = 0; // send failed
 	markStart(_insExecTime);
 	

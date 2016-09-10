@@ -56,6 +56,7 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.08.06  bperrybap - added ioread()
 // 2016.07.27  bperrybap - added return status for iosend()
@@ -492,9 +493,9 @@ uint8_t iodata;
 	return(data);
 }
 
-// iowrite(value, type) - send either command or data byte to lcd
+// iowrite(type, value) - send either command or data byte to lcd
 // returns zero on success, non zero on failure
-int iowrite(uint8_t value, hd44780::iotype type) 
+int iowrite(hd44780::iotype type, uint8_t value) 
 {
 	// If address or expander type is unknown, then drop data
 	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)

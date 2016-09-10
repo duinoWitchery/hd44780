@@ -61,6 +61,7 @@
 // Attempting to read from some of these devices will lockup the AVR Wire
 // library.
 //
+// 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.07.27  bperrybap - added return status for iosend()
 // 2017.07.21  bperrybap - merged all class code into header
@@ -117,7 +118,7 @@ uint8_t _Addr;             // I2C Address of the LCD
 // Note:
 // It is not possible to control the backlight nor
 // is it possible to read from the device.
-// so iosetbacklight(), ioread(), and & iostatus()
+// so iosetbacklight() and ioread()
 // will not be defined and will use the defaults in
 // hd44780
 
@@ -153,9 +154,9 @@ int status = 0;
 }
 
 //
-// iowrite() - send either a command or data byte to lcd
+// iowrite(type, value) - send either a command or data byte to lcd
 // returns zero on success, non zero on failure
-int iowrite(uint8_t value, hd44780::iotype type) 
+int iowrite(hd44780::iotype type, uint8_t value) 
 {
 uint8_t ctlbyte;
    
