@@ -190,7 +190,7 @@ const uint8_t charBitmap[][8] = {
 char animchar(int col, int iter);
 void showFPS(unsigned long etime, const char *type);
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
-void showByteXfer(unsigned long FPStime);
+void showByteXfer(Print &dev, unsigned long FPStime);
 
 void setup()
 {
@@ -243,7 +243,9 @@ unsigned long etime;
 	lcd.begin(LCD_COLS, LCD_ROWS); // can't check status on other libraries
 #endif
 
+#ifdef DEBUGPRINT
 Serial.println("LCD initialized");
+#endif
 
 #ifdef WIRECLOCK
 #if (ARDUINO >= 157) && !defined(MPIDE)
@@ -266,13 +268,21 @@ Serial.println("LCD initialized");
 
 
 #if defined(TIMEBYTE) || defined(TIMEFPS)
+#ifdef DEBUGPRINT
+	Serial.println("Byte timing test");
+#endif
 	delay(10);		// delay to ensure no previous commands still pending
 	etime = timeFPS(FPS_iter, LCD_COLS, LCD_ROWS);
+	lcd.clear();
 #endif
 
 #ifdef TIMEBYTE
 	// show the average single byte xfer time during the FPS test
-	showByteXfer(etime);
+	showByteXfer(lcd, etime);
+#ifdef DEBUGPRINT
+	showByteXfer(Serial, etime);
+#endif
+	delay(DELAY_TIME); // show it for a while
 	lcd.clear();
 #endif
 
@@ -288,7 +298,7 @@ Serial.println("LCD initialized");
 	 * ratio of the display sizes.
 	 */
 
-	if((iLCD_COLS != LCD_COLS) && (iLCD_ROWS != LCD_ROWS))
+	if((iLCD_COLS != LCD_COLS) || (iLCD_ROWS != LCD_ROWS))
 	{
 		etime = etime *iLCD_ROWS * iLCD_COLS / LCD_ROWS / LCD_COLS;
 
@@ -333,19 +343,19 @@ Serial.println("LCD initialized");
 // blk cursor blink
 // cursorLeft()
 // cursofRight()
-#ifdef DEBUGPRINT
-Serial.println("cursor");
-#endif
 	lcd.clear();
 	lcd.print("cursor");
+#ifdef DEBUGPRINT
+	Serial.println("cursor");
+#endif
 	lcd.cursor();
 	delay(DELAY_TIME); // show it for a while
 
-#ifdef DEBUGPRINT
-Serial.println("cursor Blink");
-#endif
 	lcd.clear();
 	lcd.print("Cursor Blink");
+#ifdef DEBUGPRINT
+	Serial.println("Cursor Blink");
+#endif
 	lcd.cursor();
 	lcd.blink();
 	delay(DELAY_TIME); // show it for a while
@@ -424,24 +434,30 @@ Serial.println("setup() done");
 	lcd.clear();
 #ifndef TRACKTIME
 	lcd.print("   Animations");
+#ifdef DEBUGPRINT
+	Serial.println("Animations");
+#endif
 #endif
 
 }
 
 #ifdef TRACKTIME
-void lcdPrintTime(uint8_t hr, uint8_t min, uint8_t sec)
+void PrintTime(Print &dev, uint8_t hr, uint8_t min, uint8_t sec)
 {
+	// print time in HH:MM:SS format
+	// Print class does not support fixed width formatting
+	// so insert a zero if number smaller than 10
 	if(hr < 10)
-		lcd.write('0');
-	lcd.print((int)hr);
-	lcd.write(':');
+		dev.write('0');
+	dev.print((int)hr);
+	dev.write(':');
 	if(min < 10)
-		lcd.write('0');
-	lcd.print((int)min);
-	lcd.write(':');
+		dev.write('0');
+	dev.print((int)min);
+	dev.write(':');
 	if(sec < 10)
-		lcd.write('0');
-	lcd.print((int)sec);
+		dev.write('0');
+	dev.print((int)sec);
 }
 #endif
 
@@ -470,13 +486,14 @@ unsigned long secs;
 		sec = secs % 60;
 
 		lcd.setCursor(4,0);
-		lcdPrintTime(hr, (uint8_t)min, sec);
+		PrintTime(lcd, hr, (uint8_t)min, sec);
+#ifdef DEBUGPRINT
+		PrintTime(Serial, hr, (uint8_t)min, sec);
+#endif
 	}
 
 #endif
 
-
-	
 
 #ifdef STATUSBARS
 	/*
@@ -493,14 +510,17 @@ unsigned long secs;
 	lcd.write(animchar(0, loopcount/16));
 #endif
 
-	/*
-	 * Draw Wave
-	 */
-	lcd.setCursor(0, 1);
-	for ( int c = 0; c < LCD_COLS; c++ )
+	if(LCD_ROWS > 1)
 	{
-        	lcd.write(animchar(c, loopcount));
-   	}
+		/*
+		 * Draw Wave
+		 */
+		lcd.setCursor(0, 1);
+		for ( int c = 0; c < LCD_COLS; c++ )
+		{
+			lcd.write(animchar(c, loopcount));
+   		}
+	}
 #ifdef SLOWERWAVE
 	delay(35);
 #endif
@@ -633,10 +653,9 @@ float fps;
 
 	delay(DELAY_TIME);
 }
-void showByteXfer(unsigned long FPStime)
+void showByteXfer(Print &dev, unsigned long FPStime)
 {
-	lcd.clear();
-	lcd.print("ByteXfer:");
+	dev.print("ByteXfer:");
 
 	/*
 	 * Calculate average byte xfer time from time of FPS test
@@ -644,8 +663,6 @@ void showByteXfer(unsigned long FPStime)
 	 * are single byte commands and take the same amount of time as a data byte write.
 	 * The final result is rounded up to an integer.
 	 */
-	lcd.print((int) (FPStime / (FPS_iter * (10.0 * (LCD_COLS *  LCD_ROWS + LCD_ROWS)))+0.5));
-	lcd.print("uS");
-
-	delay(DELAY_TIME); // show it for a while
+	dev.print((int) (FPStime / (FPS_iter * (10.0 * (LCD_COLS *  LCD_ROWS + LCD_ROWS)))+0.5));
+	dev.print("uS");
 }

@@ -70,6 +70,20 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
 // ---------------------------------------------------------------------------
 
+/*
+ * Define your LCD size
+ * 16x2 will work ok on larger displays but if you want the frame rate
+ * for the full LCD geometry, define that here
+ */
+#ifndef LCD_COLS
+#define LCD_COLS 16
+#endif
+
+#ifndef LCD_ROWS
+#define LCD_ROWS 2
+#endif
+
+
 #ifndef HD44780_LCDOBJECT
 /*
  * If not using a hd44780 library i/o class wrapper example sketch,
@@ -97,26 +111,20 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 //#include <Adafruit_LiquidCrystal.h>
 //Adafruit_LiquidCrystal lcd(0);
 
+// LiquidCrystal_I2C library in Arduino library manager
+//#include <LiquidCrystal_I2C.h>
+//#define WIRECLOCK 400000
+//LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS);
+
+//#include <PCF8574_I2C_LCD.h>
+////PCF8574_I2C_LCD lcd((PCF8574_address)0x27);
+
 
 #endif
 
 // ============================================================================
 // user configurable options below this point
 // ============================================================================
-
-
-/*
- * Define your LCD size
- * 16x2 will work ok on larger displays but if you want the frame rate
- * for the full LCD geometry, define that here
- */
-#ifndef LCD_COLS
-#define LCD_COLS 16
-#endif
-
-#ifndef LCD_ROWS
-#define LCD_ROWS 2
-#endif
 
 // if you have a slow display uncomment these defines
 // to override the default execution times.
@@ -192,8 +200,12 @@ void setup(void)
 #endif
 
 	}
+// check for LiquidCrytal_I2C library
+// note: Can't check initalization status on other libraries
+#elif defined(LiquidCrystal_I2C_h)
+	lcd.init();
 #else
-	lcd.begin(LCD_COLS, LCD_ROWS); // can't check status on other libraries
+	lcd.begin(LCD_COLS, LCD_ROWS);
 #endif
 
 #ifdef WIRECLOCK
