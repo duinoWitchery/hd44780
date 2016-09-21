@@ -757,10 +757,9 @@ I2CexpType chiptype;
  *
  * Overview of how this works:
  * 
- * It appears that when you set the i/o port to input and read
+ * When you set the i/o port to input (set port to 0xff) and read
  * the port, that the expander input pins with the en, rs, & di connections
  * will all float high from the expander input pullups.
- * Whereas the inputs with the d4-d7 connections will not.
  *
  * Also, 
  * When there is no pullup/pulldown resistor on the backlight transistor base,
@@ -768,21 +767,40 @@ I2CexpType chiptype;
  * for active low backlights, the bl input pin will be high
  * for active high backlights, the bl input pin will be low.
  *
- * The MAGIC is knowing how to use all this information to differenciate
- * between backpacks.
- *
- * Since all known 8574 backpacks appear to use either the upper or the lower
- * nibble for the data, a single read can split the devices into those
- * that use the upper nibble vs those that use the lower nibble.
+ * All known 8574 backpacks appear to use either the upper or the lower
+ * nibble for the data.
  * All the devices that use the upper nibble use the same bits
  * for rs (0), rw (1), and en (2), and backlight is bit 3
  *
- * The devices that use the lower nibble for data is much more tricky.
- * For that we have to actually guess which signal is EN, and turn it off
- * to get the LCD to stop driving the data lines. This will cause a change
- * on the data lines since the LCD seems to have pull downs on the data lines
- * that over power the weak pullups on the 8574.
- * This can be used to determine between the remaining two types.
+ * The MAGIC is knowing how to use all this information to differenciate
+ * between backpacks.
+ *
+ * The key is to attempt to do a bit of "intelligent guessing"
+ * We have to combine some initial observations of the pins when all signals
+ * have a weak pullup on them and then
+ * we have to actually guess which bit controls E, to try to 
+ * to get the LCD to stop driving the data lines. If the guess was correct,
+ * since the 8574 has weak pullups, the each data line will pull up.
+ * If not, then we continue on with some other checks/guesses.
+ *
+ * Also of importance is that if RS should go low, the read will pull from
+ * the status register instead of the data memory.
+ * So if RS was lowered instead of E, then the 4 data bits will not all
+ * float to 1s.
+ *
+ * So the summary:
+ * If bits 0-2 are all 1s and bits 4-7 are 1s when bit 2 is off,
+ * this determines that the upper bits are data lines and the lower 3 bits
+ * are the control lines with bit 2 being the E signal.
+ *		this means rs=0,rw=1,en=2,d4=4,d5=5,d6=6,d7=7,bl=3
+ *
+ * If bits 4-6 are all 1s
+ *	if bits 0-3 are 1s when bit 4 is is off
+ *		this means rs=6,rw=5,en=4,d4=0,d5=1,d6=2,d7=3,bl=7
+ *  else
+ *		this means rs=4,rw=6,en=4,d4=0,d5=1,d6=2,d7=3,bl=7
+ * 
+ * Anyting else, is "undetermined" - error
  *
  * Determiing backlight active level is easy as mentioned above.
  *
@@ -807,24 +825,36 @@ I2CexpType chiptype;
 
 int autocfg8574()
 {
-uint8_t data;
+uint8_t data, data2;
 uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 
-	/*
-	 * First put a 0xff in the output port
-	 */
+	// First put a 0xff in the output port
+
 	Wire.beginTransmission(_addr);
 	Wire.write((uint8_t) 0xff);
 	Wire.endTransmission();
 
-	/*
-	 * now read back from the port
-	 */
+	// now read back from the port
 
 	Wire.requestFrom((int)_addr, 1);
 	data = Wire.read();
 
-	if((data & 0x7) == 7)
+	// Turn off bit2 to attempt to see if en is bit 2,
+	// if it is it should change the data bit to 1s
+	
+	Wire.beginTransmission(_addr);
+	Wire.write((uint8_t) 0xfb);
+	Wire.endTransmission();
+
+	// read back data
+	Wire.requestFrom((int)_addr, 1);
+	data2 = Wire.read();
+
+	// If lower 3 bits are high and all 4 upper bits are high after clearing bit 2
+	// then lower bits are control bits and upper bits are data bits
+	// and bit2 was en.
+	
+	if( ((data & 0x7) == 7)  && ((data2 & 0xf0) == 0xf0))
 	{
 		rs = 0;
 		rw = 1;
@@ -849,7 +879,6 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 	}
 	else if((data & 0x70) == 0x70)
 	{
-	uint8_t data2;
 
 		// now we have either Electro fun LCDXIO or MJKDZ board
 		// both use bit 7 for backlight control
@@ -866,8 +895,11 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 		data2 = Wire.read();
 
 		// look at data bits and see if they changed
-		// if they changed, then en was bit 4 and it is mjdkz
-		if((data2 & 0xf)  != (data & 0xf))
+		// if they changed to 0xf, then en was bit 4 and it is mjdkz
+		// this will happen since when E is low the LCD is not
+		// driving the bus pins so they will read as 1s since the
+		// pullups in the PCF8574 will pull them up.
+		if((data2 & 0xf) ==  0xf)
 		{
 			// mjkdz
 			rs = 6;
@@ -1031,6 +1063,7 @@ uint8_t blLevel;
 	{
 		return(-1); // could not identify board
 	}
+	// currently writes are disabled for all MCP23008 devices
 	config(_addr, _expType, rs, 0xff, en, d4, d5, d6, d7, bl, blLevel);
 	return(0);
 }
