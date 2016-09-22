@@ -127,6 +127,7 @@ can be found in the included examples.
 | write(*str)	                        | send C string to the display |
 | write(*buffer, size)                  | send size bytes to the display |
 | print(...)                            | print formatted data on the display (from Print class) |
+| println(...)                          | **not supported** (from Print class) |
 | cursor()                              | turn on underline cursor |
 | noCursor()                            | turn off/hide cursor |
 | blink()                               | enable blinking at cursor position |
