@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# vi:ts=4
+#=============================================================================
+# This version of the script patches files for the hd44780 arduino library
+#=============================================================================
+#
+# mkreleasePatcher - patch all necessary files with new version information
+#
+# SYNOPSIS
+#    mkreleasePatcher VersionStr Version Major Minor Point
+#
+# DESCRIPTION
+#  mkreleasePatcher is called by the mkRelease script that controls the
+#  process for making a new release.
+#  mkrelease will pass mkreleasePatcher release information and the
+#  mkreleasePatcher script is free to use it anyway it wants to update
+#  any/all necessary files to indicate the version information.
+#  Any/all decisions about commits & tagging should nomally be handled by
+#  mkrelease rather than this script.
+#
+# EXAMPLE
+#  if the version string in mkrelease is "1.2.3-alpha"
+#  then mkrelease will run mkreleasePatcher with this commandline:
+#    mkreleasePatcher 1.2.3.3-alpha 12030 1 2 3
+#
+# AUTHOR
+#    Created by Bill Perry 2016-08-09
+#    bperrybap@opensource.billsworld.billandterrie.com
+#
+#=============================================================================
+
+# location of root repository directory relative to directory where script lives
+repodir=../..
+
+#get name & location of this script
+progname=`basename $0`
+progwd=`dirname $0`
+
+#make sure script running in root repo directory where script lives
+# note: this is done in two steps since progwd might or might not be a full path
+cd $progwd
+#make sure progwd is full path
+progwd=`pwd`
+cd $repodir
+
+#name of changelog tool
+MKCHANGELOG=$progwd/mkChangeLog
+
+#check to see if all version fields were passed in.
+if [ $# -ne 5 ]
+then
+	echo "usage: $progname VersionStr Version Maj Min Point"
+	exit 1
+fi
+
+VERSIONSTR=$1
+VERSION=$2
+MAJ=$3
+MIN=$4
+PT=$5
+
+#debug output
+#echo "$progname: VERSIONSTR $VERSIONSTR"
+#echo "$progname: VERSION $VERSION"
+#echo "$progname: MAJ $MAJ"
+#echo "$progname: MIN $MIN"
+#echo "$progname: PT $PT"
+
+echo $progname: "setting    HD44780_VERSION to $VERSION"
+echo $progname: "setting HD44780_VERSIONSTR to $VERSIONSTR"
+
+#######################################################################
+# patch the files that have version information in them
+# - hd44780.h
+# - library.properties
+# - README.md
+#######################################################################
+
+# script is running in the root of repository
+# so all files being updated need to be relative to that location
+
+#######################################################################
+# patch hd44780.h  version defines
+ed -s hd44780.h << EOF
+,s/\(HD44780_VERSION\)\s.*$/\1		$VERSION/
+,s/\(HD44780_VERSIONSTR\)\s.*$/\1	\"$VERSIONSTR\"/
+w
+q
+EOF
+#######################################################################
+
+#######################################################################
+# patch library.properties version
+ed -s library.properties << EOF
+,s/\(version=\).*$/\1$VERSIONSTR/
+w
+q
+EOF
+#######################################################################
+
+#######################################################################
+# patch iobadge in README.md
+# first, patch the VERSIONSTR string for the iobadge reference
+# iobadge parameter strings require double dash to indicate a dash
+IOBVERSIONSTR=$(echo $VERSIONSTR | sed -e 's/-/--/')
+
+# now patch that actual badge in the README.md
+# The format of the badge is:
+# https://img.shields.io/badge/<SUBJECT>-<STATUS>-<COLOR>.svg
+# this will only patch the STATUS field of the badge.
+# the rest will remain as it was.
+
+ed -s README.md << EOF
+,s/\(https:.*io\/badge\/\)\(.*-\)\([0-9].*-\)\(.*$\)/\1\2$IOBVERSIONSTR-\4/
+w
+q
+EOF
+#######################################################################
+
+#######################################################################
+# update ChangeLog in README.md file
+#
+# this is done by looking for "CHANGELOG" and removing everything in
+# the file after that and appending a new log on to the end of the file.
+#
+# First strip out the old CHANGELOG
+ed -s README.md << EOF
+/CHANGELOG/,\$d
+w
+q
+EOF
+# now create the new change log and append to end of README.md
+$MKCHANGELOG -c $VERSIONSTR -s - -H CHANGELOG >> README.md
+
+#######################################################################
+
+
+exit 0

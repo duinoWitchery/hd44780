@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+#=============================================================================
+# bash script to assist in creating a new library release.
+# Created by Bill Perry 2016-08-01
+# bperrybap@opensource.billsworld.billandterrie.com
+#
+# the script will:
+# - update version strings in the library files.
+# optionally:
+# 	- commit updated files
+# 	- create tag using supplied revision string
+#
+# 
+# To use, just run script.
+# if argument is given it will be assumd to be the revision string
+# if not, it will prompt for input.
+#
+# script will prompt to optionally commit updates, & tag the updated repo
+#
+# Note:
+# It is recommend that all other change be commited prior to running script
+#
+#=============================================================================
+
+# location of root repository directory relative to directory where script lives
+repodir=../..
+
+#get name & location of this script
+progname=`basename $0`
+progwd=`dirname $0`
+
+# patcher script
+# (assume in same dirctory with this scketh)
+PATCHER=$progwd/mkreleasePatcher
+
+#make sure script running where script lives
+cd $progwd
+
+# check to see if on master branch and ask to proceed if not
+git rev-parse --abbrev-ref HEAD |grep -q master
+if [ $? -ne 0 ]
+then
+	while
+		read -e -p "Not on master branch; continue?:" -i "n" yesno
+		[ "$yesno" = "" ]
+	do
+		:;
+	done
+fi
+if [ "$yesno" = "n" ]
+then
+	exit 0
+fi
+
+# check to see if there are uncommitted changes and ask to proceed if so
+git diff-index --quiet HEAD --
+if [ $? -ne 0 ]
+then
+	while
+		read -e -p "Uncommitted changes; continue?:" -i "n" yesno
+		[ "$yesno" = "" ]
+	do
+		:;
+	done
+fi
+if [ "$yesno" = "n" ]
+then
+	exit 0
+fi
+
+
+#check to see if version string passed in
+#if not then ask for it interactively
+if [ $# = 1 ]
+then
+	rawverstr=$1
+else
+	while
+		read -e -p "Version:" rawverstr;
+		[ "$rawverstr" = "" ]
+	do
+		:;
+	done
+fi
+
+#
+# create RETARDED SemVer compliant Revision string by sanitizing input string
+# http://semver.org/
+# this uses sed to alter a string to be @#$@$ SEMVER compliant
+# it will work as long as the version used starts with a version number that is
+# either 2 digits or 3 digits. Example 1.0 1.0.0 
+# string will be massaged to ensure compliance should tags used not be SEMVER
+# compliant. i.e. v1.2rc1 will be turned into 1.2.0-rc1
+#
+# shown here is how each "-e" works:
+# - strip out leading a leading leading non numeric chars (like 'v')
+#  will change a tag of v1.0 to 1.0 trailing strings after digits are left alone
+#
+# - convert 2 digit version numbers to 3 digit numbers
+#  will change #.# to #.#.0 trailing strings are left alone
+#
+# - change a period after the 3rd version digit to a dash
+#  will change #.#.#.foo to #.#.#-foo
+#
+# - insert a "-" afer the 3rd version digit if the character is not already a - or a +
+#   handles case of changing #.#.#foo to #.#.#-foo
+#
+#
+VERSIONSTR=$(echo $rawverstr | sed -e 's/^\([^0-9]*\)\(.*\)/\2/' -e 's/^\([0-9][0-9]*\.[0-9][0-9]*\)\($\|[^\.].*\|\.[^0-9].*\)/\1.0\2/' -e 's/^\([0-9][0-9]*\.[0-9][0-9]*.[0-9][0-9]*\)\.\(.*\)/\1-\2/' -e 's/^\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)\([^0-9+-].*\)/\1-\2/')
+
+#extract out the major, minor, and point version numbers from the semver version string
+MAJ=$(echo $VERSIONSTR | sed -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\)\(.*\)/\1/')
+MIN=$(echo $VERSIONSTR | sed -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\)\(.*\)/\2/')
+ PT=$(echo $VERSIONSTR | sed -e 's/^\([0-9][0-9]*\)\.\([0-9][0-9]*\)\.\([0-9][0-9]*\)\(.*\)/\3/')
+
+#debug
+#echo VERSIONSTR $VERSIONSTR
+#echo MAJ $MAJ
+#echo MIN $MIN
+#echo PT $PT
+
+# create a single numeric version number from the components.
+# format is MMmmPP so each version digit consumes two decimal digits
+# leading zeros are dropped to prevent number being octal
+# Examples:
+# 1.2.3 would be 10203
+# 1.0.0 would be 10000
+# 0.5.0 would be 500 (can't start with 0 as that means octal)
+
+# drop the Major number if 0 since we don't want an octal number
+if [ $MAJ -ne 0 ]
+then
+	VERSION=`printf "%d%02d%02d" $MAJ $MIN $PT`
+else
+	# drop the Minor number if 0 when MAJ is 0 ince we don't want an octal number
+	if [ $MIN -ne 0 ]
+	then
+		VERSION=`printf "%d%02d" $MIN $PT`
+	else
+		VERSION=`printf "%d" $PT`
+	fi
+fi
+
+#debug
+#echo $progname: "setting    VERSION to $VERSION"
+#echo $progname: "setting VERSIONSTR to $VERSIONSTR"
+
+# call patcher script to do the actual file patching
+# hand patch all the version information and let it do its thing...
+$PATCHER "$VERSIONSTR" "$VERSION" "$MAJ" "$MIN" "$PT"
+if [ $? -ne 0 ]
+then
+	echo "$progname: error patching version files"
+	exit 1
+fi
+
+# ask if changes should be committed and tagged
+
+while
+	read -e -p "Commit & Tag Release version updates?:" -i "n" yesno
+	[ "$yesno" = "" ]
+do
+	:;
+done
+
+if [ "$yesno" = "y" ]
+then
+	gitcomment="update version info for $VERSIONSTR release"
+	echo commiting changes to git with comment: $gitcomment
+	git commit -a -m "$gitcomment"
+	echo "setting git tag to $VERSIONSTR"
+	git tag -a $VERSIONSTR -m "Release of library version $VERSIONSTR"
+fi
+
+echo "---"
+read -n1 -p "Press any key to exit"
+echo
