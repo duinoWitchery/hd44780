@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.1-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.2-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -173,7 +173,17 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.7.2] - 2016-09-21
+ * updated README to indicate println() not supported
+ * added automation scripts to aid in building releases and generating changelog
+ * update to PCF8574 autoconfig to make it more robust
+ * tweaks to hd44780 examples & fixes for single line displays
+ * changed order of parameters for iowrite() to be more compatibile with ioread()
+ * catch calls to println() and error them off at compile time
+ * corrected LCDiSpeed test to properly show FPS when not using 16x2 display
+
 [0.7.1] - 2016-08-20
+ * update version info for 0.7.1 release
  * removed build tools for library manager compability
  * added lcdproc examples
  * update version info for 0.7.0 release
