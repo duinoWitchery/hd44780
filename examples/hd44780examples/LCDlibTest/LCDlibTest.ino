@@ -191,6 +191,7 @@ char animchar(int col, int iter);
 void showFPS(unsigned long etime, const char *type);
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
 void showByteXfer(Print &dev, unsigned long FPStime);
+void fatalError(int ecode);
 
 void setup()
 {
@@ -225,19 +226,7 @@ unsigned long etime;
 	if(lcd.begin(LCD_COLS, LCD_ROWS))
 	{
 		// begin() failed so blink the onboard LED if possible
-#ifdef LED_BUILTIN
-		pinMode(LED_BUILTIN, OUTPUT);
-		while(1)
-		{
-			digitalWrite(LED_BUILTIN, HIGH);
-			delay(500);
-			digitalWrite(LED_BUILTIN, LOW);
-			delay(500);
-		}
-#else
-		while(1){} // spin and do nothing
-#endif
-
+		fatalError(1); // this never returns
 	}
 #else
 	lcd.begin(LCD_COLS, LCD_ROWS); // can't check status on other libraries
@@ -665,4 +654,27 @@ void showByteXfer(Print &dev, unsigned long FPStime)
 	 */
 	dev.print((int) (FPStime / (FPS_iter * (10.0 * (LCD_COLS *  LCD_ROWS + LCD_ROWS)))+0.5));
 	dev.print("uS");
+}
+
+// fatalError() - loop & blink and error code
+void fatalError(int ecode)
+{
+#ifdef LED_BUILTIN
+	pinMode(LED_BUILTIN, OUTPUT);
+	while(1)
+	{
+
+		// blink out error code
+		for(int i = 0; i< ecode; i++)
+		{
+			digitalWrite(LED_BUILTIN, HIGH);
+			delay(100);
+			digitalWrite(LED_BUILTIN, LOW);
+			delay(250);
+		}
+		delay(1500);
+	}
+#else
+	while(1){} // spin and do nothing
+#endif
 }

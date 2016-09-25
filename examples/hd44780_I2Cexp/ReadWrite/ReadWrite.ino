@@ -17,6 +17,7 @@
 // (1) lcd device initalization failed
 // (2) lcd device does not support reads
 // (3) error reading data from lcd device
+// (4) error writing data to lcd device
 //
 
 #include <Wire.h>	// can be left out in arduino.cc IDE 1.6.7 and later
@@ -80,8 +81,15 @@ unsigned long secs;
 			lcd.setCursor(col, 0);
 			if((c = lcd.read()) < 0) // if a read error, bomb out
 				fatalError(3);
+
+			// check for ':' characters in col 2 and 5
+			// if not there, consider it a fatal read error
+			if((col == 2 || col == 5) && c != ':')
+				fatalError(3);
+
 			lcd.setCursor(col, 1);
-			lcd.write((uint8_t) c);
+			if(lcd.write((uint8_t) c) != 1)
+				fatalError(4);
 		}
 	}
 }
@@ -119,8 +127,6 @@ unsigned int hr, mins, sec;
 // fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
-	Serial.print(F("FATAL ERROR: "));
-	Serial.println(ecode);
 #ifdef LED_BUILTIN
 	pinMode(LED_BUILTIN, OUTPUT);
 	while(1)

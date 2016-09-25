@@ -1029,8 +1029,6 @@ char *p = str;
 // fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
-	Serial.print(F("FATAL ERROR: "));
-	Serial.println(ecode);
 #ifdef LED_BUILTIN
 	pinMode(LED_BUILTIN, OUTPUT);
 	while(1)

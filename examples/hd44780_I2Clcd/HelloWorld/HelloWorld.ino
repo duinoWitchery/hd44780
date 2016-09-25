@@ -42,18 +42,7 @@ void setup()
 	if( lcd.begin(LCD_COLS, LCD_ROWS))
 	{
 		// begin() failed so blink the onboard LED if possible
-#ifdef LED_BUILTIN
-		pinMode(LED_BUILTIN, OUTPUT);
-		while(1)
-		{
-			digitalWrite(LED_BUILTIN, HIGH);
-			delay(500);
-			digitalWrite(LED_BUILTIN, LOW);
-			delay(500);
-		}
-#else
-		while(1){} // spin and do nothing
-#endif
+		fatalError(1); // this never returns
 	}
 	
 	// Print a message to the LCD
@@ -111,4 +100,27 @@ unsigned int hr, mins, sec;
 	if(sec < 10)
 		outdev.write('0');
 	outdev.print((int)sec);
+}
+
+// fatalError() - loop & blink and error code
+void fatalError(int ecode)
+{
+#ifdef LED_BUILTIN
+	pinMode(LED_BUILTIN, OUTPUT);
+	while(1)
+	{
+
+		// blink out error code
+		for(int i = 0; i< ecode; i++)
+		{
+			digitalWrite(LED_BUILTIN, HIGH);
+			delay(100);
+			digitalWrite(LED_BUILTIN, LOW);
+			delay(250);
+		}
+		delay(1500);
+	}
+#else
+	while(1){} // spin and do nothing
+#endif
 }

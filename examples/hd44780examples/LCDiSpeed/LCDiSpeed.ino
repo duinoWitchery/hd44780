@@ -169,6 +169,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
 void showFPS(unsigned long etime, const char *fpstype, const char *fttype);
 void showByteXfer(unsigned long FPStime);
+void fatalError(int ecode);
 
 void setup(void)
 {
@@ -186,19 +187,7 @@ void setup(void)
 	if(lcd.begin(LCD_COLS, LCD_ROWS))
 	{
 		// begin() failed so blink the onboard LED if possible
-#ifdef LED_BUILTIN
-		pinMode(LED_BUILTIN, OUTPUT);
-		while(1)
-		{
-			digitalWrite(LED_BUILTIN, HIGH);
-			delay(500);
-			digitalWrite(LED_BUILTIN, LOW);
-			delay(500);
-		}
-#else
-		while(1){} // spin and do nothing
-#endif
-
+		fatalError(1); // this never returns
 	}
 // check for LiquidCrytal_I2C library
 // note: Can't check initalization status on other libraries
@@ -341,4 +330,27 @@ void showByteXfer(unsigned long FPStime)
 	lcd.print("uS");
 
 	delay(DELAY_TIME); // show it for a while
+}
+
+// fatalError() - loop & blink and error code
+void fatalError(int ecode)
+{
+#ifdef LED_BUILTIN
+	pinMode(LED_BUILTIN, OUTPUT);
+	while(1)
+	{
+
+		// blink out error code
+		for(int i = 0; i< ecode; i++)
+		{
+			digitalWrite(LED_BUILTIN, HIGH);
+			delay(100);
+			digitalWrite(LED_BUILTIN, LOW);
+			delay(250);
+		}
+		delay(1500);
+	}
+#else
+	while(1){} // spin and do nothing
+#endif
 }
