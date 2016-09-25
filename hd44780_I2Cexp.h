@@ -388,6 +388,7 @@ int ioread(hd44780::iotype type)
 uint8_t gpioValue =  _blCurState;
 uint8_t data = 0;
 uint8_t iodata;
+int rval = -1;
 
 	// If address or expander type is unknown, then abort read w/error
 	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
@@ -434,13 +435,15 @@ uint8_t iodata;
 	
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue);		// d4-d7 are inputs, RS, r/w high, E LOW
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+		goto returnStatus;
 
 
 	// raise E to read the data.
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue | _en); // Raises E 
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+		goto returnStatus;
 
 	// read the expander port to get the upper nibble of the byte
 	Wire.requestFrom((int)_addr, 1);
@@ -448,7 +451,8 @@ uint8_t iodata;
 
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue); // lower E after reading nibble
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+		goto returnStatus;
 
 	// map i/o expander port bits into upper nibble of byte
 	if(iodata & _d4)
@@ -465,10 +469,13 @@ uint8_t iodata;
 	
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue | _en); // Raise E to read next nibble
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+		goto returnStatus;
 
 	// read the expander port to get the upper lower of the byte
-	Wire.requestFrom((int)_addr, 1);
+	if(Wire.requestFrom((int)_addr, 1) != 1)
+		goto returnStatus;
+
 	iodata = Wire.read();
 
 	// map i/o expander port bits into lower nibble of byte
@@ -484,13 +491,17 @@ uint8_t iodata;
 	if(iodata & _d7)
 		data |= (1 << 3);
 
-   
-	// put gpio port back to all outputs state with WR signal low for writes
+	rval = data;
+
+returnStatus:
+
+	// try to put gpio port back to all outputs state with WR signal low for writes
 	Wire.beginTransmission(_addr);
 	Wire.write(_blCurState);		// with E LOW
-	Wire.endTransmission();
+	if(Wire.endTransmission())
+		rval = -1;
 
-	return(data);
+	return(rval);
 }
 
 // iowrite(type, value) - send either command or data byte to lcd
@@ -775,13 +786,13 @@ I2CexpType chiptype;
  * The MAGIC is knowing how to use all this information to differenciate
  * between backpacks.
  *
- * The key is to attempt to do a bit of "intelligent guessing"
+ * The key is to attempt to do a bit of intelligent probing & "guessing"
  * We have to combine some initial observations of the pins when all signals
  * have a weak pullup on them and then
  * we have to actually guess which bit controls E, to try to 
  * to get the LCD to stop driving the data lines. If the guess was correct,
- * since the 8574 has weak pullups, the each data line will pull up.
- * If not, then we continue on with some other checks/guesses.
+ * since the 8574 has weak pullups, each data line will pull up.
+ * If not, then we continue on with some other probing checks & guesses.
  *
  * Also of importance is that if RS should go low, the read will pull from
  * the status register instead of the data memory.
@@ -790,16 +801,20 @@ I2CexpType chiptype;
  *
  * So the summary:
  * If bits 0-2 are all 1s and bits 4-7 are 1s when bit 2 is off,
- * this determines that the upper bits are data lines and the lower 3 bits
- * are the control lines with bit 2 being the E signal.
+ * this determines that the upper 4 bits are lcd data lines and the lower 3 bits
+ * are the lcd control lines with bit 2 being the E signal.
  *		this means rs=0,rw=1,en=2,d4=4,d5=5,d6=6,d7=7,bl=3
  *
- * If bits 4-6 are all 1s
- *	if bits 0-3 are 1s when bit 4 is is off
+ * If bits 4-6 are all 1s and bits 0-3 are 1s when bit 4 is off
+ * this determines that the lower 4 bits are lcd data lines and the upper 3 bits
+ * are the lcd control lins with bit 4 being the E signal.
  *		this means rs=6,rw=5,en=4,d4=0,d5=1,d6=2,d7=3,bl=7
- *  else
- *		this means rs=4,rw=6,en=4,d4=0,d5=1,d6=2,d7=3,bl=7
- * 
+ *
+ * If bits 4-6 are all 1s and bits 0-3 are 1s when bit 6 is off
+ * this determines that the lower 4 bits are lcd data lines and the upper 3 bits
+ * are the lcd control lins with bit 6 being the E signal.
+ *		this means rs=4,rw=5,en=6,d4=0,d5=1,d6=2,d7=3,bl=7
+ *
  * Anyting else, is "undetermined" - error
  *
  * Determiing backlight active level is easy as mentioned above.
@@ -840,10 +855,10 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 	data = Wire.read();
 
 	// Turn off bit2 to attempt to see if en is bit 2,
-	// if it is it should change the data bit to 1s
+	// if it is, it should change all lcd data bits to 1s
 	
 	Wire.beginTransmission(_addr);
-	Wire.write((uint8_t) 0xfb);
+	Wire.write((uint8_t) (~(1 << 2)) );
 	Wire.endTransmission();
 
 	// read back data
@@ -856,14 +871,8 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 	
 	if( ((data & 0x7) == 7)  && ((data2 & 0xf0) == 0xf0))
 	{
-		rs = 0;
-		rw = 1;
-		en = 2;
-		d4 = 4;
-		d5 = 5;
-		d6 = 6;
-		d7 = 7;
-		bl = 3;
+		rs = 0; rw = 1; en = 2; d4 = 4; d5 = 5; d6 = 6; d7 = 7; bl = 3;
+
 		if(data & 0x8) // bit 3 high so active low
 		{
 			// LCM1602
@@ -887,7 +896,7 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 		// bit 4 on the mjkdz is en so we try that bit
 	
 		Wire.beginTransmission(_addr);
-		Wire.write((uint8_t) 0xef);
+		Wire.write((uint8_t) (~(1 << 4)) );
 		Wire.endTransmission();
 
 		// read back data
@@ -902,26 +911,12 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 		if((data2 & 0xf) ==  0xf)
 		{
 			// mjkdz
-			rs = 6;
-			rw = 5;
-			en = 4;
-			d4 = 0;
-			d5 = 1;
-			d6 = 2;
-			d7 = 3;
-			bl = 7;
+			rs = 6; rw = 5; en = 4; d4 = 0; d5 = 1; d6 = 2; d7 = 3; bl = 7;
 		}
 		else
 		{
 			// electrofun LCDXIO
-			rs = 4;
-			rw = 5;
-			en = 6;
-			d4 = 0;
-			d5 = 1;
-			d6 = 2;
-			d7 = 3;
-			bl = 7;
+			rs = 4; rw = 5; en = 6; d4 = 0; d5 = 1; d6 = 2; d7 = 3; bl = 7;
 		}
 		if(data & 0x80) // bit 7 high so active low
 		{
