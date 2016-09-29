@@ -270,6 +270,7 @@ Serial.println("LCD initialized");
 	showByteXfer(lcd, etime);
 #ifdef DEBUGPRINT
 	showByteXfer(Serial, etime);
+	Serial.println();
 #endif
 	delay(DELAY_TIME); // show it for a while
 	lcd.clear();
@@ -478,6 +479,7 @@ unsigned long secs;
 		PrintTime(lcd, hr, (uint8_t)min, sec);
 #ifdef DEBUGPRINT
 		PrintTime(Serial, hr, (uint8_t)min, sec);
+		Serial.println();
 #endif
 	}
 
