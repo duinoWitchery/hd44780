@@ -87,6 +87,15 @@ public:
 	static const int HD44780_CHEXECTIME = 2000; // time in us for clear&home
 	static const int HD44780_INSEXECTIME = 37;
 
+	// API return values
+	// 0 means successful, less than zero means unsuccessful
+	static const int RV_ENOERR=0;				// no error. Do not change!
+	static const int RV_EIO=-1;					// i/o operation failed (generic/default error)
+	static const int RV_EINVAL=-2;				// invalid argument/parameter
+	static const int RV_ENOTSUP=-3;				// not supported
+	static const int RV_ENXIO=-4;				// no such device or address
+	static const int RV_EMSGSIZE=-5;			// Message/data too long
+
 	// commands
 	static const uint8_t HD44780_CLEARDISPLAY = 0x01;
 	static const uint8_t HD44780_RETURNHOME = 0x02;
@@ -138,6 +147,13 @@ public:
 	size_t __attribute__ ((error("println() is not supported"))) println(const Printable&);
 	size_t __attribute__ ((error("println() is not supported"))) println(void);
 
+	// ALL API calls return a status.
+	// This is a change to existing APIs like
+	// LiquidCrystal and LCD API 1.0
+	// but should be compatible with existing code.
+	// 
+	// Unless otherwise documented,
+	// A less than zero status means the API call was not successful
 
 	// Arduino IDE LiquidCrystal lib functions
 	// =======================================
@@ -155,28 +171,28 @@ public:
 	    uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
 #endif
 	
-	void clear();
-	void home();
-	void setCursor(uint8_t col, uint8_t row); 
+	int clear();
+	int home();
+	int setCursor(uint8_t col, uint8_t row); 
 	size_t write(uint8_t value);
 	using Print::write; // for other Print Class write() functions
-	void cursor();
-	void noCursor();
-	void blink();
-	void noBlink();
-	void display();				// turn on LCD pixels
-	void noDisplay();			// turn off LCD pixels
-	void scrollDisplayLeft();
-	void scrollDisplayRight();
-	void autoscroll(); 			// auto horizontal scrolling
-	void noAutoscroll();		// no auto horizontal scrolling
-	void leftToRight();
-	void rightToLeft();
-	void createChar(uint8_t charval, uint8_t charmap[]);
-	void moveCursorLeft();
-	void moveCursorRight();
+	int cursor();
+	int noCursor();
+	int blink();
+	int noBlink();
+	int display();				// turn on LCD pixels
+	int noDisplay();			// turn off LCD pixels
+	int scrollDisplayLeft();
+	int scrollDisplayRight();
+	int autoscroll(); 			// auto horizontal scrolling
+	int noAutoscroll();		// no auto horizontal scrolling
+	int leftToRight();
+	int rightToLeft();
+	int createChar(uint8_t charval, uint8_t charmap[]);
+	int moveCursorLeft();
+	int moveCursorRight();
 	// sets memory address for each row, added in IDE 1.6.0
-	void setRowOffsets(int row0, int row1, int row2, int row3);
+	int setRowOffsets(int row0, int row1, int row2, int row3);
 
 	// Mandatory LCD API 1.0 functions
 	// ================================
@@ -219,24 +235,24 @@ public:
 	// it breaks on on older versions that shipped with older 1.x IDEs
 	// so test for gcc 4.5 or greater for better deprecated messages
 #if ( __GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
-	inline void __attribute__((deprecated("Use cursor() instead"))) cursor_on() {cursor();}
-	inline void __attribute__((deprecated("Use noCursor() instead"))) cursor_off() {noCursor();}
-	inline void __attribute__((deprecated("Use blink() instead"))) blink_on() {blink();}
-	inline void __attribute__((deprecated("Use noBlink() instead"))) blink_off() { noBlink();}
+	inline int __attribute__((deprecated("Use cursor() instead"))) cursor_on() {return(cursor());}
+	inline int __attribute__((deprecated("Use noCursor() instead"))) cursor_off() {return(noCursor());}
+	inline int __attribute__((deprecated("Use blink() instead"))) blink_on() {return(blink());}
+	inline int __attribute__((deprecated("Use noBlink() instead"))) blink_off() { return(noBlink());}
 #else 
 
-	inline void __attribute__((deprecated)) cursor_on() {cursor();}
-	inline void __attribute__((deprecated)) cursor_off() {noCursor();}
-	inline void __attribute__((deprecated)) blink_on() {blink();}
-	inline void __attribute__((deprecated)) blink_off() { noBlink();}
+	inline int __attribute__((deprecated)) cursor_on() {cursor();}
+	inline int __attribute__((deprecated)) cursor_off() {noCursor();}
+	inline int __attribute__((deprecated)) blink_on() {blink();}
+	inline int __attribute__((deprecated)) blink_off() { noBlink();}
 #endif
 
 	// optional LCD API 1.0 functions
 	// ==============================
-	inline void setBacklight(uint8_t dimvalue) {iosetBacklight(dimvalue);}
-	inline void setContrast(uint8_t contvalue) {iosetContrast(contvalue);}
-	void on(void);			// turn on LCD pixels and backlight
-	void off(void);			// turn off LCD pixels and backlight
+	inline int setBacklight(uint8_t dimvalue) {return(iosetBacklight(dimvalue));}
+	inline int setContrast(uint8_t contvalue) {return(iosetContrast(contvalue));}
+	int on(void);			// turn on LCD pixels and backlight
+	int off(void);			// turn off LCD pixels and backlight
 
 	// status();
 	// The LCD API 1.0 documenation says it does not work the same
@@ -282,8 +298,8 @@ public:
 	// status() is exists in LCD 1.0 API but is different
 	// This status() function will be consistent across all i/o subclasses
 	// ===================================================================
-	void backlight(void);		// turn on Backlight (max brightness)
-	void noBacklight(void);		// turn off Backlight
+	int backlight(void);		// turn on Backlight (max brightness)
+	int noBacklight(void);		// turn off Backlight
 	int read(void);
 
 	// set execution times for commmands to override defaults
@@ -315,11 +331,11 @@ protected:
 private:
 
 	// i/o subclass functions
-	virtual int ioinit() {return 0;}	// optional
-	virtual int ioread(hd44780::iotype type) {if(type) return -1;else return -1;}	// optional, return fail if not implemented
+	virtual int ioinit() {return 0;}	// optional - successful if not implemented
+	virtual int ioread(hd44780::iotype type) {if(type) return(RV_ENOTSUP);else return(RV_ENOTSUP);}	// optional, return fail if not implemented
 	virtual int iowrite(hd44780::iotype type, uint8_t value)=0;// mandatory
-	virtual void iosetBacklight(uint8_t dimvalue){if(dimvalue) return;}	// optional
-	virtual void iosetContrast(uint8_t contvalue){if(contvalue) return;}// optional
+	virtual int iosetBacklight(uint8_t dimvalue){if(dimvalue) return(RV_ENOTSUP); else return(RV_ENOTSUP);}	// optional
+	virtual int iosetContrast(uint8_t contvalue){if(contvalue) return(RV_ENOTSUP); else return(RV_ENOTSUP);}// optional
 
 	uint8_t _rowOffsets[4]; // memory address of start of each row/line
 

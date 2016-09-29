@@ -61,6 +61,13 @@ S/W requirements
 	- IDE version 1.6.6 (has function prototyping issues that can break some sketches)
 	- IDE version 1.6.8 (has serial port issues that breaks on certain boards)
 
+**NOTE**<br>
+There are two "Ardino" companies. arduino.cc and arduino.org
+While things may change in the future, for the time being,
+IDEs from arduino.org are not recommended as they are behind in terms
+of features and have function prototyping issues that prevent some of the example sketches in
+this library from compiling. 
+The latest arduino.org IDE at the time was 1.7.11
 
 H/W support
 ===========
@@ -119,53 +126,53 @@ can be found in the included examples.
 |Function                               | Description                           |
 | --------------------------------------| --------------------------------------|
 | **LiquidCrystal API**                 | https://www.arduino.cc/en/Reference/LiquidCrystal |
-| begin(cols, rows)                     | initialize communication interface and LCD<br> **hd44780 extension**: non zero return value is failure |
-| clear()                               | clear the display and home the cursor |
-| home()	                        | home the cursor |
-| setCursor(col, row)                   | set cursor position |
-| write(data)	                        | send data byte to the display |
-| write(*str)	                        | send C string to the display |
-| write(*buffer, size)                  | send size bytes to the display |
-| print(...)                            | print formatted data on the display (from Print class) |
+| begin(cols, rows)                     | initialize communication interface and LCD<br> **hd44780 extension**: returns zero on success |
+| clear()                               | clear the display and home the cursor<br> **hd44780 extension**: returns zero on success |
+| home()	                        | home the cursor<br> **hd44780 extension**: returns zero on success |
+| setCursor(col, row)                   | set cursor position<br> **hd44780 extension**: returns zero on success |
+| write(data)	                        | send data byte to the display<br>returns 1 on success |
+| write(*str)	                        | send C string to the display<br>returns characters written |
+| write(*buffer, size)                  | send size bytes to the display<br>returns characters written<br>returns size on success |
+| print(...)                            | print formatted data on the display<br>(from Print class)<br>returns characters output |
 | println(...)                          | **not supported** (from Print class) |
-| cursor()                              | turn on underline cursor |
-| noCursor()                            | turn off/hide cursor |
-| blink()                               | enable blinking at cursor position |
-| noBlink()                             | disable blinking at cursor position |
-| display()                             | enable pixels on display |
-| noDisplay()                           | disable/hide pixels on display |
-| scrollDisplayLeft()                   | shift display contents left |
-| scrollDisplayRight()                  | shift display contents right |
-| autoscroll()                          | enable left/right autoshifting for new characters |
-| noAutoscroll()                        | disable left/right autoshifting |
-| leftToRight()                         | write left to right, set autoshift to left |
-| rightToLeft()                         | write right to left, set autoshift to right |
-| createChar(charval, charmap[])        | create a custom character |
-| moveCursorLeft()                      | move cursor one space to right |
-| moveCursorRight()                     | move cursor one space to left |
+| cursor()                              | turn on underline cursor<br> **hd44780 extension**: returns zero on success |
+| noCursor()                            | turn off/hide cursor<br> **hd44780 extension**: returns zero on success |
+| blink()                               | enable blinking at cursor position<br> **hd44780 extension**: returns zero on success |
+| noBlink()                             | disable blinking at cursor position<br> **hd44780 extension**: returns zero on success |
+| display()                             | enable pixels on display<br> **hd44780 extension**: returns zero on success |
+| noDisplay()                           | disable/hide pixels on display<br> **hd44780 extension**: returns zero on success |
+| scrollDisplayLeft()                   | shift display contents left<br> **hd44780 extension**: returns zero on success |
+| scrollDisplayRight()                  | shift display contents right<br> **hd44780 extension**: returns zero on success |
+| autoscroll()                          | enable left/right autoshifting for new characters<br> **hd44780 extension**: returns zero on success |
+| noAutoscroll()                        | disable left/right autoshifting<br> **hd44780 extension**: returns zero on success |
+| leftToRight()                         | write left to right, set autoshift to left<br> **hd44780 extension**: returns zero on success |
+| rightToLeft()                         | write right to left, set autoshift to right<br> **hd44780 extension**: returns zero on success |
+| createChar(charval, charmap[])        | create a custom character<br> **hd44780 extension**: returns zero on success |
+| moveCursorLeft()                      | move cursor one space to right<br> **hd44780 extension**: returns zero on success |
+| moveCursorRight()                     | move cursor one space to left<br> **hd44780 extension**: returns zero on success |
 | setRowOffsets(row0, row1, row2, row3) | set address for start of each line                                        |
-| command(cmd)                          | send raw 8bit hd44780 command to LCD<br> **hd44780 extension**: non zero return value is failure |
+| command(cmd)                          | send raw 8bit hd44780 command to LCD<br> **hd44780 extension**: returns zero on success |
 |                                       ||
 | **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
-| backlight()	                        | turn on backlight (max brightness) |
-| noBacklight()                         | turn off backlight    |
-| read()                                | read data byte from LCD<br>returns negative value on failure<br>(requires r/w signal)|
+| backlight()	                        | turn on backlight (max brightness)<br>returns zero on success |
+| noBacklight()                         | turn off backlight<br>returns zero on success    |
+| read()                                | read data byte from LCD<br>(requires r/w signal)<br>returns negative value on failure |
 | setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
 |                                       ||
 | **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
-| setBacklight(dimvalue)                | set backlight brightness (0-255) |
-| setcontrast(contvalue)                | set contrast (0-255) |
-| on()                                  | turn on LCD pixels and backlight |
-| off()                                 | turn off LCD pixels and backlight |
-| status()                              | read hd44780 status byte (busy flag & address)<br> returns negative value on failure<br>(requires r/w signal) |
+| setBacklight(dimvalue)                | set backlight brightness (0-255)<br> **hd44780 extension**: returns zero on success |
+| setcontrast(contvalue)                | set contrast (0-255)<br> **hd44780 extension**: returns zero on success |
+| on()                                  | turn on LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
+| off()                                 | turn off LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
+| status()                              | read hd44780 status byte (busy flag & address)<br>(requires r/w signal)<br> returns negative value on failure |
 |                                       ||
 | **Deprecated LCD API 1.0 Functions**<br>These exist in hd44780 but are deprecated||
 | cmdDelay(CmdDelay, CharDelay)         | use setExecTimes() instead |
-| cursor_on()                           | use cursor() istead |
-| cursor_off()                          | use noCursor() instead |
-| blink_on()                            | use blink() instead |
-| blink_off()                           | use noBlink() instead |
-| load_custom_character(char_num, Rows[]) | use createChar() instead |
+| cursor_on()                           | use cursor() instead<br> **hd44780 extension**: returns zero on success |
+| cursor_off()                          | use noCursor() instead<br> **hd44780 extension**: returns zero on success |
+| blink_on()                            | use blink() instead<br> **hd44780 extension**: returns zero on success |
+| blink_off()                           | use noBlink() instead<br> **hd44780 extension**: returns zero on success |
+| load_custom_character(char_num, Rows[]) | use createChar() instead<br> **hd44780 extension**: returns zero on success |
 | **BROKEN LCD API 1.0 Functions**      ||
 | setCursor(row, col)                   | row,col is backwards from Liquidcrystal;<br>therefore cannot be supported|
 

@@ -421,34 +421,39 @@ int rval = 0;
 	// Initialize to default text direction (for romance languages)
 	_displaymode = HD44780_ENTRYLEFT2RIGHT;
 	// set the entry mode
-	command(HD44780_ENTRYMODESET | _displaymode);
+	rval = command(HD44780_ENTRYMODESET | _displaymode);
 
 	backlight(); // turn on the backlight, if supported
 
-	return(rval); // success
+	return(rval);
 }
 
-void hd44780::clear()
+int hd44780::clear()
 {
-	command(HD44780_CLEARDISPLAY);  // clear display, set cursor to 0,0
+	return(command(HD44780_CLEARDISPLAY));  // clear display, set cursor to 0,0
 }
 
-void hd44780::home()
+int hd44780::home()
 {
-	command(HD44780_RETURNHOME);  // set cursor position to 0,0
+	return(command(HD44780_RETURNHOME));  // set cursor position to 0,0
 }
 
-void hd44780::setRowOffsets(int row0, int row1, int row2, int row3)
+int hd44780::setRowOffsets(int row0, int row1, int row2, int row3)
 {
 	_rowOffsets[0] = row0;
 	_rowOffsets[1] = row1;
 	_rowOffsets[2] = row2;
 	_rowOffsets[3] = row3;
+	return(RV_ENOERR);
 }
 
 
-void hd44780::setCursor(uint8_t col, uint8_t row)
+int hd44780::setCursor(uint8_t col, uint8_t row)
 {
+	// while this could return RV_EINVAL for invalid parameters
+	// it is going to adjust them to maintain compability with existing LiquidCrystal library
+	// and to allow a back door way to set the ddram address - see below
+
 	if ( row >= _rows ) 
 	{
 		// set to max line (rows/lines start at 0, _rows is 1 based)
@@ -461,138 +466,148 @@ void hd44780::setCursor(uint8_t col, uint8_t row)
 	 * - positioning off the end of the visable line
 	 * - if line 0 is used, it is a backdoor to do SETDDRAMADDR to any address
 	 */
-	command(HD44780_SETDDRAMADDR | (col + _rowOffsets[row]));
+	return(command(HD44780_SETDDRAMADDR | (col + _rowOffsets[row])));
 }
 
 // turn off display pixels
-void hd44780::noDisplay()
+int hd44780::noDisplay()
 {
 	_displaycontrol &= ~HD44780_DISPLAYON;
-	command(HD44780_DISPLAYCONTROL | _displaycontrol);
+	return(command(HD44780_DISPLAYCONTROL | _displaycontrol));
 }
 
 // turn on display pixels
-void hd44780::display()
+int hd44780::display()
 {
 	_displaycontrol |= HD44780_DISPLAYON;
-	command(HD44780_DISPLAYCONTROL | _displaycontrol);
+	return(command(HD44780_DISPLAYCONTROL | _displaycontrol));
 }
 
 // Turns off underline cursor
-void hd44780::noCursor()
+int hd44780::noCursor()
 {
 	_displaycontrol &= ~HD44780_CURSORON;
-	command(HD44780_DISPLAYCONTROL | _displaycontrol);
+	return(command(HD44780_DISPLAYCONTROL | _displaycontrol));
 }
 // Turn on underline cursor
-void hd44780::cursor()
+int hd44780::cursor()
 {
 	_displaycontrol |= HD44780_CURSORON;
-	command(HD44780_DISPLAYCONTROL | _displaycontrol);
+	return(command(HD44780_DISPLAYCONTROL | _displaycontrol));
 }
 
 // Turn on off the blinking cursor
-void hd44780::noBlink()
+int hd44780::noBlink()
 {
 	_displaycontrol &= ~HD44780_BLINKON;
-	command(HD44780_DISPLAYCONTROL | _displaycontrol);
+	return(command(HD44780_DISPLAYCONTROL | _displaycontrol));
 }
 
 // Turn on the blinking cursor
-void hd44780::blink()
+int hd44780::blink()
 {
 	_displaycontrol |= HD44780_BLINKON;
-	command(HD44780_DISPLAYCONTROL | _displaycontrol);
+	return(command(HD44780_DISPLAYCONTROL | _displaycontrol));
 }
 
 // These API functions scroll/shift the display contents without changing the RAM
-void hd44780::scrollDisplayLeft(void)
+int hd44780::scrollDisplayLeft(void)
 {
-	command(HD44780_CURDISPSHIFT | HD44780_DISPLAYMOVE | HD44780_MOVELEFT);
+	return(command(HD44780_CURDISPSHIFT | HD44780_DISPLAYMOVE | HD44780_MOVELEFT));
 }
-void hd44780::scrollDisplayRight(void)
+int hd44780::scrollDisplayRight(void)
 {
-	command(HD44780_CURDISPSHIFT | HD44780_DISPLAYMOVE | HD44780_MOVERIGHT);
+	return(command(HD44780_CURDISPSHIFT | HD44780_DISPLAYMOVE | HD44780_MOVERIGHT));
 }
 
 // This is for text that flows Left to Right
-void hd44780::leftToRight(void)
+int hd44780::leftToRight(void)
 {
 	_displaymode |= HD44780_ENTRYLEFT2RIGHT;
-	command(HD44780_ENTRYMODESET | _displaymode);
+	return(command(HD44780_ENTRYMODESET | _displaymode));
 }
 
 // This is for text that flows Right to Left
-void hd44780::rightToLeft(void)
+int hd44780::rightToLeft(void)
 {
 	_displaymode &= ~HD44780_ENTRYLEFT2RIGHT;
-	command(HD44780_ENTRYMODESET | _displaymode);
+	return(command(HD44780_ENTRYMODESET | _displaymode));
 }
 
 // This moves the cursor one space to the right
-void hd44780::moveCursorRight(void)
+int hd44780::moveCursorRight(void)
 {
-	command(HD44780_CURDISPSHIFT | HD44780_CURSORMOVE | HD44780_MOVERIGHT);
+	return(command(HD44780_CURDISPSHIFT | HD44780_CURSORMOVE | HD44780_MOVERIGHT));
 }
 
 // This moves the cursor one space to the left
-void hd44780::moveCursorLeft(void)
+int hd44780::moveCursorLeft(void)
 {
-	command(HD44780_CURDISPSHIFT | HD44780_CURSORMOVE | HD44780_MOVELEFT);
+	return(command(HD44780_CURDISPSHIFT | HD44780_CURSORMOVE | HD44780_MOVELEFT));
 }
 
 // This will enable autoshifting display as new characters are written.
 // If mode is left to right, shift is left
 // if mode is right to left, shift is right
-void hd44780::autoscroll(void)
+int hd44780::autoscroll(void)
 {
 	_displaymode |= HD44780_ENTRYAUTOSHIFT;
-	command(HD44780_ENTRYMODESET | _displaymode);
+	return(command(HD44780_ENTRYMODESET | _displaymode));
 }
 
 // This will disable autoshifting when new characters are written
-void hd44780::noAutoscroll(void)
+int hd44780::noAutoscroll(void)
 {
 	_displaymode &= ~HD44780_ENTRYAUTOSHIFT;
-	command(HD44780_ENTRYMODESET | _displaymode);
+	return(command(HD44780_ENTRYMODESET | _displaymode));
 }
 
 // Allows us to fill the first 8 CGRAM locations
 // with custom characters
-void hd44780::createChar(uint8_t location, uint8_t charmap[])
+int hd44780::createChar(uint8_t location, uint8_t charmap[])
 {
-	location &= 0x7; // we only have 8 locations 0-7
-	command(HD44780_SETCGRAMADDR | (location << 3));
-	for (int i=0; i<8; i++)
-		write(charmap[i]);
+int rval;
 
-	setCursor(0,0); // put LCD back into DDRAM mode so write() works
+	location &= 0x7; // we only have 8 locations 0-7
+	rval = command(HD44780_SETCGRAMADDR | (location << 3));
+	if(rval)
+		return(rval);
+	for (int i=0; i<8; i++)
+	{
+		if(write(charmap[i]) != 1)
+			return(RV_EIO);
+	}
+
+	return(setCursor(0,0)); // put LCD back into DDRAM mode so write() works
 }
 
 // turn on backlight at full intensity
-void hd44780::backlight(void)
+int hd44780::backlight(void)
 {
-	iosetBacklight(-1); // max brightness
+	return(iosetBacklight(-1)); // max brightness
 }
 
 // turn off backlight
-void hd44780::noBacklight(void)
+int hd44780::noBacklight(void)
 {
-	iosetBacklight(0);
+	return(iosetBacklight(0));
 }
 
 // turn on pixels and backlight
-void hd44780::on ( void )
+int hd44780::on ( void )
 {
-   display();
-   backlight();
+int rval;
+
+	rval = display();
+	backlight(); // ignore any issues for backlight control
+	return(rval);
 }
 
 // turn off pixels and backlight
-void hd44780::off ( void )
+int hd44780::off ( void )
 {
-   noBacklight();
-   noDisplay();
+   noBacklight(); // ignore any issues for backlight control
+   return(noDisplay());
 }
 
 // command() - send hd44780 command byte to lcd
@@ -644,7 +659,7 @@ size_t hd44780::write(uint8_t value)
 int status = 1; //assume success
 
 	if(iowrite(HD44780_IOdata, value))
-		status = 0; // send failed
+		status = 0; // write was unsuccessful
 	markStart(_insExecTime);
 	
 	return status;

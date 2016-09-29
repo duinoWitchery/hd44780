@@ -125,7 +125,7 @@ uint8_t _Addr;             // I2C Address of the LCD
 // ioinit() - Returns non zero if initialization failed.
 int ioinit()
 {
-int status = 0;
+int status;
 
 	/*
 	 * First, initialize the i2c (Wire) library.
@@ -144,7 +144,15 @@ int status = 0;
 	 * Check to see if the device is responding
 	 */
 	Wire.beginTransmission(_Addr);
-	status = Wire.endTransmission();
+	if( (status = Wire.endTransmission()) )
+	{
+		if(status == 1)
+			status = hd44780:: RV_EMSGSIZE;
+		else if(status == 2)
+			status = hd44780::RV_ENXIO;
+		else
+			status = hd44780::RV_EIO;
+	}
 
 	/*
 	 * this device only runs in 8 bit mode
@@ -197,7 +205,10 @@ uint8_t ctlbyte;
 	Wire.write(ctlbyte);	// send control byte
 	Wire.write(value);		// send data/cmd
 
-	return(Wire.endTransmission());
+	if(Wire.endTransmission())
+		return(hd44780::RV_EIO);
+	else
+		return(hd44780::RV_ENOERR);
 }
 
 }; // end of class definition

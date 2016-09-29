@@ -373,7 +373,8 @@ int status = 0;
 		
 	}
 	Wire.write((uint8_t)0);  // Set the entire output port to LOW
-	status = Wire.endTransmission();
+	if( (status = Wire.endTransmission()) ) // assignment
+		status = hd44780::RV_EIO;
 
 	return ( status );
 }
@@ -392,17 +393,17 @@ int rval = -1;
 
 	// If address or expander type is unknown, then abort read w/error
 	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
-		return(-1);
+		return(hd44780::RV_ENXIO);
 
 	// reads for MCP23008 not yet supported
 	if(_expType == I2Cexp_MCP23008)
 	{
-		return(-1);
+		return(hd44780::RV_ENOTSUP);
 	}
 
 	// check if reads supported
 	if(!_rw)
-		return(-1);
+		return(hd44780::RV_ENOTSUP);
 
 	/*
 	 * ensure that previous LCD instruction finished.
@@ -546,35 +547,41 @@ int iowrite(hd44780::iotype type, uint8_t value)
 	{
 		write4bits( (value & 0x0F), type); // lower nibble, if not 4bit cmd
 	}
-	return(Wire.endTransmission());
+	if(Wire.endTransmission())
+		return(hd44780::RV_EIO);
+
+	return(hd44780::RV_ENOERR);
 }
 
 // iosetBacklight()  - set backlight brightness
 // Since dimming is not supported, any non zero value
 // will turn on the backlight.
-void iosetBacklight(uint8_t dimvalue) 
+int iosetBacklight(uint8_t dimvalue) 
 {
-	if(_bl) // backlight control?
+	if(!_bl) // backlight control?
+		return(hd44780::RV_ENOTSUP); // not backlight control support
+
+	// dimvalue 0 is backlight off any other dimvalue is backlight on
+	// configure backlight state mask according to active level
+	if(((dimvalue) && (_blLevel == HIGH)) || 
+			((dimvalue == 0) && (_blLevel == LOW)))
 	{
-		// dimvalue 0 is backlight off any other dimvalue is backlight on
-		// configure backlight state mask according to active level
-		if(((dimvalue) && (_blLevel == HIGH)) || 
-				((dimvalue == 0) && (_blLevel == LOW)))
-		{
-			_blCurState = _bl;
-		}
-		else 
-		{
-			_blCurState = 0;
-		}
-		Wire.beginTransmission(_addr);
-		if(_expType == I2Cexp_MCP23008)
-		{
-			Wire.write(9); // point to GPIO
-		}
-		Wire.write( _blCurState );
-		Wire.endTransmission();
+		_blCurState = _bl;
 	}
+	else 
+	{
+		_blCurState = 0;
+	}
+	Wire.beginTransmission(_addr);
+	if(_expType == I2Cexp_MCP23008)
+	{
+		Wire.write(9); // point to GPIO
+	}
+	Wire.write( _blCurState );
+	if(Wire.endTransmission())
+		return(hd44780::RV_EIO);
+
+	return(hd44780::RV_ENOERR); // all is good
 }
 
 // ================================

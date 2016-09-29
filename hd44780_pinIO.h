@@ -178,7 +178,7 @@ int ioinit()
 	if(_bl != 0xff)
 		pinMode(_bl, OUTPUT);
 
-	return(0); // all is good
+	return(hd44780::RV_ENOERR); // all is good
 }
 
 // ioread(type) - read a byte from LCD DDRAM
@@ -193,7 +193,7 @@ uint8_t data = 0;
 
 	// check if r/w control supported
 	if(!_rw)
-		return(-1);
+		return(hd44780::RV_ENOTSUP);
 
 	waitReady();		// ensure previous instruction finished
 
@@ -318,15 +318,15 @@ int iowrite(hd44780::iotype type, uint8_t value)
 		write4bits((value & 0x0F));// setup lower nibble on d4-d7 lcd pins
 		pulseEnable();				// send lower nibble to LCD
 	}
-	return(0); // it never fails
+	return(hd44780::RV_ENOERR); // it never fails
 }
 
 // iosetBacklight() - set backlight brightness
 // if dimming not supported, any non zero dimvalue turns backlight on
-void iosetBacklight(uint8_t dimvalue)
+int iosetBacklight(uint8_t dimvalue)
 {
 	if (_bl == 0xff )
-		return; // no backlight pin so nothing to do
+		return(hd44780::RV_ENOTSUP); // no backlight pin so nothing to do
 
 	// Check if backlight pin has PWM support
 	// The reason this has to be done is that Arduino analogWrite()
@@ -370,6 +370,7 @@ void iosetBacklight(uint8_t dimvalue)
 	{
 		digitalWrite(_bl, LOW);
 	}
+	return(hd44780::RV_ENOERR);
 }
 
 // ================================
