@@ -133,7 +133,13 @@
                                                                       // GP5 is hooked to s/w JP1 jumper, LCD RW is hardwired to gnd
                                                                       // So no ability to do LCD reads.
 
-#define I2Cexp_BOARD_XXX           I2Cexp_MCP23008,7,6,5,4,3,2,1,HIGH // unknown backpack brand
+#define I2Cexp_BOARD_EFREAK        I2Cexp_MCP23008,7,6,5,4,3,2,1,HIGH // elecfreaks backpack. (lcd RW grounded)
+                                                                      // very similar design to Adafruit board but uses different pin mapping
+                                                    // http://www.elecfreaks.com/store/i2ctwi-lcd1602-moduleblack-on-green-p-314.html
+                                                    // http://elecfreaks.com/store/download/datasheet/lcd/Char/IICshematic.pdf
+                                                    // http://www.elecfreaks.com/wiki/index.php?title=I2C/TWI_LCD1602_Module
+
+
 
 #define I2Cexp_BOARD_MLTBLUE       I2Cexp_MCP23008,1,3,4,5,6,7,0,HIGH // i2c LCD MLT group "Blue Board" backpack
                                                                       // http://www.mlt-group.com/I2C-LCD-Blue-Board-for-Arduino
