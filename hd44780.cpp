@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.10.15  bperrybap - createChar() restores DDRAM location when possible
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.08.06  bperrybap - added status() and read()
@@ -567,8 +568,17 @@ int hd44780::noAutoscroll(void)
 int hd44780::createChar(uint8_t location, uint8_t charmap[])
 {
 int rval;
+int ddramaddr;
 
 	location &= 0x7; // we only have 8 locations 0-7
+
+	ddramaddr = status(); // fetch status which includes ddram address
+
+	if(ddramaddr < 0) // status() failed, so just set address to 0
+		ddramaddr = 0;
+	else
+		ddramaddr &= 0x3f; // strip off BUSY bit
+
 	rval = command(HD44780_SETCGRAMADDR | (location << 3));
 	if(rval)
 		return(rval);
@@ -578,7 +588,8 @@ int rval;
 			return(RV_EIO);
 	}
 
-	return(setCursor(0,0)); // put LCD back into DDRAM mode so write() works
+	// put LCD back into DDRAM mode so write() works
+	return(setCursor(ddramaddr , 0));
 }
 
 // turn on backlight at full intensity
