@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.10.17  bperrybap - corrected DDRAM address mask in createChar()
 // 2016.10.15  bperrybap - createChar() restores DDRAM location when possible
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
@@ -577,7 +578,7 @@ int ddramaddr;
 	if(ddramaddr < 0) // status() failed, so just set address to 0
 		ddramaddr = 0;
 	else
-		ddramaddr &= 0x3f; // strip off BUSY bit
+		ddramaddr &= 0x7f; // strip off BUSY bit
 
 	rval = command(HD44780_SETCGRAMADDR | (location << 3));
 	if(rval)
