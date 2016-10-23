@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.2-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.3-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -198,7 +198,21 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.7.3] - 2016-10-23
+ * updates to current library status in readme
+ * updated non library manager installation instructions
+ * display digital pin #s for a4 and a5 on boards that have them.
+ * corrected DDRAM address mask in createChar()
+ * createChar() will restore DDRAM address on devices that support reads
+ * added Custom Character example
+ * added I2Cexp canned entry for elecfreaks i2c/spi backpack
+ * corrected Serial output formatting issue in LCDlibTest
+ * All device API functions now return status
+ * updated sketches to call a fatalError() routine to blink the led on fatal errors
+ * Corrected ioread in I2Cexp to properly return errors
+
 [0.7.2] - 2016-09-21
+ * update version info for 0.7.2 release
  * updated README to indicate println() not supported
  * added automation scripts to aid in building releases and generating changelog
  * update to PCF8574 autoconfig to make it more robust

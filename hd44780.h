@@ -72,8 +72,8 @@
 #include <inttypes.h>
 #include <Print.h>
 
-#define HD44780_VERSION		702
-#define HD44780_VERSIONSTR	"0.7.2"
+#define HD44780_VERSION		703
+#define HD44780_VERSIONSTR	"0.7.3"
 
 class hd44780 : public Print
 {
