@@ -83,6 +83,7 @@ static const int dummyvar = 0;
 //	- display information about the enviroment on the serial monitor.
 //	- probe the i2c bus to check for external pullup resistors 
 //	- scan the i2c bus and show all devices found
+//		NOTE: Arduino 2560 boards have 10k external pullups on the board
 //	- attempt to initalize all LCD devices detected
 //	- display information about each each initialized LCD device
 //		this includes i2c address and configuration information
@@ -205,7 +206,6 @@ const int LCD_COLS = 16;
 // The rest of the world is so much simpler and normal
 #define P(name)   const char name[]   // declare a const string
 #endif
-
 
 /*
  * declare some horizonal 'line' strings in program memory
@@ -591,14 +591,20 @@ void showSystemConfig(void)
 	Serial.print(F("F_CPU: "));
 	Serial.println(F_CPU);
 
-
-
 	Serial.println(hline);
+#if NUM_ANALOG_INPUTS > 4
+	Serial.print(F(" A4: digital pin: "));
+	Serial.println(A4);
+	Serial.print(F(" A5: digital pin: "));
+	Serial.println(A5);
+#endif
+
 	Serial.print(F("SDA: digital pin: "));
 	Serial.println(SDA);
 
 	Serial.print(F("SCL: digital pin: "));
 	Serial.println(SCL);
+
 }
 
 
