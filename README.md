@@ -48,6 +48,7 @@ The hd44780 API also provides some addtional extensions and all the API
 functions provided by hd44780 are common across all i/o subclasses.
 The most most significant extensions being:
 - ability to modify the libraries expected command execution times.
+- API functions return a status to indicate whether not successful
 - ability to tell if lcd initialized failed
 - ability to read data or status from the LCD (requires r/w control)
 - ability to tell if sending a raw command to the LCD failed
@@ -87,33 +88,52 @@ Installation
 For ease of installation it is recommended to use an IDE that supports the library mananager which was implemented in IDE version 1.6.2
 
 ### Installation using Library manager (IDE 1.6.2 and later)
-In the IDE, Simply click on [Sketch]->Include Library->Manage Libraries...
-Then search for "Extensible hd44780" to locate the library and install it.
+In the IDE, Simply click on [Sketch]->Include Library->Manage Libraries...<br>
+Then search for "Extensible hd44780" to locate the library and install it.<br>
+There is no need to uninstall or modify any other LCD libary that may have already been installed.
 
-### Installation using zip file (IDE 1.6.1 and earlier)
+### Installation using zip file w/o library manager (IDE 1.6.1 and earlier)
 Installation requires downloading a zip image and
-then, depending on the version of the IDE you can either install it from the IDEor install it manually by unziping the file into your sketchbook libraries.
+then, depending on the version of the IDE you can either install it from the IDE or install it manually by unziping the file into your sketchbook libraries.
 
-1) dowload a library zip image from the github repository:
-https://github.com/duinoWitchery/hd44780
-Download the image by clicking the green box that says [Clone or Download].
+**NOTE**: due to the way github creates its zip files, there is a manual step that must be done to rename the library directory created in your sketchbook libraries area.
 
-2) Rename the downloaded and saved the zip image to hd44780.zip
+First, dowload a library zip image from the github repository releases area:<br>
+https://github.com/duinoWitchery/hd44780/releases <br>
+Download the image by clicking the zip icon for the desired release.
 
 #### Installation of zip file library on IDE 1.0.6 to 1.6.1
 The library can be installed from the zip image using the IDE.
 Install it by clicking on:
 [Sketch]->Include Library->Add .ZIP library...
-then, simply select the hd44780.zip image you downloaded and renamed.
+then, simply select the hd44780.zip image you downloaded.
+
+The hd44780 sketchbook library must now be renamed. (see below)
 
 #### Installation of zip file library on IDE 1.0 to 1.0.5
-On these versions of the IDE the install must be done manually.
+On these versions of the IDE, the install must be done manually.
 To install the library simply extract it into your sketchbook/libraries directory.
 If you don't know where you sketchbook/libraries directory is simply click on:
 [File]-Prefernces
 or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
-The loation of your sketchbook directory will be in the text box.
-The zip image must be installed in a directory called "libraries" under that directory.
+The location of your sketchbook directory will be in the text box.
+The zip image must be installed in a directory called "libraries" under that directory.<br>
+
+After the zip file has been extracted and the hd44780 sketchbook library has been created,
+the library must now be renamed. (see below)
+
+### Renaming hd44780 libary directory name after installation w/o library manager
+When not using the library manager, the hd44780 library directory created in your sketchbook libary area will not be the correct name.
+This is due to the way github creates its zip files and the way the IDE library manager works.
+The downloaded zip file and internal directory will have a name like hd44780-X.Y.Z which causes the sketchbook library name to also be hd44780-X.Y.Z
+While the IDE will usually allow this to work, the proper name should be simply "hd44780" and not using its real name can cause issues in the future.<br>
+To rename the library directory, simply go to the sketchbook library location and rename it.
+If you don't know where you sketchbook/libraries directory is simply click on:
+[File]-Prefernces
+or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
+The location of your sketchbook directory will be in the text box.<br>
+Use your favorite tool to rename it.
+
 
 API Summary
 ===========
@@ -156,7 +176,7 @@ can be found in the included examples.
 | **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
 | backlight()	                        | turn on backlight (max brightness)<br>returns zero on success |
 | noBacklight()                         | turn off backlight<br>returns zero on success    |
-| read()                                | read data byte from LCD<br>(requires r/w signal)<br>returns negative value on failure |
+| read()                                | read data byte from LCD<br>(requires r/w signal control)<br>returns negative value on failure |
 | setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
 |                                       ||
 | **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
@@ -164,7 +184,7 @@ can be found in the included examples.
 | setcontrast(contvalue)                | set contrast (0-255)<br> **hd44780 extension**: returns zero on success |
 | on()                                  | turn on LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
 | off()                                 | turn off LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
-| status()                              | read hd44780 status byte (busy flag & address)<br>(requires r/w signal)<br> returns negative value on failure |
+| status()                              | read hd44780 status byte (busy flag & address)<br>(requires r/w signal control)<br> returns negative value on failure |
 |                                       ||
 | **Deprecated LCD API 1.0 Functions**<br>These exist in hd44780 but are deprecated||
 | cmdDelay(CmdDelay, CharDelay)         | use setExecTimes() instead |
