@@ -56,6 +56,8 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2016.10.29  bperrybap - added sunrom canned entry
+//                         updated pcf8574 autoconfig comments
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.08.06  bperrybap - added ioread()
@@ -78,7 +80,7 @@
 #ifndef hd44780_I2Cexp_h
 #define hd44780_I2Cexp_h
 
-#include <Wire.h>
+//#include <Wire.h>
 #include <hd44780.h>
 // For STUPID versions of gcc that don't hard error on missing header files
 #ifndef hd44780_h
@@ -118,9 +120,17 @@
 #define I2Cexp_BOARD_DFROBOT       I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
 #define I2Cexp_BOARD_SAINSMART     I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
 #define I2Cexp_BOARD_FUNDUINO      I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
+#define I2Cexp_BOARD_SUNROM        I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack
+                                                                        // http://www.sunrom.com/p/i2c-lcd-backpack-pcf8574
+// not recommended
 #define I2Cexp_BOARD_SYDZ          I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // YwRobot/DFRobot/SainSmart/funduino backpack 
-                                                                        // SYDZ backpack uses a pullup because of the pullup,
-                                                                        // backlight active level can not be auto detected
+                                                                        // SYDZ backpacks have a broken backlight circuit design.
+                                                                        // the backlight active level can not be auto detected
+                                                                        // It hooks the BL anode to the emitter rather than
+                                                                        // hook the collector to the BL cathode.
+                                                                        // The pullup on the base wont' be pulled low enough by
+                                                                        // the backlight so the P3 pin will read high instead of low.
+                                                                        // This breaks the autodetection.
 
 // MCP23008 based boards
 // Currently r/w control is disabled since most boards either can't do it, or have it disabled.
@@ -790,6 +800,14 @@ I2CexpType chiptype;
  * the 8574 bl pin as an input will be pulled to the direction of the emitter.
  * for active low backlights, the bl input pin will be high
  * for active high backlights, the bl input pin will be low.
+ * When there is a pullup on the NPN base, it will still be pulled down low enough
+ * to read as a low as long as the emitter is wired directly to ground.
+ *
+ * NOTE: While normally wiring an i/o pin directly to a NPN base when the emitter
+ * is connected directly to ground would be bad when the i/o pin is driven high (it shorts),
+ * It is not an issue with the PCF8574 since the PCF8574 does not drive i/o pins.
+ * The PCF8574 will enable a pullup when the pin is set to "high". The path through
+ * the transistor base, out the emitter to ground will pull the signal down to read as a low.
  *
  * All known 8574 backpacks appear to use either the upper or the lower
  * nibble for the data.
@@ -832,16 +850,21 @@ I2CexpType chiptype;
  *
  * Determiing backlight active level is easy as mentioned above.
  *
- * Auto active level detect fails when a FET is used or
- * a pullup resistor is used on a NPN transistor.
+ * Auto active level detect fails when a FET is used.
+ * Auto active level detect will also fail when a pullup resistor is used on
+ * a NPN transistor base *AND* the BL anode is wired to the emitter instead wiring
+ * the BL cathode to the colector.
  * With an FET there is no load betweent the 8574 bl pin and the FET gate,
  * so there is no way to distinguish this from a PNP emitter pulling up a
  * base pin.
  * When using a NPN transistor with a pullup, the pullup on the base will
- * not allow the base to be pulled in the direction of the emitter.
+ * not allow the base to be pulled in the direction of the emitter if the BL
+ * anode is wired to the emitter.
+ * 
  *
  * As of now, the only known auto config failure is the SYDZ board since
- * it uses a pullup on the base.
+ * it uses a pullup on the base and wired the backlight to the emitter instead
+ * of the collector.
  * Because of this, the code will incorrecly pick active low backlight control.
  * Modifying the h/w to disable the pullup can be done, but is difficult due
  * to the way R1 resistors are used and the PCB layout.
