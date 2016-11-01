@@ -5,8 +5,8 @@ CurrentStatus
 The library is currently in an alpha state.
 
 While the API and underlying code is stable and has been tested, there are
-likely to be some changes in the include file names and possibly some changes in the constructors for the i/o subclasses that will
-not be backward compatible, particuarly for the `hd44780_I2Cexp` i/o subclass.
+possibly some changes in the constructors for the included i/o classes that will
+not be backward compatible, particuarly for the `hd44780_I2Cexp` i/o class.
 
 Any potential changes are not anticipated to affect lcd `hd44780_I2Cexp` autoconfiguration object definitions or main line sketch code.
 
