@@ -8,15 +8,15 @@
 // This sketch is simple wrapper that declares the needed lcd object for the
 // hd44780 library sketch.
 // It is provided as a convenient way to run a pre-configured sketch for
-// the i/o sub library.
+// the i/o class.
 // The source code for this sketch lives in the hd44780 examples.
 // hd44780/examples/hd44780examples/lcdproc/lcdproc.ino
 // From IDE:
 // [File]->Examples-> hd44780/hd44780examples/lcdproc
 //
 
-#include <hd44780.h>		// can be omitted starting with IDE 1.6.7
-#include <hd44780_pinIO.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_pinIO.h> // include i/o class header
 
 // declare Arduino pins used for LCD functions
 // and the lcd object

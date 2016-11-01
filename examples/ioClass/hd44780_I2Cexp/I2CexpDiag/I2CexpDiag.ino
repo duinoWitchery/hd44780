@@ -138,7 +138,7 @@ static const int dummyvar = 0;
 #error Missing hd44780.h header file
 #endif
 
-#include <hd44780_I2Cexp.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h>
 #ifndef hd44780_I2Cexp_h
 #error Missing hd44780_I2Cexp.h header file
 #endif

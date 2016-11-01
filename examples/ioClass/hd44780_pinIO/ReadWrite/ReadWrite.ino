@@ -20,8 +20,8 @@
 // (4) error writing data to lcd device
 //
 
-#include <hd44780.h>	// can be left out in arduino.cc IDE 1.6.7 and later
-#include <hd44780_pinIO.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_pinIO.h> // include i/o class header
 
 // declare Arduino pins used for LCD functions
 // and the lcd object
@@ -104,7 +104,7 @@ unsigned long secs;
 				fatalError(3);
 
 			lcd.setCursor(col, 1);
-			if( lcd.write((uint8_t) c) != 1)
+			if(lcd.write((uint8_t) c) != 1)
 				fatalError(4);
 		}
 	}

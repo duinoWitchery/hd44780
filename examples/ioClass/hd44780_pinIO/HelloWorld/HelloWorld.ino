@@ -15,8 +15,8 @@
 // the sketch will simply blink the built in LED.
 //
 
-#include <hd44780.h>	// can be left out in arduino.cc IDE 1.6.7 and later
-#include <hd44780_pinIO.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_pinIO.h> // include i/o class header
 
 // declare Arduino pins used for LCD functions
 // and the lcd object

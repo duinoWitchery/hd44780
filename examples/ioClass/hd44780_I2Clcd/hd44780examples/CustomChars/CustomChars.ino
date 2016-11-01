@@ -8,7 +8,7 @@
 // This sketch is simple wrapper that declares the needed lcd object for the
 // hd44780 library sketch.
 // It is provided as a convenient way to run a pre-configured sketch for
-// the i/o sub library.
+// the i/o class.
 // The source code for this sketch lives in the hd44780 examples.
 // hd44780/examples/hd44780examples/CustomCharacters/CustomCharacters.ino
 // From IDE:
@@ -17,7 +17,7 @@
 
 #include <Wire.h>
 #include <hd44780.h>
-#include <hd44780_I2Clcd.h>
+#include <hd44780ioClass/hd44780_I2Clcd.h>
 
 // lcd i2c address
 const uint8_t I2Clcd_Addr = 0x3e;

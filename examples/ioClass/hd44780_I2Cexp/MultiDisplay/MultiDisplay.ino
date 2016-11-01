@@ -15,9 +15,9 @@
 // the sketch will simply blink the built in LED.
 //
 
-#include <Wire.h>	// can be left out in IDE 1.6.7 or later
-#include <hd44780.h>	// can be left out in IDE 1.6.7 or later
-#include <hd44780_I2Cexp.h>
+#include <Wire.h>
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h>
 
 // All displays will be assumed to be 16x2
 // Even if display is larger the sketch should still work correctly
