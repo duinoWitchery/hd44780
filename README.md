@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.7.3-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.0-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -198,7 +198,15 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.8.0] - 2016-11-01
+ * updated README current status
+ * added i/o class and examples for Noritake CU165ECBP-T2J display
+ * moved all i/o sub class headers to hd44780ioClass directory
+ * added canned entry of sunrom i2c backpack
+ * relocated all io class examples to live under examples/ioClass directory
+
 [0.7.3] - 2016-10-23
+ * update version info for 0.7.3 release
  * updates to current library status in readme
  * updated non library manager installation instructions
  * display digital pin #s for a4 and a5 on boards that have them.
