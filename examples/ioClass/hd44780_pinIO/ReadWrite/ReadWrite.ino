@@ -96,16 +96,27 @@ unsigned long secs;
 
 			lcd.setCursor(col, 0);
 			if((c = lcd.read()) < 0) // if a read error, bomb out
+			{
+				lcd.clear();
+				lcd.print("read fail");
 				fatalError(3);
+			}
 
 			// check for ':' characters in col 2 and 5
 			// if not there, consider it a fatal read error
 			if((col == 2 || col == 5) && c != ':')
-				fatalError(3);
+			{
+				lcd.clear();
+				lcd.print("read fail");
+			}
 
 			lcd.setCursor(col, 1);
 			if(lcd.write((uint8_t) c) != 1)
+			{
+				lcd.clear();
+				lcd.print("write fail");
 				fatalError(4);
+			}
 		}
 	}
 }
