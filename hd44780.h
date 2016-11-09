@@ -144,7 +144,9 @@ public:
 	size_t __attribute__ ((error("println() is not supported"))) println(long, int = DEC);
 	size_t __attribute__ ((error("println() is not supported"))) println(unsigned long, int = DEC);
 	size_t __attribute__ ((error("println() is not supported"))) println(double, int = 2);
+#ifdef Printable_h
 	size_t __attribute__ ((error("println() is not supported"))) println(const Printable&);
+#endif
 	size_t __attribute__ ((error("println() is not supported"))) println(void);
 
 	// ALL API calls return a status.
