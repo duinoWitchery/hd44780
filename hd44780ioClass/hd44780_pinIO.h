@@ -192,7 +192,7 @@ int ioread(hd44780::iotype type)
 uint8_t data = 0;
 
 	// check if r/w control supported
-	if(!_rw)
+	if(_rw == 0xff)
 		return(hd44780::RV_ENOTSUP);
 
 	waitReady();		// ensure previous instruction finished
