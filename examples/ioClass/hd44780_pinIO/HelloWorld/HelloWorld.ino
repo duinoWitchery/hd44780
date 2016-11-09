@@ -14,6 +14,24 @@
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED.
 //
+// While not all hd44780 use the same pinout, here is the one that most use:
+// pin 1 is the pin closest to the edge of the PCB
+//  1 - LCD gnd
+//  2 - VCC (5v)
+//  3 - Vo Contrast Voltage
+//  4 - RS Register Select (rs)
+//  5 - Read/Write
+//  6 - Enable (en)
+//  7 - Data 0 (d0) ----
+//  8 - Data 1 (d1)     |- Not used in 4 bit mode
+//  9 - Data 2 (d2)     |
+// 10 - Data 3 (d3) ----
+// 11 - Data 4 (d4)
+// 12 - Data 5 (d5)
+// 13 - Data 6 (d6)
+// 14 - Data 7 (d7)
+// 15 - Backlight Anode (+5v)
+// 16 - Backlight Cathode (Gnd)
 
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_pinIO.h> // include i/o class header
@@ -33,6 +51,10 @@ hd44780_pinIO lcd(rs, en, d4, d5, d6, d7);
 //	- backlight active level which tells the library the level
 //		needed to turn on the backlight.
 //		note: If the backlight control pin supports PWM, dimming can be done
+//	WARNING: some lcd keypads have a broken backlight circuit
+//		If you have a lcd keypad, it is recommended that you first run the
+//		LCDKeypadCheck sketch to verify that the backlight circuitry
+//		is ok before enabling backlight control.
 //
 //const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7, bl=10, blLevel=HIGH;
 //hd44780_pinIO lcd(rs, en, d4, d5, d6, d7, bl, blLEvel);
