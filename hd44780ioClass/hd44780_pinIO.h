@@ -29,6 +29,7 @@
 // with the functionality of the Arduino LiquidCrystal library.
 //
 //
+// 2016.11.12  bperrybap - added code to safely handle broken backlight circuits
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - added ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
@@ -50,6 +51,8 @@
 #error Missing hd44780.h header file
 #endif
 #include <pins_arduino.h> // to get PWM detection macros
+
+#define HIGHZ 0xfe // value is not critical but it cannot be the same as LOW or HIGH
 
 class hd44780_pinIO : public hd44780
 {
@@ -137,6 +140,7 @@ uint8_t _d6;		// hd44780 d4 arduino pin
 uint8_t _d7;		// hd44780 d4 arduino pin
 uint8_t _bl;		// arduino pin to control backlight
 uint8_t _blLevel;	// backlight active control level HIGH/LOW
+					// (HIGHZ is input mode for ON, LOW for off)
 
 
 // ==================================================
@@ -176,7 +180,16 @@ int ioinit()
 	pinMode(_d7, OUTPUT);
   
 	if(_bl != 0xff)
+	{
+		// check for broken backlight circuit on LCDkeypads
+		// and protect Arduino if it appears to be broken
+		// code will do "safe" backlight control
+		
+		if(blPinTest(_bl))
+			_blLevel = HIGHZ;
+
 		pinMode(_bl, OUTPUT);
+	}
 
 	return(hd44780::RV_ENOERR); // all is good
 }
@@ -328,6 +341,21 @@ int iosetBacklight(uint8_t dimvalue)
 	if (_bl == 0xff )
 		return(hd44780::RV_ENOTSUP); // no backlight pin so nothing to do
 
+	// Check for HIGHZ active level which is used on LCDkeypads with broken backlight circuits
+	// In HIGHZ active level, the output is is never driven high, instead the pin is put
+	// into input mode to turn on the backlight.
+	// To turn off the backlight, the pin is flipped to output mode.
+	// because the pin is never set to HIGH, when the pin is set to output mode it will be LOW.
+
+	if(_blLevel == HIGHZ)
+	{
+		if(dimvalue)
+			pinMode(_bl, INPUT);
+		else
+			pinMode(_bl, OUTPUT);
+		return(hd44780::RV_ENOERR);
+	}
+
 	// Check if backlight pin has PWM support
 	// The reason this has to be done is that Arduino analogWrite()
 	// sets a pin to LOW if there is no PWM support and the PWM value is
@@ -409,6 +437,82 @@ void pulseEnable(void)
 	delayMicroseconds(1);    // enable pulse must be >450ns
 	digitalWrite(_en, LOW);
 }
+
+//
+// Function to test a backlight pin
+// Returns non-zero if test fails (bad circuit design)
+int blPinTest(int pin)
+{
+int val;
+
+	/*
+	 * Check to see if there
+	 * is a problem in the backlight circuit
+	 * So far, the "broken" designs connected D10
+	 * directly to the base of a NPN transistor,
+	 * this will cause a short when D10 is set to HIGH
+	 * as there is no current limiting resistor in the path
+	 * between D10 to the base and the emitter to ground.
+	 */
+
+	/*
+	 * Set the  pin to an input with pullup disabled.
+	 * This should be safe on all shields.
+	 * The reason for the digitalWrite() first is that
+	 * only the newer Arduino cores disable the pullup
+	 * when setting the pin to INPUT.
+	 * On boards that have a pullup on the transistor base,
+	 * this should cause the backlight to be on.
+	 */
+	digitalWrite(pin, LOW);
+	pinMode(pin, INPUT);
+
+	/*
+	 * Set the backlight pin to an output.
+	 * since the pullup was turned off above by
+	 * setting the pin to input mode,
+	 * it should drive the pin LOW which should
+	 * be safe given the known design flaw.
+	 */
+	pinMode(pin, OUTPUT);
+
+	/*
+ 	 * Set the backlight pin to HIGH
+	 * NOTE: This is NOT a safe thing to do
+	 * on the broken designs. The code will minimize
+	 * the time this is done to prevent any potential damage.
+	 */
+
+	digitalWrite(pin, HIGH);
+
+	
+	/*
+	 * Now read back the pin value to
+	 * See if a short is pulling down the HIGH output.
+	 */
+
+	delayMicroseconds(5); // give some time for the signal to droop
+
+	val = digitalRead(pin); // read the level on the pin
+
+	/*
+ 	 * Restore the pin to a safe state
+	 * Input with pullup turned off
+	 */
+	digitalWrite(pin, LOW);
+	pinMode(pin, INPUT);
+
+	/*
+	 * If the level read back is not HIGH
+	 * Then there is a problem because the pin is
+	 * being driven HIGH by the AVR.
+	 */
+	if (val != HIGH)
+		return(-1); // test failed
+	else
+		return(0); // all is ok.
+}
+
 
 }; // end of class definition
 #endif
