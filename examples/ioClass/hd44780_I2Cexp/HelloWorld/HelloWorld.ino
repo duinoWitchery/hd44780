@@ -14,6 +14,9 @@
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED.
 //
+// NOTE:
+//	If the sketch fails to produce the expected results, run the included
+//	I2CexpDiag sketch.
 
 #include <Wire.h>
 #include <hd44780.h>

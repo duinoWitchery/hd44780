@@ -108,6 +108,7 @@ unsigned long secs;
 			{
 				lcd.clear();
 				lcd.print("read fail");
+				fatalError(3);
 			}
 
 			lcd.setCursor(col, 1);

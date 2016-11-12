@@ -14,6 +14,8 @@
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED.
 //
+// This sketch demonstrates using the Nortake CU165ECBP-T2J display
+//
 // Datasheet can be found here:
 //	http://www.blog.zapro.dk/wp-content/CU165.pdf
 // Full datasheet/release notes:
@@ -32,7 +34,17 @@
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_NTCU165ECPB.h> // include io class header
 
-hd44780_NTCU165ECPB lcd; // declare lcd object
+// constructor parameters:
+// lcd([cs], [clock, data])
+// If no parameters, then library will use SS, SCK, and MOSI and h/w SPI if <SPI.h> included
+// If cs parameter, used, then use it for SS
+// if clock, and data pins match SPI signals SCK and MOSI h/w spi will be used if <SPI.h> included
+//
+// NOTE: Leonardo h/w is "stupid" and does not bring out SS (it only drives an LED)
+// 	Because of this an explicity cs pin has been defined
+//
+const int cs = 10;
+hd44780_NTCU165ECPB lcd(cs); // declare lcd object
 
 // LCD geometry
 const int LCD_ROWS = 1;

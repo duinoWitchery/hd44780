@@ -468,7 +468,21 @@ int hd44780::setCursor(uint8_t col, uint8_t row)
 	 * - positioning off the end of the visable line
 	 * - if line 0 is used, it is a backdoor to do SETDDRAMADDR to any address
 	 */
-	return(command(HD44780_SETDDRAMADDR | (col + _rowOffsets[row])));
+
+#ifdef later
+	// in right to left mode the cursor position wil be incorrect.
+	// however, things like home() and clear() will not work as expected either.
+	// home() positions back to DDRAMADDR 0 
+	// clear() positions back to DDRAMADDR 0 and removes the right to left mode
+	// It isn't clear how home() and clear() should be handled.
+	// if they position to (0,0) then they have to expcility do it as well as
+	// restore rightToLeft() mode when being used.
+	//
+	if(!(_displaymode & HD44780_ENTRYLEFT2RIGHT))
+		return(command(HD44780_SETDDRAMADDR | (_cols - col -1 + _rowOffsets[row])));
+	else
+#endif
+		return(command(HD44780_SETDDRAMADDR | (col + _rowOffsets[row])));
 }
 
 // turn off display pixels
