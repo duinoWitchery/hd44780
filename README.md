@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.0-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.1-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -200,7 +200,18 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.8.1] - 2016-11-12
+ * added some clarifying comments to various files
+ * pinIO class will now auto detect and safely handle broken backlight circuits
+ * added Noritake CU165ECBP-T2J to list of supported h/w devices in readme file
+ * tweak to hd44780.h to not expect/require Printable class.
+ * pinIO class ReadWrite example now atempts to indicate errors on LCD
+ * added most common hd44780 pinout to comments in pinIO class helloworld  example
+ * fixed bug in pinIO class to properly report status when no read support.
+ * added pinIO class LCDKeypadCheck sketch
+
 [0.8.0] - 2016-11-01
+ * update version info for 0.8.0 release
  * updated README current status
  * added i/o class and examples for Noritake CU165ECBP-T2J display
  * moved all i/o sub class headers to hd44780ioClass directory
