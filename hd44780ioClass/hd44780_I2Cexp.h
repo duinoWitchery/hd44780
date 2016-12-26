@@ -56,6 +56,7 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2015.12.25  bperrybap - new constructor for canned entry with no address for auto locate
 // 2016.10.29  bperrybap - added sunrom canned entry
 //                         updated pcf8574 autoconfig comments
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
@@ -89,7 +90,8 @@
 
 // canned i2c board/backpack parameters
 // allows using:
-// hd44780_I2Cexp lcd({i2c_address}, I2Cexp_BOARD_XXX);
+// hd44780_I2Cexp lcd(I2Cexp_BOARD_XXX); // auto locate
+// hd44780_I2Cexp lcd(i2c_address, I2Cexp_BOARD_XXX); // explicit i2c address
 // instead of specifying all individual parameters.
 // Note: some boards tie the LCD r/w line directly to ground
 // boards that have control of the LCD r/w line will be able to do reads from lcd.
@@ -182,6 +184,14 @@ hd44780_I2Cexp(){ _addr = AutoInst++; _expType = I2Cexp_UNKNOWN;}
 // Auto config specific addr/instance.
 // addr can be i2c address or instance (0 - 15)
 hd44780_I2Cexp(uint8_t addr){ _addr = addr; _expType = I2Cexp_UNKNOWN;}
+
+// Auto locate but with explicit config with r/w control and backlight control
+hd44780_I2Cexp(I2CexpType type, uint8_t rs, uint8_t rw, uint8_t en,
+				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+				uint8_t bl, uint8_t blLevel)
+{
+   config(I2Cexp_ADDR_UNKNOWN, type, rs, rw, en, d4, d5, d6, d7, bl, blLevel);
+}
 
 
 // -- Explicit constructors, specify address & pin mapping information --
@@ -912,7 +922,7 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 		if(data & 0x8) // bit 3 high so active low
 		{
 			// LCM1602
-			// 0,1,2,4,5,7,3, LOW
+			// 0,1,2,4,5,6,7,3, LOW
 			blLevel = LOW;
 		}
 		else
