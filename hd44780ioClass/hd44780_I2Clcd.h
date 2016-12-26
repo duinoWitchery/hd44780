@@ -28,9 +28,12 @@
 // on the Hitachi HD44780 and compatible chipsets which have
 // a native I2C interface rather than use a simple I2C i/o expander chip
 // such as a PCF8574 or MCP23008
+//
 // Here is a example of such a device: 
 // http://www.seeedstudio.com/wiki/images/0/03/JHD1214Y_YG_1.0.pdf
-// This device uses address 0x3E
+// This device uses address 0x3E and incorrectly responds to read requests
+// It overlaps with the addresses for the PCF8574A
+// It will lock up module and/or the AVR i2c h/w and require a power cycle to reset.
 // NOTE:
 //		This device needs pullups on the bus signals.
 //		While it will usually work on an AVR platform without external pullups,
@@ -39,16 +42,23 @@
 // PCF2119x chips use this protocol and slave addresses are 0x3A and 0x3B
 // This is defined in the allocated i2c address table Group 7 
 // It overlaps with the addresses for the PCF8574A
+// This device has extended function set commands that are not directly
+// supported by the library but can be used through the command() API
+//
+// PCF2116 chips use this protocol and slave addresses are 0x3A and 0x3B
+// It overlaps with the addresses for the PCF8574A
 //
 // Raystar RC1602B5-LLH-JWV is jumper settable to 0x3c, 0x3d, 0x3e, 0x3f
+// and appears to only be able to be written to.
+// It overlaps with the addresses for the PCF8574A
 //
-// Known other addresses for this type of device:
-// 0x3a
-// 0x3b
-// 0x3c
-// 0x3d
-// 0x3e
-// 0x3f
+// Known addresses for this type of device:
+// 0x3a PCF2116/PCF2119x
+// 0x3b PCF2116/PCF2119x
+// 0x3c Raystar
+// 0x3d Raystar
+// 0x3e Raystar
+// 0x3f Raystar
 //
 // The interface consists of sending 2 bytes over I2C for each hd44780
 // data/cmd. 
@@ -61,6 +71,7 @@
 // Attempting to read from some of these devices will lockup the AVR Wire
 // library.
 //
+// 2016.12.26  bperrybap - added auto i2c address location
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.07.27  bperrybap - added return status for iosend()
@@ -87,11 +98,7 @@ public:
 // === constructors ===
 // ====================
 
-hd44780_I2Clcd(uint8_t i2c_addr)
-{
-	_Addr = i2c_addr; // Save away the device address in object
-}
-
+hd44780_I2Clcd(uint8_t i2c_addr=0) : _Addr(i2c_addr) {} // zero addres means auto locate
 
 private:
 // ====================
@@ -141,6 +148,17 @@ int status;
 	Wire.begin();
 
 	/*
+	 * If i2c address was not specified go try to locate device
+	 */
+	if(!_Addr)
+	{
+		if( !(_Addr = LocateDevice())) // failed to find device
+		{
+			return(hd44780::RV_ENXIO);
+		}
+	}
+
+	/*
 	 * Check to see if the device is responding
 	 */
 	Wire.beginTransmission(_Addr);
@@ -184,7 +202,6 @@ uint8_t ctlbyte;
 		ctlbyte = 0; // control byte with no RS and no continue
 	}
 
-	
 	/*
 	 * ensure that previous LCD instruction finished.
 	 * There is a 25us offset since there will be at least 1 byte
@@ -210,6 +227,36 @@ uint8_t ctlbyte;
 	else
 		return(hd44780::RV_ENOERR);
 }
+
+// ================================
+// === internal class functions ===
+// ================================
+//  LocateDevice() - Locate I2C LCD device
+uint8_t LocateDevice()
+{
+uint8_t error, address;
+
+	// Search for 6 addresses
+	for(address = 0x3a; address <= 0x3f; address++ )
+	{
+		Wire.beginTransmission(address);
+		error = Wire.endTransmission();
+
+		// chipkit i2c screws up if you do a beginTransmission() too quickly
+		// after an endTransmission()
+		// below 20us will cause it to fail,
+		// we use delay(1) here to accomdate that as well as ensure that
+		// systems with watchdog timers like ESP8266 won't have issues.
+		delay(1);
+
+		if(error == 0) // if no error we found something
+		{
+				return(address);
+		}
+	}
+	return(0); // could not locate device address
+}
+
 
 }; // end of class definition
 #endif

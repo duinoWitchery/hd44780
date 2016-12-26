@@ -19,11 +19,12 @@
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_I2Clcd.h> // include i/o class header
 
-// lcd i2c address
-const uint8_t I2Clcd_Addr = 0x3e;
+// declare the lcd object for auto i2c address location
+hd44780_I2Clcd lcd;
 
-// declare the lcd object
-hd44780_I2Clcd lcd(I2Clcd_Addr);
+// declare i2c address and constructor for specified i2c address
+//const int i2c_addr = 0x3e;
+//hd44780_I2Clcd lcd(i2c_addr); // use device at this address
 
 // tell the hd44780 sketch the lcd object has been declared
 #define HD44780_LCDOBJECT
