@@ -35,7 +35,7 @@ The library consists of a hd44780 base class combined with one or more
 i/o subclasses to perform the i/o communication between the host and the
 hd44780 display interface.
 
-The hd44780 library is not a direct drop in replacement for the the Arduino IDE LiquidCrystal library.
+While the library is API compatible with the Arduino IDE bundled LiquidCrystal library, hd44780 is not a direct drop in replacement for the LiquidCrystal library.
 
 The API functionality provided by the hd44780 base class, when combined
 with an hd44780 library i/o subclass, is compatible with most of the API
@@ -61,16 +61,23 @@ S/W requirements
 	- IDE version 1.6.8 (has serial port issues that breaks on certain boards)
 
 **NOTE**<br>
-There are two "Ardino" companies. arduino.cc and arduino.org
-While things may change in the future, for the time being,
-IDEs from arduino.org are not recommended as they are behind in terms
+There are two "Ardino" entities. arduino.cc and arduino.org
+While things appear to be converging/merging, and on Dec 20, 2016 there was a big merging of the two code bases
+for the 1.8.0 release, for the time being,
+IDEs from arduino.org are still not recommended as arduino.org 1.8.0 is not the same as arduino.cc 1.8.0
+and the 1.8.0 arduino.org IDE does not work at all in some OS environments.
+Also, IDEs from Arduino.org  prior to 1.8.0 are quite far behind IDEs from arduino.cc interms of 
 of features and have function prototyping issues that prevent some of the example sketches in
 this library from compiling. 
-The latest arduino.org IDE at the time was 1.7.11
+Therefore, for the time being, it is recommend that Arduino IDEs be obtained from arduino.cc
 
 H/W support
 ===========
-Library should work on all Arduino boards.
+Library should work on all Arduino boards including boards with AVR, pic32, arm, and ESP8266 processors.
+
+**WARNING**<br>
+Use caution when using 3v only processors like arm and ESP8266 processors when interfacing with 5v modules
+as not doing proper level shifting or incorrectly hooking things up can damage the processor.
 
 The library currenly comes with the following i/o subclasses:
 
