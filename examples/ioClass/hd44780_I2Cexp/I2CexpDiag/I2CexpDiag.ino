@@ -1,4 +1,3 @@
-static const int dummyvar = 0; 
 // vi:ts=4
 // ----------------------------------------------------------------------------
 // I2Cexpdiag - i2c LCD i/o expander backpack diagnostic tool
@@ -60,22 +59,37 @@ static const int dummyvar = 0;
 // 2. Hookup up i2c i/o expander backpack based LCD devices.
 //	Currently supports PCF8574 or MCP32008 devices
 //	(can test more than one LCD at a time)
+//	WARNING: 3v only systems like ARM/Teensy3/ESP8266 devices will need to take
+//		precautions on SDA and SCL connections if using 5V I2C devices.
+//		Level shifters are recommended and should be used.
+//		It is possible to cheat and hook the pullups to 3v instead of 5v.
+//		If doing this, there can be no other pullups that are conected to 5V
+//		on any device that is connected to the bus.
+//		Many of the backpacks ind other devices nclude 5v pullups on them
+//		so if pullups to 3v are being used to cheat, the backpack or other
+//		device will likely require hardware modification.
+//		Failure to do this 3v pullup "cheat" correctly can damage the processor
+//		which is why using actual level shifters is recommended.
 //
-// 3. compile and upload sketch
-//	note:
-//		if you have a slow display you may need to modify the
+// 3. Connect to the board using the IDE serial monitor; set the baud rate to 9600
+//	While using the serial monitor is not required, additional information
+//	will be sent to the serial monitor.
+//	NOTE: If you have IDE older than 1.6.6 you will have to connect to the
+//		serial monitor *after* the upload completes as the upload will
+//		not reconnect after the upload completes.
+//
+//	It is recommended to connect to the serial monitor *before* you upload the
+//	sketch so that the serial monitor is reconnected as soon as the sketch is
+//	uploaded to avoid character loss.
+//	This is particularly helpful on boards that use a USB virtual serial port
+//	like leonardo.
+//
+// 4. compile and upload sketch
+//	Note:
+//		if you have a slow LCD display you may need to modify the
 //		execution times to be longer than the hd44780 defaults.
 //		Scroll down to modify the defines: LCD_CHEXECTIME, LCD_INSEXECTIME
 //
-// 4. Connect to the board using the serial monitor; set the baud rate to 9600
-//	While using the serial monitor is not required additional information
-//	will be sent to the serial monitor.
-//	NOTE:
-//		When using recent IDEs, it is useful to connect to the serial
-//		monitor *before* you upload the sketch so that the serial monitor
-//		is reconnected as soon as the sketch is uploaded.
-//		This is particularly helpful on boards that use a USB virtual
-//		serial port like leonardo.
 // -----------------------------------------------------------------------
 // Expected behavior
 // -----------------------------------------------------------------------
@@ -83,12 +97,12 @@ static const int dummyvar = 0;
 //	- display information about the enviroment on the serial monitor.
 //	- probe the i2c bus to check for external pullup resistors 
 //	- scan the i2c bus and show all devices found
-//		NOTE: Arduino 2560 boards have 10k external pullups on the board
+//		NOTE: Arduino 2560 boards have 10k external pullups on the arduino board
 //	- attempt to initalize all LCD devices detected
 //	- display information about each each initialized LCD device
 //		this includes i2c address and configuration information
 //		and information about missing pullups.
-//	- test display memory
+//	- test internal LCD display memory
 //		 LCD expander must be able to control r/w line
 //	- perform a backlight blink test
 //	- drop into a loop and display the system uptime on each display
@@ -98,7 +112,8 @@ static const int dummyvar = 0;
 //	the code will fall into a fatal error and blink out an error code:
 //	Error codes:
 //		[1] no i2c devices found on i2c bus
-//		[2] no LCD devices were successfully initalized
+//		[2] no working LCD devices
+//		[3] i2c bus is not usable
 //
 // -----------------------------------------------------------------------
 // Also note:
@@ -124,6 +139,7 @@ static const int dummyvar = 0;
 // -----------------------------------------------------------------------
 // 
 // History
+// 2016.12.25 bperrybap  - updates for ESP8266
 // 2016.08.07 bperrybap  - added lcd memory tests
 // 2016.07.27 bperrybap  - added defines for setting execution times
 // 2016.06.17 bperrybap  - initial creation
@@ -133,15 +149,7 @@ static const int dummyvar = 0;
 
 #include <Wire.h>
 #include <hd44780.h>
-// For STUPID versions of gcc that don't hard error on missing header files
-#ifndef hd44780_h
-#error Missing hd44780.h header file
-#endif
-
 #include <hd44780ioClass/hd44780_I2Cexp.h>
-#ifndef hd44780_I2Cexp_h
-#error Missing hd44780_I2Cexp.h header file
-#endif
 
 // ============================================================================
 // user configurable options below this point
@@ -216,6 +224,10 @@ P(_hstar) =  "******************************************************************
 P(_PASSED) = "PASSED";
 P(_FAILED) = "FAILED";
 
+#ifndef BIT
+#define BIT(_bitnum) (1 << _bitnum)
+#endif
+
 #ifdef __AVR__
 #define hline (const __FlashStringHelper *)_hline
 #define hstar (const __FlashStringHelper *)_hstar
@@ -234,6 +246,14 @@ P(_FAILED) = "FAILED";
 #define DEFPROMPT ((const char *) 0)
 
 int NumLcd;		// number of LCD displays found.
+uint16_t WorkingLCD = 0; // bitmap of LCDs that are "working"
+// macros to process working lcd info
+#define isWorkingLCD(_n) (WorkingLCD & BIT(_n))
+#define setWorkingLCD(_n) WorkingLCD |= BIT(_n)
+#define clrWorkingLCD(_n) WorkingLCD &= ~BIT(_n)
+#define anyWorkingLCD (WorkingLCD) // non zero if there are any working LCDs
+
+
 
 
 // convert a define to a string
@@ -258,6 +278,7 @@ int nopullups;
 	} while(!Serial);
 #endif
 
+	Serial.println();
 	Serial.println(hstar);
 	Serial.println(F("Serial Initialized"));
 
@@ -269,11 +290,23 @@ int nopullups;
 	Serial.println(HD44780_VERSIONSTR);
 #endif
 
+#if ARDUINO < 10605 
+	// wait 3 seconds on older IDEs
+	// to allow users some time to manually start monitor
+	delay(3000);
+#endif
+
 	Serial.println(hline);
 	showSystemConfig();
 
 	Serial.println(hline);
 	nopullups = i2cpulluptest();
+
+	if(nopullups < 0)
+	{
+		Serial.println(F("I2C bus not usable"));
+		fatalError(3); // this never returns
+	}
 
 	Serial.println(hline);
 	Wire.begin();
@@ -301,6 +334,9 @@ int nopullups;
 		// If begin fails, then assume we have no more displays
 		if(lcd[NumLcd].begin(LCD_ROWS, LCD_COLS) != 0)
 			break;
+
+		setWorkingLCD(NumLcd); // mark LCD as "working"
+
 		Serial.print(F(" LCD at address: "));
 		Serial.print(F("0x"));
 		Serial.print(lcd[NumLcd].getProp(hd44780_I2Cexp::Prop_addr), HEX);
@@ -322,7 +358,7 @@ int nopullups;
 
 	if(!NumLcd)
 	{
-		Serial.println(F("No LCD devices found"));
+		Serial.println(F("No working LCD devices"));
 		fatalError(2); // this never returns
 	}
 	Serial.print(F("Total LCD devices found: "));
@@ -332,35 +368,51 @@ int nopullups;
 	Serial.println(F("LCD Display Memory Test"));
 	for(int n = 0; n < NumLcd; n++)
 	{
-	int errors;
+	int errors, lcdstatus;
 
 		Serial.print(F("Display: "));
 		Serial.println(n);
 
 		// check for r/w control
 		// by attempting to read lcd status
-		if(lcd[n].status() >= 0)
+		if((lcdstatus = lcd[n].status()) >= 0)
 		{
-			Serial.print(F(" Walking 1s data test: "));
+			if(lcdstatus & 0x80) // check for stuck BUSY status
+			{
+				Serial.println(F(" LCD stuck BUSY status"));
+				clrWorkingLCD(n); // mark LCD as no longer "working"
+				continue;
+			}
+
+			Serial.print(F(" Walking 1s data test:\t"));
 			// try a few different locations which also tests addressing
 			errors = lcdw1test(lcd[n], 0);
 			errors += lcdw1test(lcd[n], 0x40);
 			errors += lcdw1test(lcd[n], 0x10);
 			errors += lcdw1test(lcd[n], 0x50);
 			if(errors)
+			{
 				Serial.print(FAILED);
+			}
 			else
+			{
 				Serial.print(PASSED);
+			}
 
 			Serial.println();
 
-			Serial.print(F("    Address line test: "));
+			Serial.print(F(" Address line test:\t"));
 			errors = lcdAddrLineTest(lcd[n], 0x00, 0x27); // 1st block of memory
 			errors += lcdAddrLineTest(lcd[n], 0x40, 0x67); // 2nd block of memory
 			if(errors)
+			{
 				Serial.print(FAILED);
+				clrWorkingLCD(n); // mark LCD as no longer "working"
+			}
 			else
+			{
 				Serial.print(PASSED);
+			}
 
 		
 #if 0
@@ -378,7 +430,7 @@ int nopullups;
 			//
 			// this quick test will test a few values on the 2nd chunk of memory.
 			// 
-			Serial.print(F(" Quick DDRAM memory test: "));
+			Serial.print(F("  Quick DDRAM memory test: "));
 			errors = lcdDDRAMtest(lcd[n], 0x40, 0x67, '0', '9');
 
 			if(errors)
@@ -396,9 +448,19 @@ int nopullups;
 	}
 	Serial.println(hline);
 
+	if(!anyWorkingLCD)
+	{
+		Serial.println(F("No working LCD devices"));
+		fatalError(2); // this never returns
+	}
+		
+
 	for(int n = 0; n < NumLcd; n++)
 	{
 	char buf[16];
+
+		if(!(isWorkingLCD(n)))
+			continue; //skip over non working LCDs
 
 		//showLCDconfig(Serial, lcd[n]);
 
@@ -410,6 +472,7 @@ int nopullups;
 		lcd[n].setCursor(0, 0);
 		lcd[n].print(F("LCD:"));
 		lcd[n].print(n);
+
 		if(nopullups)
 		{
 			lcd[n].setCursor(5,0);
@@ -424,7 +487,7 @@ int nopullups;
 		lcd[n].print(lcdConfigStr(buf, lcd[n]));
 
 	}
-	Serial.println(F("Each display should be displaying its #, address, and config information"));
+	Serial.println(F("Each working display should be displaying its #, address, and config information"));
 	Serial.println(F("If display is blank, but backlight is on, try adjusting contrast pot"));
 	Serial.println(F("If backlight is off, wait for next test"));
 	delay(10000);
@@ -485,6 +548,8 @@ int nopullups;
 	// and erase 2nd line on all displays
 	for(int n = 0; n < NumLcd; n++)
 	{
+		if(!isWorkingLCD(n))
+			continue;
 		lcd[n].setCursor(0,0);
 		lcd[n].print(F("LCD:"));
 		lcd[n].print(n);
@@ -519,14 +584,35 @@ unsigned long secs;
 	{
 		lastsecs = secs; // keep track of last seconds
 
-		//  write the 'uptime' to each display found
+		//  write the 'uptime' to each working display
 		for(int n = 0; n < NumLcd; n++)
 		{
+			if(!isWorkingLCD(n))
+				continue; // skip over non working displays
 			// set the cursor to column 0, line 1
 			// (note: line 1 is the second row, counting begins with 0):
-			lcd[n].setCursor(0, 1);
-			// print uptime on lcd device: (time since last reset)
-			PrintUpTime(lcd[n], secs);
+			if(lcd[n].setCursor(0, 1))
+			{
+				clrWorkingLCD(n); // mark display as no longer working
+				// output uptime and error message to serial port
+				PrintUpTime(Serial, secs);
+				Serial.print(F(" - Error on Display: "));
+				Serial.println(n);
+			}
+			else
+			{
+				// print uptime on lcd device: (time since last reset)
+				PrintUpTime(lcd[n], secs);
+			}
+			if(!anyWorkingLCD)
+			{
+				Serial.println(hstar);
+				Serial.println(F("No working LCD devices"));
+				PrintUpTime(Serial, secs);
+				Serial.print(" - Fatal error: ");
+				Serial.println(2);
+				fatalError(2); // this never returns
+			}
 		}
 	}
 }
@@ -587,6 +673,15 @@ void showSystemConfig(void)
 #endif
 
 #endif
+#if defined(__AVR__)
+	Serial.print(F("CPU ARCH: AVR - "));
+#elif defined(__arm__)
+	Serial.print(F("CPU ARCH: arm - "));
+#elif defined(__PIC32MX__)
+	Serial.print(F("CPU ARCH: pic32 - "));
+#elif defined(ARDUINO_ARCH_ESP8266)
+	Serial.print(F("CPU ARCH: ESP8266 - "));
+#endif
 
 	Serial.print(F("F_CPU: "));
 	Serial.println(F_CPU);
@@ -611,56 +706,125 @@ void showSystemConfig(void)
 
 /*
  * Test for external pullup on pin
- * returns non zero if pin appears to have external pullup on it
+ * returns less than zero if pin appears to be driven low
+ * returns zero if pin appears to have external pullup on it
+ * returns greather than zero if pin appears to NOT have a pullup on it
+ *
+ * i.e. zero means pullup exists and non zero means there is no pullup.
+ * and positive/negative indicates more information
  */
 int pullupOnPin(uint8_t pin)
 {
+
+	// test to see if pin is pulled/stuck low
+	// this is more complicated that it should be because
+	// Arduino 1.0 didn't support INPUT_PULLUP
+	// it was added in the next releast 1.0.1
+	// but this code *should* still work even on 1.0 or if the pin
+	// doesn't have a built in pullup.
+#ifdef INPUT_PULLUP
+	pinMode(pin, INPUT_PULLUP);
+	delay(20);
+	if(digitalRead(pin) == LOW)
+		return(-1); // pin appears to be driven low
+#else
+	// this code is for Arduion 1.0 which didn't support INPUT_PULLUP
+	{
+	int t = 0;
+		pinMode(pin, INPUT);
+		digitalWrite(pin, HIGH); // try to turn on pullup
+		delay(20);
+		for(int i = 0; i< 5; i++) // loop in case pin is floating
+		{
+			if(digitalRead(pin) == LOW)
+				t++;
+			delay(2);
+		}
+		if(t == 5)
+			return(-1); // pin appears to be driven low
+	}
+#endif
+
+	// test to see if high is an external pullup
 	pinMode(pin, OUTPUT);
 	digitalWrite(pin, LOW);
 	delay(20);
 	pinMode(pin,INPUT);
 	delayMicroseconds(10);
-	return(digitalRead(pin));
+	if(digitalRead(pin) == HIGH)
+		return(0); // pin appears to have external pullup
+
+	return(1); // pin appears to NOT have an external pullup
 }
 
 /*
  * Test for external pullups on i2c signals
+ *
+ * returns 0 if both pullups appear ok
+ * returns positive if no pullup exist on either pin (soft error on AVR)
+ * returns negative if either pin is driven low (I2C cannot function)
  */
 int i2cpulluptest()
 {
-int nopullups = 0;
+int rval = 0;
+int s;
 
     Serial.print(F("Checking for required external I2C pull-up on SDA - "));
-    if (!pullupOnPin(SDA))
+    if ( (s = pullupOnPin(SDA)) )
 	{
-		nopullups++;
-        Serial.println(F("NO"));
+		if(s > 0)
+		{
+			rval = 1;
+        	Serial.println(F("NO"));
+		}
+		else
+		{
+        	Serial.println(F("STUCK LOW"));
+			rval = -1;
+		}
 	}
 	else
 	{
     	Serial.println(F("YES"));
 	}
     Serial.print(F("Checking for required external I2C pull-up on SCL - "));
-    if (!pullupOnPin(SCL))
+    if ( (s = pullupOnPin(SCL)) )
 	{
-		nopullups++;
-        Serial.println(F("NO"));
+		if(s > 0)
+		{
+			if(!rval)
+				rval = 1;
+        	Serial.println(F("NO"));
+		}
+		else
+		{
+        	Serial.println(F("STUCK LOW"));
+			rval = -1;
+		}
 	}
 	else
 	{
     	Serial.println(F("YES"));
 	}
-	if(nopullups)
+	if(rval)
 	{
         Serial.println(hstar);
-        Serial.println(F("WARNING: I2C requires external pullups for proper operation"));
-		Serial.println(F("It may appear to work without them, but may be unreliable and slower"));
-		Serial.println(F("Do not be surprised if it fails to work correctly"));
-        Serial.println(F("Install external pullup resistors to ensure proper I2C operation"));
+		if(rval  > 0)
+		{
+        	Serial.println(F("WARNING: I2C requires external pullups for proper operation"));
+			Serial.println(F("It may appear to work without them, but may be unreliable and slower"));
+			Serial.println(F("Do not be surprised if it fails to work correctly"));
+	        Serial.println(F("Install external pullup resistors to ensure proper I2C operation"));
+		}
+		else
+		{
+        	Serial.println(F("ERROR: SDA or SCL stuck pin"));
+			rval = -1;
+		}
         Serial.println(hstar);
     }
 
-	return(nopullups); // just say passed for now.
+	return(rval);
 }
 
 
@@ -800,7 +964,9 @@ int rdata;
 		}
 		else if((rdata != pat))
 		{
-			Serial.print(F(" Compare error: addr: "));
+			if(!errors)
+				Serial.println();
+			Serial.print(F("\tCompare error: addr: "));
 			Serial.print(addr, HEX);
 			Serial.print(F(" read "));
 			Serial.print((unsigned int)rdata, HEX);
@@ -834,7 +1000,9 @@ int rdata;
 		lcd.setCursor(addr,0);
 		if(lcd.write(addr) != 1)
 		{
-			Serial.print(F(" Read Error addr: "));
+			if(!errors)
+				Serial.println();
+			Serial.print(F("\tRead Error addr: "));
 			Serial.println((unsigned int)addr, HEX);
 			errors++;
 		}
@@ -854,13 +1022,17 @@ int rdata;
 
 		if(rdata < 0)
 		{
-			Serial.print(F(" Read Error addr: "));
+			if(!errors)
+				Serial.println();
+			Serial.print(F("\tRead Error addr: "));
 			Serial.println((unsigned int)addr, HEX);
 			errors++;
 		}
 		else if((rdata != addr))
 		{
-			Serial.print(F(" Compare error: addr: "));
+			if(!errors)
+				Serial.println();
+			Serial.print(F("\tCompare error: addr: "));
 			Serial.print(addr, HEX);
 			Serial.print(F(" read "));
 			Serial.print((unsigned int)rdata, HEX);
@@ -1032,7 +1204,18 @@ char *p = str;
 	return(str);
 }
 
-// fatalError() - loop & blink and error code
+// fatalError() - loop & blink an error code
+
+// macros to turn on built in LED as some boards like the ESP8266 use active low LEDs
+
+#if defined(ARDUINO_ARCH_ESP8266)
+#define ledBuiltinOn() digitalWrite(LED_BUILTIN, LOW)
+#define ledBuiltinOff() digitalWrite(LED_BUILTIN, HIGH)
+#else
+#define ledBuiltinOn() digitalWrite(LED_BUILTIN, HIGH)
+#define ledBuiltinOff() digitalWrite(LED_BUILTIN, LOW)
+#endif
+
 void fatalError(int ecode)
 {
 #ifdef LED_BUILTIN
@@ -1043,15 +1226,25 @@ void fatalError(int ecode)
 		// blink out error code
 		for(int i = 0; i< ecode; i++)
 		{
-			digitalWrite(LED_BUILTIN, HIGH);
+			ledBuiltinOn();
 			delay(100);
-			digitalWrite(LED_BUILTIN, LOW);
+			ledBuiltinOff();
 			delay(250);
 		}
 		delay(1500);
 	}
 #else
-	while(1){} // spin and do nothing
+	// No built in LED, so spin and do "nothing"
+	while(1)
+	{
+		if(ecode){} // "nop" if to eliminate warning, will be optimized out
+
+ 		// A delay is not needed here but delay() will keep a watchdog from
+		// firing.  normally yield() would be used, but yield doesn't exist on
+		// IDEs before 1.5.1 and delay(0) does not call yield() on all cores,
+		// so delay(1) is used.
+		delay(1);
+	}
 #endif
 }
 
