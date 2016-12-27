@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.1-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.2-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -207,7 +207,18 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.8.2] - 2016-12-26
+ * I2Cexpdiag: ESP8266 updates, more system info, multi display updates, better i2c checks
+ * README updates
+ * hd44780 updated comments, added new BUSY status error return value
+ * Seperated license information from actual license file for licensee script compatibilty.
+ * updated hd44780_I2Cexp.h comments for constructor usage
+ * hd44780_pinIO check for broken backlight only on active HIGH backlights
+ * hd44780_I2Clcd i2c address auto discovery
+ * New I2Cexp constructor for auto locate with canned entry for configuation
+
 [0.8.1] - 2016-11-12
+ * update version info for 0.8.1 release
  * added some clarifying comments to various files
  * pinIO class will now auto detect and safely handle broken backlight circuits
  * added Noritake CU165ECBP-T2J to list of supported h/w devices in readme file
