@@ -10,7 +10,7 @@
 //  Copyright (C) 2006-2008 Hans-Christoph Steiner. All rights reserved.
 //  Copyright (c) 2010 Arduino LLC. All right reserved.
 //
-//  See the license.txt file for a history of the copyrights of LiquidCrystal
+//  See licenseInfo.txt for a history of the copyrights of LiquidCrystal
 // ------------------------------------------------------------------------
 //
 //  This file is part of the hd44780 library
@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.12.26  bperrybap - new constructors
 // 2016.10.17  bperrybap - corrected DDRAM address mask in createChar()
 // 2016.10.15  bperrybap - createChar() restores DDRAM location when possible
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
@@ -75,6 +76,19 @@ hd44780::hd44780()
 
 	setExecTimes(HD44780_CHEXECTIME, HD44780_INSEXECTIME);
 
+	markStart(0); // initialize last start time to 'now'
+}
+
+hd44780::hd44780(uint8_t cols, uint8_t rows) : _cols(cols), _rows(rows)
+{
+	setExecTimes(HD44780_CHEXECTIME, HD44780_INSEXECTIME);
+	markStart(0); // initialize last start time to 'now'
+}
+
+hd44780::hd44780(uint8_t cols, uint8_t rows, uint32_t chExecTimeUs, uint32_t insExecTimeus) :
+		 _cols(cols), _rows(rows), _chExecTime(chExecTimeUs), _insExecTime(insExecTimeus)
+{
+	setExecTimes(HD44780_CHEXECTIME, HD44780_INSEXECTIME);
 	markStart(0); // initialize last start time to 'now'
 }
 
@@ -425,6 +439,19 @@ int rval = 0;
 	// set the entry mode
 	rval = command(HD44780_ENTRYMODESET | _displaymode);
 
+// FIXME
+#ifdef LATER
+	// quick check to see if BUSY is working on devices that support reads
+	{
+	int lcdstatus = status();
+		if(lcdstatus >= 0)
+		{
+			// if BUSY bit is set then there is a problem
+			if(lcdstatus &  0x80)
+				return(RV_EBUSY);
+		}
+	}
+#endif
 	backlight(); // turn on the backlight, if supported
 
 	return(rval);

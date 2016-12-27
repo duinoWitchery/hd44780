@@ -10,7 +10,7 @@
 //  Copyright (C) 2006-2008 Hans-Christoph Steiner. All rights reserved.
 //  Copyright (c) 2010 Arduino LLC. All right reserved.
 //
-//  See the license.txt file for a history of the copyrights of LiquidCrystal
+//  See licenseInfo.txt for a history of the copyrights of LiquidCrystal
 // --------------------------------------------------------------------------
 //
 //  This file is part of the hd44780 library
@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2016.12.26  bperrybap - new BUSY error status, new constructors
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
 // 2016.08.06  bperrybap - added status() and read()
@@ -79,6 +80,8 @@ class hd44780 : public Print
 {
 public:
 	hd44780();
+	hd44780(uint8_t cols, uint8_t rows);
+	hd44780(uint8_t cols, uint8_t rows, uint32_t chExecTime, uint32_t insExecTime);
 
 	// default execute times in us for clear/home and instructions/data
 	// The hd44780 spec uses 1520 and 37 in table 6 page 24
@@ -95,6 +98,7 @@ public:
 	static const int RV_ENOTSUP=-3;				// not supported
 	static const int RV_ENXIO=-4;				// no such device or address
 	static const int RV_EMSGSIZE=-5;			// Message/data too long
+	static const int RV_EBUSY=-6;				// device is unexpectedly BUSY
 
 	// commands
 	static const uint8_t HD44780_CLEARDISPLAY = 0x01;
@@ -350,16 +354,19 @@ private:
 
 };
 
-// LED_BUILTIN define fixups for Teensy and ChipKit
+// LED_BUILTIN define fixups for Teensy, ChipKit, and ESP8266 cores
 #if !defined(LED_BUILTIN)
+
 #if defined(CORE_TEENSY)
 #define LED_BUILTIN CORE_LED0_PIN
-#else
-#if defined(PIN_LED1)
+
+#elif defined(ARDUINO_ARCH_ESP8266)
+#define LED_BUILTIN BUILTIN_LED
+
+#elif defined(PIN_LED1) // chipkit
 #define LED_BUILTIN PIN_LED1
 #endif
 #endif
-#endif
 
-
+// endif for header guard
 #endif
