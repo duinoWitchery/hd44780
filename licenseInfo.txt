@@ -1,0 +1,178 @@
+==============================================================================
+In terms of licensing, hd44780 consists of multiple comoponents.
+Library components:
+- The "hd44780 library"
+- hd44780 base class source files
+- multiple hd44780 i/o sub class source files
+
+Application components:
+- example sketches
+
+Every source file should contain its own explicit licensing.
+Currently all library components above are licensed as GPL v3.0
+Some but not all application components are GPL v3.0.
+
+The hd44780 base class code is a derative work
+from the IDE LiquidCrystal library which is licensed as LGPL 2.1+,
+and this derative work (hd44780 base class) is being licensed as GPL 3
+==============================================================================
+
+All of the files supplied with and comprising the hd44780 library, including,
+but not limited to: the Arduino hd44780 base class library, i/o subclasses,
+sketch/applications, are either licensed under the terms of the
+GNU General Public License or are compatible with this license.
+
+Files should have explicit licensing ageement statements in them.
+In the absence of of any licensing agreement statement,
+the license below shall apply.
+
+==============================================================================
+
+  hd44780 is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation version 3 of the License.
+
+  hd44780 is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with hd44780.  If not, see <http://www.gnu.org/licenses/>.
+
+  (See the included license.txt file for a full copy of the GPL 3.0 license)
+
+==============================================================================
+
+While the hd44780 base class source files share a common ancestry with the
+Arduino IDE LiquidCrystal library source files, the hd44780 base class source
+files included in the hd44780 library are a separate derivative work,
+licensed under GPLv3 whereas LiquidCrystal was licensed as 
+LGPL v2.1 or later (LGPL 2.1+).
+
+Also, all the i/o subclass source files included in the hd44780 library
+are licensed GPLv3.
+
+As such, projects that use hd44780 that are conveyed (shared/distributed)
+to others must be open source licensed under the same terms
+and may only be used with other libraries that are fully compatible with GPLv3.
+
+For a full GPL/LGPL compatibilty matrix see:
+http://www.gnu.org/licenses/gpl-faq.html#AllCompatibility
+
+Furthermore, none of the code, including any additions and improvements in
+hd44780 over LiquidCrystal, can be moved back into LiquidCrystal or into any
+other LGPL, BSD, or closed source compatible licensed project or library
+without violating the GPLv3 licensing terms.
+
+See the historical notes below for more details about the history of the
+licensing.
+
+==============================================================================
+IMPORTANT Historical note about Arduino Library licensing:
+==============================================================================
+(with notes about LiquidCrystal and hd44780)
+The Arduino project has been VERY sloppy with respect to s/w licensing terms,
+especially for the IDE bundled libraries.
+Some libraries had clear licensing terms, some attempted to use conflicting
+terms, and some libraries had no licensing terms.
+And the libraries that specified their terms were not all the same license so
+some licenses were a bit more "fee" than others and not all are compatible
+with each other.
+
+And while there was a general LGPL 2.1 statement in the IDE package that
+attempted to make all bundled libraries LGPL 2.1, it is not possible to
+apply this license to all the bundled libraries that failed to state their
+licensing terms or to libraries that used other incompatible licenses.
+AND, this generic license.txt licensing file was only in the IDE source control
+repository and was not included in the IDE installation package that is
+installed on a users machine. So users that received and installed the s/w
+would not know of this file or default licensing.
+This has persisted from Arduino's begining; and while the situation is much
+better today in 2016, some of the issues still exist to this day.
+
+LiquidCrystal in particuar was one of the libraries that was handled poorly.
+To this day including in the latest IDE release 1.6.9 there are still no
+copyright or license notices in the actual source code modules for the IDE
+bundled LiquidCrystal library.
+
+In fact when the new 1.5x library spec came out, the .properties file in
+the LiquidCrystal library left the "author" field blank.
+In IDE 1.5.7 released (2014-07-07) the author field was blank but "Arduino"
+was listed as a the maintainer.
+Starting in IDE 1.6.1 (2015-03-10) the author field became
+"Arduino, AdaFruit" while the maintainer still remains "Arduino".
+But yet there is still no mention of Adafruit in the copyright notice in the
+source code or license file included with the library.
+
+LiquidCrystal had no specific licensing terms until the 1.6.0 IDE release
+which was 2015-02-09.
+There were no specific licensing terms or copyright notices prior to 1.6.0
+other than the default licensing mentioned in the repository readme.txt file.
+In the 1.6.0 IDE, the LiquidCrystal copyright notice was simply:
+====
+Copyright (c) Arduino LLC. All right reserved.
+(with a LGPL 2.1+ notice.)
+====
+This notice was not in the .cpp and .h files themselves but in README.adoc
+and mentions no specific dates for the copyright.
+Also, from a historical perspective, prior to 2015, there were several
+authors/contributors to the LiquidCrystal library some of whom were not
+employees of Arduino LCC, so Arduino LCC is unlikely to be the sole
+copyright holder.
+
+In IDE 1.6.1 (2015-07-07), the library .properties shows "Arduino, Adafruit" as
+the author but yet there is no mention of Adafruit in the source files nor the
+README.adoc which has the Copyright notice and licensing terms.
+
+On 2015-11-03 in the 1.6.6 IDE release,
+the copyright notice changed to:
+====
+Copyright (C) 2006-2008 Hans-Christoph Steiner. All rights reserved.
+Copyright (c) 2010 Arduino LLC. All right reserved.
+(with LGPL 2.1+ notice)
+====
+
+This notice was also not in the .cpp and .h files themselves but in
+README.adoc
+
+This new notice is effectively backdating the copyright notice for the
+library to include a new copyright holder vs what was in prior releases.
+
+And still no mention of Adafruit other than in the .properties file
+where they are listed as an author.
+
+The hd44780 project was started in 2013.
+The hd44780 library project hd44780 base class is, for the most part,
+a major refactoring re-write and enhancement of the IDE LiquidCrystal library.
+And while much of the code has been re-written, the primary author of hd44780
+still considers the hd44780 base class library to be a derative work of
+the IDE bundled LiquidCystal library.
+In 2013 there were no clear licensing terms for LiquidCrystal, but it was
+assumed that the the license was LGPL 2.1 since there was the catch all
+license (license.txt added Oct 11, 2007) in the IDE source code repository.
+It read:
+===
+next, the gnu lesser general public license that covers the arduino core
+and libraries.
+===
+
+Also, at the time there was a very close interaction between any LiquidCrystal
+contributors and the Arduino LLC development team.
+i.e. developers had to give their code to Arduino LLC to get it into the 
+source tree and the distribution
+
+Given the latest licensing terms for LiquidCrystal in IDE 1.6.6 released
+2015-11-03 very clearly spell out that the license is LGPL 2.1+, then the
+original intent for LiquidCrystal being licensed as LGPL 2.1+
+(even back in 2013) seems even stronger.
+
+But given that the IDE LiquidCrystal code is now licensed as LGPL2.1+ and
+LGPL 2.1+ allows creating a derative work and re-licensing the derative work
+as GPL 3, that is what the primary author of hd44780 has decided to do.
+
+So in terms of licensing, the hd44780 base class library is a derative work
+from the IDE LiquidCrystal library which is licensed as LGPL 2.1+,
+and this derative work (hd44780) is being licensed as GPL 3
+
+==============================================================================
