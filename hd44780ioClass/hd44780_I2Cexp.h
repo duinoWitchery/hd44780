@@ -31,10 +31,8 @@
 // The hd44780_I2Cexp constructor can specify all the parameters or let the
 // library auto configure itself.
 // hd44780_I2Cexp constructor can specifiy expander output bit assignments
-// or use pre-defined entries
-//
-// addr can  be I2Cexp_ADDR_UNKNOWN or an instance number (0 to 15) 
-//  if you want the library to autolocate the io/expander.
+// or use pre-defined backpack board types
+// Some parameters can be left off when not used or to auto detect.
 //
 // examples:
 // hd44780_I2Cexp lcd; // autolocate/autoconfigure everything
@@ -43,11 +41,17 @@
 // hd44780_I2Cexp lcdA; // autolocate/autoconfigure for lcd instance 0
 // hd44780_I2Cexp lcdB; // autolocate/autoconfigure for lcd instance 1
 //
-// hd44780_I2Cexp lcd(addr, chiptype,    rs,en,d4,d5,d6,d7,bl,blpol);
-// hd44780_I2Cexp lcd(I2Cexp_ADDR_UNKNOWN, I2Cexp_BOARD_SYDZ);
-// hd44780_I2Cexp lcd(0x38, I2Cexp_BOARD_SYDZ);
-// hd44780_I2Cexp lcd(0x20, I2Cexp_BOARD_ADAFRUIT292);
-// hd44780_I2Cexp lcd(I2Cexp_ADDR_UNKNOWN, I2Cexp_MCP23008,1,2,3,4,5,6,7,HIGH);
+// hd44780_I2Cexp lcd(addr, chiptype,    rs,[rw],en,d4,d5,d6,d7,bl,blpol);
+// hd44780_I2Cexp lcd(0x20, I2Cexp_MCP23008,1,2,3,4,5,6,7,HIGH);   // no rw support
+// hd44780_I2Cexp lcd(0x27, I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH); // with rw support
+//
+// hd44780_I2Cexp lcd(addr, canned-entry);
+// hd44780_I2Cexp lcd(0x20, I2Cexp_BOARD_ADAFRUIT292); // specific backpack at 0x20
+// hd44780_I2Cexp lcd(0x38, I2Cexp_BOARD_SYDZ);        // specific backpack at 0x38
+//
+// hd44780_I2Cexp lcdcanned-entry);
+// hd44780_I2Cexp lcd(I2Cexp_BOARD_SYDZ); // locate specific backpack
+//
 //
 // NOTES:
 // It is best to use autoconfigure if possible.
@@ -56,7 +60,8 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
-// 2015.12.25  bperrybap - new constructor for canned entry with no address for auto locate
+// 2016.12.26  bperrybap - update comments for constructor usage
+// 2016.12.25  bperrybap - new constructor for canned entry with no address for auto locate
 // 2016.10.29  bperrybap - added sunrom canned entry
 //                         updated pcf8574 autoconfig comments
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
