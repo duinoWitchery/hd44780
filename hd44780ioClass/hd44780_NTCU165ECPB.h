@@ -63,14 +63,14 @@ public:
 
 // no parameters: use h/w spi signals
 // Note: This doesn't work for Leonardo since SS is not available and only drives an LED
-hd44780_NTCU165ECPB() : _cs(SS), _data(MOSI), _clk(SCK) { }
+hd44780_NTCU165ECPB() : _cs(SS), _clk(SCK), _data(MOSI) { }
 
 // supply alternate chip/slave select
 // will use h/w spi with alternate chip select
-hd44780_NTCU165ECPB(int cs) : _cs(cs), _data(MOSI), _clk(SCK) { }
+hd44780_NTCU165ECPB(int cs) : _cs(cs), _clk(SCK), _data(MOSI) { }
 
-// supply pins for chip select, data, and clock
-hd44780_NTCU165ECPB(int cs, int data, int clock) : _cs(cs), _data(data), _clk(clock) { }
+// supply pins for chip select, clock, and data
+hd44780_NTCU165ECPB(int cs, int clock, int data) : _cs(cs), _clk(clock), _data(data) { }
 
 
 private:
@@ -81,8 +81,8 @@ private:
 // Arduino Pin information
 
 const uint8_t _cs;	// arduino pint for slave select (chip select)
-const uint8_t _data;  // arduino pin for master out slave in (data)
 const uint8_t _clk;	// arduino pin for clock
+const uint8_t _data;  // arduino pin for master out slave in (data)
 
 // other internal variables
 uint8_t _cgmode; // set when in cgramaddr mode
@@ -93,23 +93,23 @@ uint8_t _cgchar; // custom character (0 to 7, this board goes to f)
 
 // device commands
 
-const uint8_t CMD_SETDISPLAYLEN = 0x00;	// lower 3 bits sets total digits/cols
+static const uint8_t CMD_SETDISPLAYLEN = 0x00;	// lower 3 bits sets total digits/cols
                                         // to display
 										// 0 is 9 and 7 means all 16 digits/cols
 
-const uint8_t CMD_SETBRIGHTNESS = 0x08; // lower 3 bits sets brigtness 
+static const uint8_t CMD_SETBRIGHTNESS = 0x08; // lower 3 bits sets brigtness 
                                         // 0 is 1/16 and 7 is 14/16 max
-const uint8_t CMD_SETDIGSCAN160 = 0xF6; // set digit scan time to 160us
-const uint8_t CMD_SETDIGSCAN320 = 0xF7; // set digit scan time to 320us
-const uint8_t CMD_SETDIGPOINTER = 0xE0; // set column, lower 4 bits sets column
-const uint8_t CMD_NOAUTOINCREMENT = 0xF0; // no auto advance to next column
-const uint8_t CMD_AUTOINCREMENT   = 0xF1; // auto advance to next column
+static const uint8_t CMD_SETDIGSCAN160 = 0xF6; // set digit scan time to 160us
+static const uint8_t CMD_SETDIGSCAN320 = 0xF7; // set digit scan time to 320us
+static const uint8_t CMD_SETDIGPOINTER = 0xE0; // set column, lower 4 bits sets column
+static const uint8_t CMD_NOAUTOINCREMENT = 0xF0; // no auto advance to next column
+static const uint8_t CMD_AUTOINCREMENT   = 0xF1; // auto advance to next column
 
-const uint8_t CMD_DISPLAYOFF   = 0xF0; // all digits/dots off
-const uint8_t CMD_DISPLAYON    = 0xF1; // normal display mode
-const uint8_t CMD_DISPLAYALLON = 0xF3; // all digits, all dots on
+static const uint8_t CMD_DISPLAYOFF   = 0xF0; // all digits/dots off
+static const uint8_t CMD_DISPLAYON    = 0xF1; // normal display mode
+static const uint8_t CMD_DISPLAYALLON = 0xF3; // all digits, all dots on
 
-const uint8_t CMD_STOREUDF = 0xFC; // begin user defined font (custom char)
+static const uint8_t CMD_STOREUDF = 0xFC; // begin user defined font (custom char)
                                    // There are 16 custom chars, they are
                                    // accessed/printed using 0x90-0x9F
                                    // they are programmed using locations 0-F
@@ -123,7 +123,7 @@ const uint8_t CMD_STOREUDF = 0xFC; // begin user defined font (custom char)
 
 // start of custom user defined font (UDF) characters
 // There are 16 UDF characters that shart here
-const uint8_t UDF_BASE = 0x90; 
+static const uint8_t UDF_BASE = 0x90; 
 
 
 // ==================================================
@@ -328,12 +328,11 @@ void devicewrite(uint8_t value)
 #if defined(SPI_HAS_TRANSACTION)
 	if((_data == MOSI) && (_clk == SCK))
 	{
-		SPI.beginTransaction(SPISettings());	// use default 4Mhz clock
-												// NOTE: spec says 2Mhz is max
-												// 4Mhz seems to work.
-
+		// NOTE: spec says 2Mhz is max, 4Mhz seems to work.
+		SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE0));
 		digitalWrite(_cs,LOW);	// select device
 		SPI.transfer(value);
+		delayMicroseconds(1);	// must delay at least 130ns before de-selecting
 	 	digitalWrite(_cs,HIGH);	// deselect device
 		SPI.endTransaction();
 	}
@@ -342,6 +341,7 @@ void devicewrite(uint8_t value)
 	{
 		digitalWrite(_cs,LOW);	// select device
 		shiftOut(_data, _clk, MSBFIRST, value);
+		delayMicroseconds(1);	// must delay at least 130ns before de-selecting
 	 	digitalWrite(_cs,HIGH);	// deselect device
 	}
 }
