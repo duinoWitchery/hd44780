@@ -246,11 +246,10 @@ public:
 	inline int __attribute__((deprecated("Use blink() instead"))) blink_on() {return(blink());}
 	inline int __attribute__((deprecated("Use noBlink() instead"))) blink_off() { return(noBlink());}
 #else 
-
-	inline int __attribute__((deprecated)) cursor_on() {cursor();}
-	inline int __attribute__((deprecated)) cursor_off() {noCursor();}
-	inline int __attribute__((deprecated)) blink_on() {blink();}
-	inline int __attribute__((deprecated)) blink_off() { noBlink();}
+	inline int __attribute__((deprecated)) cursor_on() {return(cursor());}
+	inline int __attribute__((deprecated)) cursor_off() {return(noCursor());}
+	inline int __attribute__((deprecated)) blink_on() {return(blink());}
+	inline int __attribute__((deprecated)) blink_off() { return(noBlink());}
 #endif
 
 	// optional LCD API 1.0 functions
@@ -312,6 +311,10 @@ public:
 	inline void setExecTimes(uint32_t chExecTimeUs, uint32_t insExecTimeUs)
 		{ _chExecTime = chExecTimeUs; _insExecTime = insExecTimeUs;}
 
+	// A few undocumented helper functions for the included examples
+	static int blinkLED(int blinks);		// blink a built in LED if possible
+	static void fatalError(int errcode);	// hang in loop blinking error code
+
 protected:
 
 	// type of data being sent through ioread()/iowrite()
@@ -362,6 +365,10 @@ private:
 
 #elif defined(ARDUINO_ARCH_ESP8266)
 #define LED_BUILTIN BUILTIN_LED
+
+// special check for pre 1.0.6 IDEs that didn't define LED_BUILTIN
+#elif (ARDUINO <  106 ) && ( defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega32U4__))
+#define LED_BUILTIN 13 // bundled boards use pin 13 for builtin led
 
 #elif defined(PIN_LED1) // chipkit
 #define LED_BUILTIN PIN_LED1

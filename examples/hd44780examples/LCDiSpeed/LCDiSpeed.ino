@@ -331,26 +331,16 @@ void showByteXfer(unsigned long FPStime)
 
 	delay(DELAY_TIME); // show it for a while
 }
-
 // fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
-#ifdef LED_BUILTIN
-	pinMode(LED_BUILTIN, OUTPUT);
+#if defined(hd44780_h)
+	// if using hd44780 library use built in fatalError()
+	hd44780::fatalError(ecode);
+#else
 	while(1)
 	{
-
-		// blink out error code
-		for(int i = 0; i< ecode; i++)
-		{
-			digitalWrite(LED_BUILTIN, HIGH);
-			delay(100);
-			digitalWrite(LED_BUILTIN, LOW);
-			delay(250);
-		}
-		delay(1500);
+		delay(1); // delay to prevent WDT on some cores
 	}
-#else
-	while(1){} // spin and do nothing
 #endif
 }

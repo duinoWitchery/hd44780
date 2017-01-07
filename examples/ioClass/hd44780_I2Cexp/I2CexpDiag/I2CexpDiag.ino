@@ -28,6 +28,11 @@
 // on the Hitachi HD44780 and compatible chipsets using I2C extension
 // backpacks that use a simple I2C i/o expander chip.
 //
+// WARNING:
+//	Use caution when using 3v only processors like arm and ESP8266 processors
+//	when interfacing with 5v modules as not doing proper level shifting or
+//  incorrectly hooking things up can damage the processor.
+//
 // It requires the hd44780 library which can be installed using the
 // Arduino IDE library manager starting with IDE 1.6.2 or can found here:
 // https://github.com/duinoWitchery/hd44780
@@ -149,7 +154,7 @@
 
 #include <Wire.h>
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_I2Cexp.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
 
 // ============================================================================
 // user configurable options below this point
@@ -1205,49 +1210,10 @@ char *p = str;
 }
 
 // fatalError() - loop & blink an error code
-
-// macros to turn on built in LED as some boards like the ESP8266 use active low LEDs
-
-#if defined(ARDUINO_ARCH_ESP8266)
-#define ledBuiltinOn() digitalWrite(LED_BUILTIN, LOW)
-#define ledBuiltinOff() digitalWrite(LED_BUILTIN, HIGH)
-#else
-#define ledBuiltinOn() digitalWrite(LED_BUILTIN, HIGH)
-#define ledBuiltinOff() digitalWrite(LED_BUILTIN, LOW)
-#endif
-
 void fatalError(int ecode)
 {
-#ifdef LED_BUILTIN
-	pinMode(LED_BUILTIN, OUTPUT);
-	while(1)
-	{
-
-		// blink out error code
-		for(int i = 0; i< ecode; i++)
-		{
-			ledBuiltinOn();
-			delay(100);
-			ledBuiltinOff();
-			delay(250);
-		}
-		delay(1500);
-	}
-#else
-	// No built in LED, so spin and do "nothing"
-	while(1)
-	{
-		if(ecode){} // "nop" if to eliminate warning, will be optimized out
-
- 		// A delay is not needed here but delay() will keep a watchdog from
-		// firing.  normally yield() would be used, but yield doesn't exist on
-		// IDEs before 1.5.1 and delay(0) does not call yield() on all cores,
-		// so delay(1) is used.
-		delay(1);
-	}
-#endif
+	hd44780::fatalError(ecode); // does not return
 }
-
 
 void waitinput(const char *prompt)
 {

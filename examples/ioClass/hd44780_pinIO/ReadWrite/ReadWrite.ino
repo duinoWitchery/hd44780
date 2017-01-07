@@ -161,23 +161,6 @@ unsigned int hr, mins, sec;
 // fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
-#ifdef LED_BUILTIN
-	pinMode(LED_BUILTIN, OUTPUT);
-	while(1)
-	{
-
-		// blink out error code
-		for(int i = 0; i< ecode; i++)
-		{
-			digitalWrite(LED_BUILTIN, HIGH);
-			delay(100);
-			digitalWrite(LED_BUILTIN, LOW);
-			delay(250);
-		}
-		delay(1500);
-	}
-#else
-	while(1){} // spin and do nothing
-#endif
+	hd44780::fatalError(ecode); // does not return
 }
 

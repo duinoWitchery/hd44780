@@ -650,8 +650,9 @@ void showByteXfer(Print &dev, unsigned long FPStime)
 
 	/*
 	 * Calculate average byte xfer time from time of FPS test
-	 * This takes into consideration the set cursor position commands (1 per row) which
-	 * are single byte commands and take the same amount of time as a data byte write.
+	 * This takes into consideration the set cursor position commands
+	 * (1 per row) which are single byte commands and take the same amount of
+	 * time as a data byte write.
 	 * The final result is rounded up to an integer.
 	 */
 	dev.print((int) (FPStime / (FPS_iter * (10.0 * (LCD_COLS *  LCD_ROWS + LCD_ROWS)))+0.5));
@@ -661,22 +662,13 @@ void showByteXfer(Print &dev, unsigned long FPStime)
 // fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
-#ifdef LED_BUILTIN
-	pinMode(LED_BUILTIN, OUTPUT);
+#if defined(hd44780_h)
+	// if using hd44780 library use built in fatalError()
+	hd44780::fatalError(ecode);
+#else
 	while(1)
 	{
-
-		// blink out error code
-		for(int i = 0; i< ecode; i++)
-		{
-			digitalWrite(LED_BUILTIN, HIGH);
-			delay(100);
-			digitalWrite(LED_BUILTIN, LOW);
-			delay(250);
-		}
-		delay(1500);
+		delay(1); // delay to prevent WDT on some cores
 	}
-#else
-	while(1){} // spin and do nothing
 #endif
 }

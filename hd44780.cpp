@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2017.01.07  bperrybap - added blinkLED() and fatalError() 
 // 2016.12.26  bperrybap - new constructors
 // 2016.10.17  bperrybap - corrected DDRAM address mask in createChar()
 // 2016.10.15  bperrybap - createChar() restores DDRAM location when possible
@@ -717,3 +718,66 @@ int status = 1; //assume success
 	
 	return status;
 }
+
+//============================================================================
+// A couple of functions that really shouldn't be here.
+// blinkLED() and fatalError()
+//
+// NOTE: I REALLY do not like having these functions here and they definitely
+// do not belong in this class; HOWEVER.... blinking a built in LED in arduino
+// is not as easy as it should be to ensure that works across many different
+// cores and boards.
+// Some cores didn't correclty define their LED_BUILTIN define, and some boards
+// use use an active LOW LED.
+// To make things simpler for the hd44780 examples and ensure consistency as
+// well as making maintenance much easier,
+// I held my nose and moved those two functions to here.
+// -- bperrybap
+
+// blinkLED() - blink builtin LED
+// blinks a built in LED if there is one.
+// returns zero if successful
+//
+
+// helper macros to turn on built in LED as some boards like the ESP8266 use
+// active low LEDs
+
+#if defined(ARDUINO_ARCH_ESP8266)
+#define ledBuiltinOn() digitalWrite(LED_BUILTIN, LOW)
+#define ledBuiltinOff() digitalWrite(LED_BUILTIN, HIGH)
+#else
+#define ledBuiltinOn() digitalWrite(LED_BUILTIN, HIGH)
+#define ledBuiltinOff() digitalWrite(LED_BUILTIN, LOW)
+#endif
+
+int hd44780::blinkLED(int blinks)
+{
+#ifdef LED_BUILTIN
+	pinMode(LED_BUILTIN, OUTPUT);
+	// blink out error code
+	for(int i = 0; i< blinks; i++)
+	{
+		ledBuiltinOn();
+		delay(100);
+		ledBuiltinOff();
+		delay(250);
+	}
+	return(0);
+#else
+	// No built in LED, so do "nothing"
+	if(blinks){} // "nop" if to eliminate warning, will be optimized out
+
+	return(RV_ENOTSUP);
+#endif
+}
+
+// fatalError() - loop & blink an error code
+void hd44780::fatalError(int errcode)
+{
+	while(1)
+	{
+		blinkLED(errcode);	// blink LED if possible
+		delay(1500);		// using delay() ensures watchdogs don't trip
+	}
+}
+//============================================================================

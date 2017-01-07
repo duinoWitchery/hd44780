@@ -55,7 +55,7 @@
 // do this for the sketch when the backlight API functions are used.
 // 
 // History
-// 2016.01.07 bperrybap  - updated comments to reflect that library now
+// 2017.01.07 bperrybap  - updated comments to reflect that library now
 //                         automatically detects bad backlight circuits
 // 2016.11.08 bperrybap  - updated for inclusion in hd44780 library
 // 2013.10.29 bperrybap  - Original creation
