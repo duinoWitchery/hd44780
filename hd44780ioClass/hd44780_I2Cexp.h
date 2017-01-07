@@ -60,6 +60,7 @@
 // It will correctly identify the pin mapping but incorrectly determine
 // the backlight active level control.
 //
+// 2017.01.07  bperrybap - unknown address is now an address of zero
 // 2016.12.26  bperrybap - update comments for constructor usage
 // 2016.12.25  bperrybap - new constructor for canned entry with no address for auto locate
 // 2016.10.29  bperrybap - added sunrom canned entry
@@ -171,8 +172,6 @@
 //FIXME these can't go in the class unless they are referenced using the classname
 
 enum I2CexpType { I2Cexp_UNKNOWN, I2Cexp_PCF8574, I2Cexp_MCP23008 };
-static const int I2Cexp_ADDR_UNKNOWN = 0xff; // auto locate device
-
 
 class hd44780_I2Cexp : public hd44780
 {
@@ -184,10 +183,9 @@ public:
 //	-- Automagic / auto-detect constructors --
 
 // Auto find next instance and auto config pin mapping
-hd44780_I2Cexp(){ _addr = AutoInst++; _expType = I2Cexp_UNKNOWN;}
+hd44780_I2Cexp(){ _addr = 0; _expType = I2Cexp_UNKNOWN;}
 
-// Auto config specific addr/instance.
-// addr can be i2c address or instance (0 - 15)
+// Auto config specific i2c addr
 hd44780_I2Cexp(uint8_t addr){ _addr = addr; _expType = I2Cexp_UNKNOWN;}
 
 // Auto locate but with explicit config with r/w control and backlight control
@@ -195,7 +193,7 @@ hd44780_I2Cexp(I2CexpType type, uint8_t rs, uint8_t rw, uint8_t en,
 				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
 				uint8_t bl, uint8_t blLevel)
 {
-   config(I2Cexp_ADDR_UNKNOWN, type, rs, rw, en, d4, d5, d6, d7, bl, blLevel);
+   config(0, type, rs, rw, en, d4, d5, d6, d7, bl, blLevel); // auto locate i2c address
 }
 
 
@@ -345,12 +343,10 @@ int status = 0;
 
 	// auto locate i2c expander and magically detect pin mappings
 
-	if(_addr < 0x10) // go locate device instance if index instance specified
-		_addr = LocateDevice(_addr);
-	else if(_addr == I2Cexp_ADDR_UNKNOWN) // locate next instance
+	if(!_addr) // locate next instance
 		_addr = LocateDevice(AutoInst++);
 
-	if(_addr == I2Cexp_ADDR_UNKNOWN) // if we couldn't locate it, return error
+	if(!_addr) // if we couldn't locate it, return error
 		return(-1);
 
 	if(_expType == I2Cexp_UNKNOWN) // figure out expander chip if not told
@@ -422,8 +418,8 @@ uint8_t data = 0;
 uint8_t iodata;
 int rval = -1;
 
-	// If address or expander type is unknown, then abort read w/error
-	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
+	// If no address or expander type is unknown, then abort read w/error
+	if(!_addr || _expType == I2Cexp_UNKNOWN)
 		return(hd44780::RV_ENXIO);
 
 	// reads for MCP23008 not yet supported
@@ -540,8 +536,8 @@ returnStatus:
 // returns zero on success, non zero on failure
 int iowrite(hd44780::iotype type, uint8_t value) 
 {
-	// If address or expander type is unknown, then drop data
-	if(_addr == I2Cexp_ADDR_UNKNOWN || _expType == I2Cexp_UNKNOWN)
+	// If no address or expander type is unknown, then drop data
+	if(!_addr || _expType == I2Cexp_UNKNOWN)
 		return(-1);
 
 	/*
@@ -714,7 +710,7 @@ uint8_t locinst = 0;
 			locinst++;
 		}
 	}
-	return(I2Cexp_ADDR_UNKNOWN); // could not locate expander instance
+	return(0); // could not locate expander instance
 }
 
 
