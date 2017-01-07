@@ -7,6 +7,12 @@
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 // 
+// This sketch is for LCDs with PCF8574 or MCP23008 chip based backpacks
+// WARNING:
+//	Use caution when using 3v only processors like arm and ESP8266 processors
+//	when interfacing with 5v modules as not doing proper level shifting or
+//  incorrectly hooking things up can damage the processor.
+//
 // Sketch will print lcd instance number on top line with i2c address
 // and will print the amount of time since the Arduino has been reset
 // on the second row.
@@ -17,7 +23,7 @@
 
 #include <Wire.h>
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_I2Cexp.h>
+#include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
 
 // All displays will be assumed to be 16x2
 // Even if display is larger the sketch should still work correctly

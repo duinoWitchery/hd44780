@@ -25,8 +25,15 @@
 // See this Arduino forum thread for a discussion about the isue:
 // http://forum.arduino.cc//index.php?topic=96747
 //
-// To use, fill in the proper pin assignements if they are different
-// from below.
+// NOTE:
+//	As of 2016-11-12 in release 0.8.1 the hd44780_pinIO class now
+//	automatically detects broken backlight circuits and will use backlight
+//	control methods to protect the AVR chip. The sketch can simply
+//	use all the backlight API functions setbacklight(), backlight(), and
+//	noBacklight() without concern.
+//
+// To use this sketch, fill in the proper pin assignements if they are
+// different from below.
 //
 // upload the sketch.
 // The LCD display will show whether the backlight circuit is good/bad.
@@ -39,35 +46,36 @@
 // This means that PWM or analogWrite() cannot be used to dim the backlight.
 //
 // If you are happy with the backlight on all the time, then nothing needs to
-// be done.
+// be done and you can use the LCD without backlight control.
+//
 // A simple software only solution for backlight on/off control
 // is to set the backlight pin to INPUT to turn on the backlight and set the
 // backlight pin to OUTPUT mode to turn the backlight off.
+// If using hd44780 library 0.8.1 or newer the library will automatically 
+// do this for the sketch when the backlight API functions are used.
 // 
-// You can also grab and use the SafeBLon()/SafeBLoff() macros below in your
-// sketch to turn the backlight on/off.
-// These macros will work regardless of the BL circuit.
-//
 // History
+// 2016.01.07 bperrybap  - updated comments to reflect that library now
+//                         automatically detects bad backlight circuits
 // 2016.11.08 bperrybap  - updated for inclusion in hd44780 library
 // 2013.10.29 bperrybap  - Original creation
 //
 // ---------------------------------------------------------------------------
 
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_pinIO.h>
+#include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
 
 // initialize the library with the numbers of the interface pins
-const int pin_RS = 8; // arduino pin wired to LCD RS
-const int pin_EN = 9; // arduino pin wired to LCD EN
-const int pin_d4 = 4; // arduino pin wired to LCD d4
-const int pin_d5 = 5; // arduino pin wired to LCD d5
-const int pin_d6 = 6; // arduino pin wired to LCD d7
-const int pin_d7 = 7; // arduino pin wired to LCD d8
+const int rs = 8; // arduino pin wired to LCD RS
+const int en = 9; // arduino pin wired to LCD EN
+const int db4 = 4;// arduino pin wired to LCD db4
+const int db5 = 5;// arduino pin wired to LCD db5
+const int db6 = 6;// arduino pin wired to LCD db7
+const int db7 = 7;// arduino pin wired to LCD db8
 
 const int pin_BL = 10; // arduino pin wired to LCD backlight circuit
 
-hd44780_pinIO lcd( pin_RS,  pin_EN,  pin_d4,  pin_d5,  pin_d6,  pin_d7);
+hd44780_pinIO lcd( rs, en, db4,  db5,  db6, db7);
 
 
 /*

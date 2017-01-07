@@ -7,6 +7,12 @@
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 // 
+// This sketch is for LCDs that are directly controlled with Arduino pins.
+//
+// The purpose of the sketch is demonstrate the ability to read data from
+// the LCD. As such, it requires an extra Arduino pin to control the R/W LCD
+// pin. See below for configuring the Arduino pins used.
+//
 // Sketch will print the amount of time since the Arduino has been reset
 // on the top row and then read the data from the LCD to print it on the
 // second row
@@ -21,7 +27,7 @@
 //
 
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_pinIO.h> // include i/o class header
+#include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
 
 // declare Arduino pins used for LCD functions
 // and the lcd object
@@ -29,18 +35,18 @@
 // Note: this can be with or without backlight control:
 
 // without backlight control:
-const int rs=8, rw=A0, en=9, d4=4, d5=5, d6=6, d7=7;
-hd44780_pinIO lcd(rs, rw, en, d4, d5, d6, d7);
+const int rs=8, rw=A0, en=9, db4=4, db5=5, db6=6, db7=7;
+hd44780_pinIO lcd(rs, rw, en, db4, db5, db6, db7);
 
 //with backlight control:
 //	backlight control requires two additional parameters
-//	- an additional pin to contro the backlight
+//	- an additional pin to control the backlight
 //	- backlight active level which tells the library the level
 //		needed to turn on the backlight.
 //		note: If the backlight control pin supports PWM, dimming can be done
 //
-//const int rs=8, rw=A0, en=9, d4=4, d5=5, d6=6, d7=7, bl=10, blLevel=HIGH;
-//hd44780_pinIO lcd(rs, rw, en, d4, d5, d6, d7, bl, blLEvel);
+//const int rs=8, rw=A0, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
+//hd44780_pinIO lcd(rs, rw, en, db4, db5, db6, db7, bl, blLEvel);
 
 // LCD geometry
 const int LCD_ROWS = 2;

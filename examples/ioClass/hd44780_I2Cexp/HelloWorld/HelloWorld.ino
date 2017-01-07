@@ -6,6 +6,12 @@
 //
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
+//
+// This sketch is for LCDs with PCF8574 or MCP23008 chip based backpacks
+// WARNING:
+//	Use caution when using 3v only processors like arm and ESP8266 processors
+//	when interfacing with 5v modules as not doing proper level shifting or
+//  incorrectly hooking things up can damage the processor.
 // 
 // Sketch will print "Hello, World!" on top row of lcd
 // and will print the amount of time since the Arduino has been reset
@@ -15,12 +21,12 @@
 // the sketch will simply blink the built in LED.
 //
 // NOTE:
-//	If the sketch fails to produce the expected results, run the included
-//	I2CexpDiag sketch.
+//	If the sketch fails to produce the expected results, or blinks the LED,
+//	run the included I2CexpDiag sketch to test the i2c signals and the LCD.
 
 #include <Wire.h>
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_I2Cexp.h> // include i/o class header
+#include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
 
 hd44780_I2Cexp lcd; // declare lcd object: auto locate & config exapander chip
 

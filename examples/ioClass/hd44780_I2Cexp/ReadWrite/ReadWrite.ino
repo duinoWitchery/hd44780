@@ -7,11 +7,20 @@
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 // 
+// This sketch is for LCDs with PCF8574 or MCP23008 chip based backpacks
+// WARNING:
+//	Use caution when using 3v only processors like arm and ESP8266 processors
+//	when interfacing with 5v modules as not doing proper level shifting or
+//  incorrectly hooking things up can damage the processor.
+//
+// The purpose of the sketch is demonstrate the ability to read data from
+// the LCD.
+//
 // Sketch will print the amount of time since the Arduino has been reset
 // on the top row and then read the data from the LCD to print it on the
 // second row
 //
-// If there are errors the arduino supports a built in LED,
+// If there are errors and the arduino supports a built in LED,
 // an error status code will blink on the built in LED.
 // Error codes:
 // (1) lcd device initalization failed

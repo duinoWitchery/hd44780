@@ -53,7 +53,7 @@
 #endif
 #include <pins_arduino.h> // to get PWM detection macros
 
-#define HIGHZ 0xfe // value is not critical but it cannot be the same as LOW or HIGH
+#define HIGHZ 0xfe // value is not critical but it cannot be the same as LOW or HIGH, or 0xff
 
 class hd44780_pinIO : public hd44780
 {

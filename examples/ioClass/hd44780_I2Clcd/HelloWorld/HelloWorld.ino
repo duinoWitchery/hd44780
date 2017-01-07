@@ -6,6 +6,17 @@
 //
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
+//
+// This sketch is for LCD modules that have a native I2C interface such as
+// PCF2119x, PCF2116, or certain RayStar LCDs rather than those LCD modules that
+// use an i/o expander chip based based backpack.
+// NOTE:
+//	These devices usually need external pullups as they typically are not on
+//	the module.
+// WARNING:
+//	Use caution when using 3v only processors like arm and ESP8266 processors
+//	when interfacing with 5v modules as not doing proper level shifting or
+//  incorrectly hooking things up can damage the processor.
 // 
 // Sketch will print "Hello, World!" on top row of lcd
 // and will print the amount of time since the Arduino has been reset
@@ -17,7 +28,7 @@
 
 #include <Wire.h>
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_I2Clcd.h>
+#include <hd44780ioClass/hd44780_I2Clcd.h> // i2c LCD i/o class header
 
 // Note, i2c address can be specified or automatically located
 // If you wish to use a specific address comment out this constructor

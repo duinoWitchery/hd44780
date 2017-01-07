@@ -7,9 +7,13 @@
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 // 
+// This sketch is for LCDs that are directly controlled with Arduino pins.
+//
 // Sketch will print "Hello, World!" on top row of lcd
 // and will print the amount of time since the Arduino has been reset
 // on the second row.
+//
+// See below for configuring the Arduino pins used.
 //
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED.
@@ -22,19 +26,19 @@
 //  4 - RS Register Select (rs)
 //  5 - Read/Write
 //  6 - Enable (en)
-//  7 - Data 0 (d0) ----
-//  8 - Data 1 (d1)     |- Not used in 4 bit mode
-//  9 - Data 2 (d2)     |
-// 10 - Data 3 (d3) ----
-// 11 - Data 4 (d4)
-// 12 - Data 5 (d5)
-// 13 - Data 6 (d6)
-// 14 - Data 7 (d7)
+//  7 - Data 0 (db0) ----
+//  8 - Data 1 (db1)     |-------- Not used in 4 bit mode
+//  9 - Data 2 (db2)     |
+// 10 - Data 3 (db3) ----
+// 11 - Data 4 (db4)
+// 12 - Data 5 (db5)
+// 13 - Data 6 (db6)
+// 14 - Data 7 (db7)
 // 15 - Backlight Anode (+5v)
 // 16 - Backlight Cathode (Gnd)
 
 #include <hd44780.h>
-#include <hd44780ioClass/hd44780_pinIO.h> // include i/o class header
+#include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
 
 // declare Arduino pins used for LCD functions
 // and the lcd object
@@ -42,12 +46,12 @@
 // Note: this can be with or without backlight control:
 
 // without backlight control:
-const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7;
-hd44780_pinIO lcd(rs, en, d4, d5, d6, d7);
+const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
+hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
 //with backlight control:
 //	backlight control requires two additional parameters
-//	- an additional pin to contro the backlight
+//	- an additional pin to control the backlight
 //	- backlight active level which tells the library the level
 //		needed to turn on the backlight.
 //		note: If the backlight control pin supports PWM, dimming can be done
@@ -56,8 +60,8 @@ hd44780_pinIO lcd(rs, en, d4, d5, d6, d7);
 //		LCDKeypadCheck sketch to verify that the backlight circuitry
 //		is ok before enabling backlight control.
 //
-//const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7, bl=10, blLevel=HIGH;
-//hd44780_pinIO lcd(rs, en, d4, d5, d6, d7, bl, blLEvel);
+//const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
+//hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
 
 // LCD geometry
 const int LCD_ROWS = 2;
