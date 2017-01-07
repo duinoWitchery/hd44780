@@ -53,7 +53,7 @@ The most most significant extensions being:
 
 S/W requirements
 ================
-- ### IDE version 1.0 or later
+- ### IDE version 1.0 or later (versions 1.6.9 and higher are recommended)
 
 - ### IDE versions that should be avoided:
 	- IDE versions 1.5 to 1.55 (unnecessary file name restrictions, breaks many libraries)
@@ -141,6 +141,9 @@ or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The location of your sketchbook directory will be in the text box.<br>
 Use your favorite tool to rename it.
 
+### Additional Arduino Library Information
+For more information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
+https://www.arduino.cc/en/Guide/Libraries
 
 API Summary
 ===========
