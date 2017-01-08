@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.2-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.3-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -210,7 +210,16 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.8.3] - 2017-01-08
+ * added  keywords to library.properties paragraph for better Arduino IDE library manager searching
+ * README updates
+ * hd44780_I2Cexp unknown address is now zero vs an enum/define
+ * refactored fatalError() code to live in hd44780 class for better support and maintenance.
+ * Added clarifying comments to sketches
+ * NTCU165ECPB bug fixes & timing fixes in i/o class, fixes for Leonardo, clarifying comments in examples.
+
 [0.8.2] - 2016-12-26
+ * update version info for 0.8.2 release
  * I2Cexpdiag: ESP8266 updates, more system info, multi display updates, better i2c checks
  * README updates
  * hd44780 updated comments, added new BUSY status error return value
