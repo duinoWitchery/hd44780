@@ -299,10 +299,6 @@ private:
 // === private data ===
 // ====================
 
-// auto instance tracts inst number when creating multiple auto locate objects
-// this is static since it is for the entire class not per object.
-static uint8_t AutoInst; // declaration only, definition is outside class
-
 // expander pin mapping & state information
 uint8_t _addr;			// I2C Address of the IO expander
 I2CexpType _expType;	// I2C chip type used on the IO expander
@@ -330,6 +326,9 @@ uint8_t _blCurState;	// Current IO pin state mask for Backlight
 int ioinit()
 {
 int status = 0;
+// auto instance tracts inst number when creating multiple auto locate objects
+// this is static since it is for the entire class not per object.
+static uint8_t AutoInst;
 
 	/*
 	 * First, initialize the i2c (Wire) library.
@@ -1150,7 +1149,5 @@ uint8_t gpioValue =  _blCurState;
 }
 	
 }; // end of class definition
-
-uint8_t hd44780_I2Cexp::AutoInst; // define the static auto instance variable
 
 #endif
