@@ -189,9 +189,15 @@ void setup(void)
 		// begin() failed so blink the onboard LED if possible
 		fatalError(1); // this never returns
 	}
-// check for LiquidCrytal_I2C library
-// note: Can't check initalization status on other libraries
-#elif defined(LiquidCrystal_I2C_h)
+
+// NOTE: Can't check initalization status on other libraries
+// NOTE: fm's LiquidCrystal_I2C class and other LiquidCrystal_I2C
+// 	classes define LiquidCrystal_I2C_h, but they don't initialize the
+//	the same way. We check for I2CIO use when checking for
+//	LiquidCrystal_I2C use to see which "LiquidCrystal_I2C" is
+//	is being used since fm's uses begin() while all the others use init()
+//
+#elif defined(LiquidCrystal_I2C_h) && !defined(_I2CIO_H_)
 	lcd.init();
 #else
 	lcd.begin(LCD_COLS, LCD_ROWS);
