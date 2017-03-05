@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.3-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.4-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -210,7 +210,17 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.8.4] - 2017-03-05
+ * I2CexpDiag udpates for ESP8266 and to blink backlight 3 times after initialization
+ * Comment typo corrections & Word Smithing.
+ * Tweaks to allow LCDiSpeed & LCDlibTest to run with either LiquidCrystal_I2C or fm's New LiquidCrystal
+ * Tweak to I2Cexp header to allow it to be included in multiple compilation modules.
+ * Added canned backpack entry to I2Cexp i/o class for SY1622 backpacks
+ * added i/o class readme files
+ * Added readme files for examples and ioClass directories
+
 [0.8.3] - 2017-01-08
+ * update version info for 0.8.3 release
  * added  keywords to library.properties paragraph for better Arduino IDE library manager searching
  * README updates
  * hd44780_I2Cexp unknown address is now zero vs an enum/define
