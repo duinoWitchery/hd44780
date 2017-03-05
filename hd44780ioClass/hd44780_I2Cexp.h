@@ -140,6 +140,9 @@
                                                                         // the backlight so the P3 pin will read high instead of low.
                                                                         // This breaks the autodetection.
 
+#define I2Cexp_BOARD_SY1622        I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH // This board uses a FET for backlight control
+                                                                        // This breaks the autodetection.
+
 // MCP23008 based boards
 // Currently r/w control is disabled since most boards either can't do it, or have it disabled.
 #define I2Cexp_BOARD_ADAFRUIT292   I2Cexp_MCP23008,1,2,3,4,5,6,7,HIGH // Adafruit #292 i2c/SPI backpack in i2c mode (lcd RW grounded)
@@ -667,12 +670,14 @@ uint8_t locinst = 0;
 	{
 		Wire.beginTransmission(address);
 		error = Wire.endTransmission();
-#ifdef ARDUINO_ARCH_PIC32
 		// chipkit stuff screws up if you do beginTransmission() too fast
 		// after an endTransmission()
-		// below 20us will cause it to fail, so we pad it out a bunch to provide margin
-		delayMicroseconds(100);
-#endif
+		// below 20us will cause it to fail
+		// ESP8286 needs to make sure WDT doesn't fire so we use delay()
+		// The delay(1) is overkill and not needed for other chips, but it won't
+		// hurt and the loop is only 8 addresses.
+		
+		delay(1);
 		if(error == 0) // if no error we found something
 		{
 			if(locinst == instance)
@@ -691,12 +696,14 @@ uint8_t locinst = 0;
 	{
 		Wire.beginTransmission(address);
 		error = Wire.endTransmission();
-#ifdef ARDUINO_ARCH_PIC32
 		// chipkit stuff screws up if you do beginTransmission() too fast
 		// after an endTransmission()
-		// below 20us will cause it to fail, so we pad it out a bunch to provide margin
-		delayMicroseconds(20);
-#endif
+		// below 20us will cause it to fail.
+		// ESP8286 needs to make sure WDT doesn't fire so we use delay()
+		// The delay(1) is overkill and not needed for other chips, but it won't
+		// hurt and the loop is only 8 addresses.
+		
+		delay(1);
 		if(error == 0) // if no error we found something
 		{
 			if(locinst == instance)
