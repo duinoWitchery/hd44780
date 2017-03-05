@@ -13,7 +13,7 @@
 //	when interfacing with 5v modules as not doing proper level shifting or
 //  incorrectly hooking things up can damage the processor.
 //
-// The purpose of the sketch is demonstrate the ability to read data from
+// The purpose of the sketch is to demonstrate the ability to read data from
 // the LCD.
 //
 // Sketch will print the amount of time since the Arduino has been reset

@@ -70,8 +70,8 @@ const int rs = 8; // arduino pin wired to LCD RS
 const int en = 9; // arduino pin wired to LCD EN
 const int db4 = 4;// arduino pin wired to LCD db4
 const int db5 = 5;// arduino pin wired to LCD db5
-const int db6 = 6;// arduino pin wired to LCD db7
-const int db7 = 7;// arduino pin wired to LCD db8
+const int db6 = 6;// arduino pin wired to LCD db6
+const int db7 = 7;// arduino pin wired to LCD db7
 
 const int pin_BL = 10; // arduino pin wired to LCD backlight circuit
 

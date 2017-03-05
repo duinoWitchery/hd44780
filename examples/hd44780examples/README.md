@@ -3,7 +3,8 @@ hd44780examples
 
 The examples included in this directory should work with any LiquidCrystal API 
 compatible lcd library.
-All the examples have the ability to be included by another "wrapper sketch" whican be used to define the LCD object and LCD geometry.
+All the examples have the ability to be included by another "wrapper sketch"
+which can be used to define the LCD object and LCD geometry.
 
 #### The following examples are included:
 
@@ -13,8 +14,7 @@ This will demonstrate using custom hd44780 characters on the display as well as 
 - `LCDisSpeed`<br>
 This will show the speed of writing characters to the display.
 It will show the transfer time of an individual character as well as updating
-the full display and if the geometry is different than 16x2 it will also show
-what the timing would be if the display were 16x2.
+the full display. If the geometry is different than 16x2 it will also show what the full display timing would be if the display were 16x2.
 Since the sketch can work on many different libraries and h/w, it is useful for ccomparing the speed of various libraries and LCD h/w.
 
 - `LCDlibTest`<br>
