@@ -103,7 +103,8 @@
 //	- probe the i2c bus to check for external pullup resistors 
 //	- scan the i2c bus and show all devices found
 //		NOTE: Arduino 2560 boards have 10k external pullups on the arduino board
-//	- attempt to initalize all LCD devices detected
+//	- attempt to initalize each LCD device detected
+//	- attempt to blink backlight of each initalized LCD 3 times
 //	- display information about each each initialized LCD device
 //		this includes i2c address and configuration information
 //		and information about missing pullups.
@@ -358,6 +359,15 @@ int nopullups;
 			Serial.print(F("Yes"));
 
 		Serial.println();
+
+		// attempt to blink backlight 3 times
+		for(int i = 0; i < 3; i++)
+		{
+			lcd[NumLcd].noBacklight(); // turn off backlight
+			delay(150);
+			lcd[NumLcd].backlight(); // turn on backlight
+			delay(200);
+		}
 		
 	}
 
@@ -492,7 +502,8 @@ int nopullups;
 		lcd[n].print(lcdConfigStr(buf, lcd[n]));
 
 	}
-	Serial.println(F("Each working display should be displaying its #, address, and config information"));
+	Serial.println(F("Each working display should have its backlight on"));
+	Serial.println(F("and be displaying its #, address, and config information"));
 	Serial.println(F("If display is blank, but backlight is on, try adjusting contrast pot"));
 	Serial.println(F("If backlight is off, wait for next test"));
 	delay(10000);
@@ -929,12 +940,17 @@ int devcount = 0;
 				Serial.print('0');
 			Serial.println(address,HEX);
 		}   
-#ifdef ARDUINO_ARCH_PIC32
 		// chipkit stuff screws up if you do beginTransmission() too fast
 		// after an endTransmission()
-		// below 20us will cause it to fail, pad it out more to provide margin
-		delayMicroseconds(100);
-#endif
+		// below 20us will cause it to fail
+		// ESP8286 needs to make sure WDT doesn't fire.
+		// normally yield() would be used to prevent WDT, but yield() doesn't
+		// exist on older IDEs so we use delay(1) which calls yield()
+		// The delay(1) is overkill for chipkit and not needed for other chips,
+		// but it won't hurt and keeps things compatible with older IDEs.
+		
+		delay(1);
+
 	}
 
 	Serial.print(F("Total I2C devices found: "));
