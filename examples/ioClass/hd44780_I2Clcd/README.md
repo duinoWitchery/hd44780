@@ -2,6 +2,7 @@ hd44780_I2Clcd examples
 =======================
 
 The examples included in this directory are for the hd44780_I2Clcd i/o class.
+The hd44780_I2Clcd i/o class controls an LCD with a native i2c interface that uses chips like the PCF2116, PCF2119x etc...
 
 #### The following examples are included:
 

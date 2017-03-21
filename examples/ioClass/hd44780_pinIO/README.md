@@ -2,6 +2,7 @@ hd44780_pinIO examples
 =======================
 
 The examples included in this directory are for the hd44780_pinIO i/o class.
+The hd44780_pinIO i/o class is used to control an LCD using direct Arduino pin connections.
 
 #### The following examples are included:
 

@@ -2,6 +2,8 @@ hd44780_I2Cexp examples
 =======================
 
 The examples included in this directory are for the hd44780_I2Cexp i/o class.
+The hd44780_I2Cexp i/o class controls an LCD using an i2c i/o exapander backpack (PCF8574 or MCP23008)
+
 
 #### The following examples are included:
 
