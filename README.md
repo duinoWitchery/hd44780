@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.4-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.5-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -210,7 +210,13 @@ can be found in the included examples.
 CHANGELOG
 ----------------------
 
+[0.8.5] - 2017-04-29
+ * Tweaks to comments in examples and readme files
+ * Added 'OtherLibraries' wrapper example sketches for some non hd44780 libraries
+ * updates to readme files in examples
+
 [0.8.4] - 2017-03-05
+ * update version info for 0.8.4 release
  * I2CexpDiag udpates for ESP8266 and to blink backlight 3 times after initialization
  * Comment typo corrections & Word Smithing.
  * Tweaks to allow LCDiSpeed & LCDlibTest to run with either LiquidCrystal_I2C or fm's New LiquidCrystal
