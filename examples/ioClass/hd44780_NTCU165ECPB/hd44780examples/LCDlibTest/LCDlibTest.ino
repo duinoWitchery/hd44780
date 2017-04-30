@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// LCDLibTest - LCD library test sketch
+// LCDLibTest - LCD library test sketch for hd44780_NTCU165ECPB i/o class
 // ----------------------------------------------------------------------------
 // This sketch is a wrapper sketch for the hd44780 library example.
 // Note:

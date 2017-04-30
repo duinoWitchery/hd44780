@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// lcdproc - LCD library lcdproc wrapper sketch
+// lcdproc - LCD library lcdproc wrapper sketch for hd44780_I2Cexp i/o class
 // ----------------------------------------------------------------------------
 // This sketch is a wrapper sketch for the hd44780 library example.
 // Note:

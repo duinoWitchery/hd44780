@@ -1,10 +1,11 @@
 hd44780examples
 ===============
 
-The examples included in this directory should work with any LiquidCrystal API 
-compatible lcd library.
-All the examples have the ability to be included by another "wrapper sketch"
-which can be used to define the LCD object and LCD geometry.
+The examples included in this directory contain example sketches that are used like templates for the i/o class examples.
+The examples allow using a "wrapper sketch" to define the lcd object
+and lcd geometry which then includes the hd44780 example sketch as an
+alternative to having to edit the actual sketch.
+While these sketches can be modified to work standalone with any LiquidCrystal API compatible library, their primary purpose, as shipped in the hd44780 library package, is to act as a template sketch for the i/o class wrapper sketches.
 
 #### The following examples are included:
 
@@ -19,6 +20,7 @@ Since the sketch can work on many different libraries and h/w, it is useful for 
 
 - `LCDlibTest`<br>
 This will test various API functions and LCD capabilities
+Diagnostic information is also sent to the serial port.
 
 - `lcdproc`<br>
 This is a sketch that will allow using an LCD display with the linux/unix

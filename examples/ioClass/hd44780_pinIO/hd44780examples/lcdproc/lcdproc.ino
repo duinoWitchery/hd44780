@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// lcdproc - LCD library lcdproc wrapper sketch
+// lcdproc - LCD library lcdproc wrapper sketch for hd44780_pinIO i/o class
 // ----------------------------------------------------------------------------
 // This sketch is a wrapper sketch for the hd44780 library example.
 // Note:
@@ -24,7 +24,8 @@
 // Note: this can be with or without backlight control:
 
 // without backlight control:
-//const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
+//const int rs=12, en=11, db4=5, db5=4, db6=3, db7=2; // IDE LiquidCrystal pins
+//const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7; // lcd keypad shield pins
 //hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
 // with backlight control:

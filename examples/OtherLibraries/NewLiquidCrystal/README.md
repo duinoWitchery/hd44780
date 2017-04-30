@@ -1,7 +1,7 @@
 NewLiquidCrystal hd44780 examples
 =================================
 
-The fm's NewLiquidCrystal library must be installed in order to use these sketches.
+fm's NewLiquidCrystal library must be installed in order to use these sketches.<br>
 The NewliquidCrystal library contains multiple i/o classes.
 
 

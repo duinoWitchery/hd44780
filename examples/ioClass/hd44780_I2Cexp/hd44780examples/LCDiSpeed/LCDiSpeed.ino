@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// LCDiSpeed - LCD Interface Speed test
+// LCDiSpeed - LCD Interface Speed test for hd44780 hd44780_I2Cexp i/o class
 // ----------------------------------------------------------------------------
 // This sketch is a wrapper sketch for the hd44780 library example LCDiSpeed.
 // Note:

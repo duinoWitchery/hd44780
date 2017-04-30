@@ -1,7 +1,7 @@
 hd44780_NTCU165ECPB examples
 =======================
 
-The examples included in this directory are for the hd44780_NTCU165ECPB i/o class.
+The examples included in this directory are for the hd44780_NTCU165ECPB i/o class.<br>
 The hd44780_NTCU165ECPB i/o class is used to control a Noritake CU165ECBP-T2J LCD display over SPI
 
 
