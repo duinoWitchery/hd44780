@@ -46,8 +46,8 @@ The hd44780 API also provides some addtional extensions and all the API
 functions provided by hd44780 are common across all i/o subclasses.
 The most most significant extensions being:
 - ability to modify the libraries expected command execution times.
-- API functions return a status to indicate whether not successful
-- ability to tell if lcd initialized failed
+- API functions return a status to indicate whether successful
+- ability to tell if lcd initialization failed
 - ability to read data or status from the LCD (requires r/w control)
 - ability to tell if sending a raw command to the LCD failed
 
@@ -191,7 +191,7 @@ can be found in the included examples.
 |                                       ||
 | **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
 | setBacklight(dimvalue)                | set backlight brightness (0-255)<br> **hd44780 extension**: returns zero on success |
-| setcontrast(contvalue)                | set contrast (0-255)<br> **hd44780 extension**: returns zero on success |
+| setContrast(contvalue)                | set contrast (0-255)<br> **hd44780 extension**: returns zero on success |
 | on()                                  | turn on LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
 | off()                                 | turn off LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
 | status()                              | read hd44780 status byte (busy flag & address)<br>(requires r/w signal control)<br> returns negative value on failure |
@@ -205,6 +205,16 @@ can be found in the included examples.
 | load_custom_character(char_num, Rows[]) | use createChar() instead<br> **hd44780 extension**: returns zero on success |
 | **BROKEN LCD API 1.0 Functions**      ||
 | setCursor(row, col)                   | row,col is backwards from Liquidcrystal;<br>therefore cannot be supported|
+
+Examples
+========
+Examples for the included i/o classes are provided to demonstrate how to use hd44780.<br>
+hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780.
+
+See the included readme files under the examples directory for additional information
+about the included examples.<br>
+If browsing on the github repository, you can click on the examples directory
+and its sub directory to see each readme file.
 
 
 CHANGELOG
