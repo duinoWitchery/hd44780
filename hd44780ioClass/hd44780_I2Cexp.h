@@ -349,7 +349,7 @@ static uint8_t AutoInst;
 		_addr = LocateDevice(AutoInst++);
 
 	if(!_addr) // if we couldn't locate it, return error
-		return(-1);
+		return(RV_ENXIO);
 
 	if(_expType == I2Cexp_UNKNOWN) // figure out expander chip if not told
 	{

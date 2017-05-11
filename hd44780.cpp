@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2017.05.11  bperrybap - added auto linewrap functionality
 // 2017.01.07  bperrybap - added blinkLED() and fatalError() 
 // 2016.12.26  bperrybap - new constructors
 // 2016.10.17  bperrybap - corrected DDRAM address mask in createChar()
@@ -497,6 +498,9 @@ int hd44780::setCursor(uint8_t col, uint8_t row)
 	 * - if line 0 is used, it is a backdoor to do SETDDRAMADDR to any address
 	 */
 
+	_curcol = col;
+	_currow = row;
+
 #ifdef later
 	// in right to left mode the cursor position wil be incorrect.
 	// however, things like home() and clear() will not work as expected either.
@@ -627,7 +631,7 @@ int ddramaddr;
 		return(rval);
 	for (int i=0; i<8; i++)
 	{
-		if(write(charmap[i]) != 1)
+		if(_write(charmap[i]) != 1) // use raw write to avoid line processing
 			return(RV_EIO);
 	}
 
@@ -676,9 +680,15 @@ int status;
 
 	// executime time depends on command
 	if((value == HD44780_CLEARDISPLAY) || (value == HD44780_RETURNHOME))
+	{
+		_curcol = 0;
+		_currow = 0;
 		markStart(_chExecTime);
+	}
 	else
+	{
 		markStart(_insExecTime);
+	}
 
 	return(status);
 }
@@ -705,10 +715,31 @@ int rvalue = ioread(HD44780_IOdata);
 	return(rvalue);
 }
 
-// write() - send data character byte to lcd
+// write() - process data character byte to lcd
 // returns number of bytes successfully written to device
 // i.e. 1 if success or 0 if no character was processed (error)
 size_t hd44780::write(uint8_t value)
+{
+	if(_wraplines)
+	{
+		// currently on works for left to right mode
+		if(_curcol >= _cols)
+		{
+			_curcol = 0;
+			_currow++;
+			if(_currow >= _rows)
+				_currow = 0;
+			setCursor(_curcol, _currow);
+		}
+	}
+	_curcol++; // where cursor will be after successful writing
+	return _write(value);
+}
+
+
+// _write() - send raw data byte to lcd
+// returns 1 if success or 0 if no byte was processed (error)
+size_t hd44780::_write(uint8_t value)
 {
 int status = 1; //assume success
 

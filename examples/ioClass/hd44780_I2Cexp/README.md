@@ -18,6 +18,9 @@ on the Hitachi HD44780 and compatible chipsets using I2C extension
 backpacks that use a simple I2C i/o expander chip.
 Sketch supports testing of multiple displays at once.
 
+- `LineWrap`<br>
+Sketch to demonstrate linewrap functionality
+
 - `MultiDisplay`<br>
 Sketch will display information on multiple displays at once.
 

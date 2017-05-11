@@ -14,6 +14,9 @@ on the second row.
 - `LCDKeypadCheck`<br>
 Sketch to test lcd keypad shields for bad backlight circuitry
 
+- `LineWrap`<br>
+Sketch to demonstrate linewrap functionality
+
 - `ReadWrite`<br>
 The purpose of the sketch is to demonstrate the ability to read data from
 the LCD.

@@ -92,6 +92,9 @@ The library currenly comes with the following i/o subclasses:
 
 Installation
 ============
+For generic information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
+https://www.arduino.cc/en/Guide/Libraries
+
 For ease of installation it is recommended to use an IDE that supports the library mananager which was implemented in IDE version 1.6.2
 
 ### Installation using Library manager (IDE 1.6.2 and later)
@@ -141,10 +144,6 @@ or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The location of your sketchbook directory will be in the text box.<br>
 Use your favorite tool to rename it.
 
-### Additional Arduino Library Information
-For more information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
-https://www.arduino.cc/en/Guide/Libraries
-
 API Summary
 ===========
 The table below is a summary of all the available API functions in the hd44780 library.
@@ -186,6 +185,8 @@ can be found in the included examples.
 | **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
 | backlight()	                        | turn on backlight (max brightness)<br>returns zero on success |
 | noBacklight()                         | turn off backlight<br>returns zero on success    |
+| lineWrap                              | turn on automatic line wrapping<br>(wraps lines but does not scroll display)<br>returns zero on success
+| noLineWrap                            | turn off automatic line wrapping<br>returns zero on success
 | read()                                | read data byte from LCD<br>(requires r/w signal control)<br>returns negative value on failure |
 | setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
 |                                       ||
@@ -213,8 +214,8 @@ hd44780 also includes some examples that use other 3rd party LCD libraries rathe
 
 See the included readme files under the examples directory for additional information
 about the included examples.<br>
-If browsing on the github repository, you can click on the examples directory
-and its sub directory to see each readme file.
+If browsing on the hd44780 github repository, you can click on the examples
+directory and its subdirectories to see each readme file.
 
 
 CHANGELOG

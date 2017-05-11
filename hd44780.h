@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2017.05.11  bperrybap - added auto linewrap functionality
 // 2016.12.26  bperrybap - new BUSY error status, new constructors
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
 // 2016.08.06  bperrybap - changed iosend() to iowrite()
@@ -180,7 +181,8 @@ public:
 	int clear();
 	int home();
 	int setCursor(uint8_t col, uint8_t row); 
-	size_t write(uint8_t value);
+	size_t write(uint8_t value);	// does char & line processing
+	size_t _write(uint8_t value);	// does not do char & line processing
 	using Print::write; // for other Print Class write() functions
 	int cursor();
 	int noCursor();
@@ -306,6 +308,10 @@ public:
 	int backlight(void);		// turn on Backlight (max brightness)
 	int noBacklight(void);		// turn off Backlight
 	int read(void);
+	// enable automatic line wrapping (only works in left 2 right mode)
+	int lineWrap(void)  { if(_displaymode & HD44780_ENTRYLEFT2RIGHT) {_wraplines=1; return(RV_ENOERR);}else{return(RV_ENOTSUP);}}
+	// disable automatic line wrapping
+	int noLineWrap(void){ _wraplines=0; return(RV_ENOERR);};		// turn off automatic line wrapping
 
 	// set execution times for commmands to override defaults
 	inline void setExecTimes(uint32_t chExecTimeUs, uint32_t insExecTimeUs)
@@ -338,6 +344,10 @@ protected:
 		{while(( ((uint32_t)micros()) - _stime) < _etime){}}
 
 private:
+
+	uint8_t _curcol;	// current LCD col if doing char & line processing
+	uint8_t _currow;	// current LCD row if doing char & line processing
+	uint8_t _wraplines;	// set to nonzero if wrapping long lines
 
 	// i/o subclass functions
 	virtual int ioinit() {return 0;}	// optional - successful if not implemented

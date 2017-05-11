@@ -11,6 +11,9 @@ Sketch will print "Hello, World!" on top row of lcd
 and will print the amount of time since the Arduino has been reset
 on the second row.
 
+- `LineWrap`<br>
+Sketch to demonstrate linewrap functionality
+
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains
 hd44780_I2Clcd class specific wrapper sketches for sketches under
