@@ -43,6 +43,7 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2017.05.11  bperrybap - linewrap tweak for better visual cursor position
 // 2017.05.11  bperrybap - added auto linewrap functionality
 // 2017.01.07  bperrybap - added blinkLED() and fatalError() 
 // 2016.12.26  bperrybap - new constructors
@@ -720,10 +721,13 @@ int rvalue = ioread(HD44780_IOdata);
 // i.e. 1 if success or 0 if no character was processed (error)
 size_t hd44780::write(uint8_t value)
 {
+size_t rval;
+
+	rval = _write(value);
 	if(_wraplines)
 	{
-		// currently on works for left to right mode
-		if(_curcol >= _cols)
+		// currently onl works for left to right mode
+		if(++_curcol >= _cols)
 		{
 			_curcol = 0;
 			_currow++;
@@ -732,8 +736,7 @@ size_t hd44780::write(uint8_t value)
 			setCursor(_curcol, _currow);
 		}
 	}
-	_curcol++; // where cursor will be after successful writing
-	return _write(value);
+	return (rval);
 }
 
 
