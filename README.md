@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.5-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.6-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -221,7 +221,15 @@ directory and its subdirectories to see each readme file.
 CHANGELOG
 ----------------------
 
+[0.8.6] - 2017-05-11
+ * updated examples README
+ * renamed examples/OtherLibraries to examples/otherLibraries
+ * Added LineWrap examples
+ * added automatic linewrap functionality and API
+ * Added section about Examples to main readme
+
 [0.8.5] - 2017-04-29
+ * update version info for 0.8.5 release
  * Tweaks to comments in examples and readme files
  * Added 'OtherLibraries' wrapper example sketches for some non hd44780 libraries
  * updates to readme files in examples
