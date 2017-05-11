@@ -15,6 +15,6 @@ While these sketches can be modified to work standalone with any LiquidCrystal A
 Contains subdirectories for each included hd44780 i/o class containing sketches
 that are specific to the i/o class. They also contain wrapper sketches for the sketches mentioned above.
 
-* `OtherLibraries`<br>
+* `otherLibraries`<br>
 Contains subdirectories for other (non hd44780) libraries that contain wrapper sketches for various hd44780examples sketches.
 This is intended to allow easy benchmarking of other libraries for comparison purposes.
