@@ -43,6 +43,8 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// 2017.05.11  bperrybap - setCursor() wraps when auto linewrap enabled
+//                         and col beyond end of line
 // 2017.05.11  bperrybap - linewrap tweak for better visual cursor position
 // 2017.05.11  bperrybap - added auto linewrap functionality
 // 2017.01.07  bperrybap - added blinkLED() and fatalError() 
@@ -497,10 +499,28 @@ int hd44780::setCursor(uint8_t col, uint8_t row)
 	 * It is intionally not checked to allow allow:
 	 * - positioning off the end of the visable line
 	 * - if line 0 is used, it is a backdoor to do SETDDRAMADDR to any address
+	 *
+	 * NOTE:
+	 * Things are handled differently if auto linewrap is enabled:
+	 * position takes into consideration line wrapping.
+	 * i.e. positioning to col 16, row 0  on a 16x2 display
+	 * will position the cursor to col 0 row 1.
 	 */
 
-	_curcol = col;
-	_currow = row;
+	if(_wraplines)
+	{
+		// wrap while requested col > toal cols
+		while(col >= _cols)
+		{
+			col -= _cols;
+			if(++row >= _rows)
+				row = 0; // wrap back to top line
+		}
+
+		// save position
+		_curcol = col;
+		_currow = row;
+	}
 
 #ifdef later
 	// in right to left mode the cursor position wil be incorrect.
