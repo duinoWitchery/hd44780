@@ -147,6 +147,8 @@ void loop()
 	// now print 2 full displays worth of characters to show
 	// the full wrapping.
 
+	lcd.cursor(); // turn on cursor so you can see where it is
+
 	char c = '0'; // start at the character for the number zero
 	for(int i = 2*LCD_COLS*LCD_ROWS; i; i--)
 	{
@@ -157,4 +159,5 @@ void loop()
 			c = '!'; 
 	}
 	delay(3000);
+	lcd.noCursor(); // turn off cursor
 }
