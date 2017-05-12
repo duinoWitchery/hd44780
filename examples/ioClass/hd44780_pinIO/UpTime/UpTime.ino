@@ -1,0 +1,166 @@
+// vi:ts=4
+// ----------------------------------------------------------------------------
+// HelloWorld - simple demonstration of lcd
+// Created by Bill Perry 2017-05-11
+// bperrybap@opensource.billsworld.billandterrie.com
+//
+// This example code is unlicensed and is released into the public domain
+// ----------------------------------------------------------------------------
+// 
+// This sketch is for LCDs that are directly controlled with Arduino pins.
+//
+// Sketch will print "UpTime" on top row of lcd
+// and will print the amount of time since the Arduino has been reset
+// on the second row.
+//
+//
+// See below for configuring the Arduino pins used.
+//
+// If initialization of the LCD fails and the arduino supports a built in LED,
+// the sketch will simply blink the built in LED.
+//
+// While not all hd44780 use the same pinout, here is the one that most use:
+// pin 1 is the pin closest to the edge of the PCB
+//  1 - LCD gnd
+//  2 - VCC (5v)
+//  3 - Vo Contrast Voltage
+//  4 - RS Register Select (rs)
+//  5 - Read/Write
+//  6 - Enable (en)
+//  7 - Data 0 (db0) ----
+//  8 - Data 1 (db1)     |-------- Not used in 4 bit mode
+//  9 - Data 2 (db2)     |
+// 10 - Data 3 (db3) ----
+// 11 - Data 4 (db4)
+// 12 - Data 5 (db5)
+// 13 - Data 6 (db6)
+// 14 - Data 7 (db7)
+// 15 - Backlight Anode (+5v)
+// 16 - Backlight Cathode (Gnd)
+
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
+
+// declare Arduino pins used for LCD functions
+// and the lcd object
+
+// Note: this can be with or without backlight control:
+
+// without backlight control:
+const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
+hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
+
+//with backlight control:
+//	backlight control requires two additional parameters
+//	- an additional pin to control the backlight
+//	- backlight active level which tells the library the level
+//		needed to turn on the backlight.
+//		note: If the backlight control pin supports PWM, dimming can be done
+//	WARNING: some lcd keypads have a broken backlight circuit
+//		If you have a lcd keypad, it is recommended that you first run the
+//		LCDKeypadCheck sketch to verify that the backlight circuitry
+//		is ok before enabling backlight control.
+//
+//const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
+//hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
+
+// LCD geometry
+const int LCD_COLS = 16;
+const int LCD_ROWS = 2;
+
+void setup()
+{
+int status;
+
+	// initialize LCD with number of columns and rows: 
+	// hd44780 returns a status from begin() that can be used
+	// to determine if initalization failed.
+	// the actual status codes are defined in <hd44780.h>
+	status = lcd.begin(LCD_COLS, LCD_ROWS);
+	if(status) // non zero status means it was unsuccesful
+	{
+		status = -status; // convert negative status value to positive number
+
+		// hd44780 has a fatalError() routine that blinks an led if possible
+		// begin() failed so call fatalError() with the error code.
+		hd44780::fatalError(status); // does not return
+	}
+
+	// Print a message to the LCD
+	lcd.print(" UpTime");
+
+	if(LCD_ROWS < 2)
+		delay(3000);
+}
+
+void loop()
+{
+static unsigned long lastsecs = -1; // pre-initialize with non zero value
+unsigned long secs;
+int status;
+
+	secs = millis() / 1000;
+
+	// see if 1 second has passed
+	// so the display is only updated once per second
+	if(secs != lastsecs)
+	{
+		lastsecs = secs; // keep track of last seconds
+
+		// set the cursor position to column 0, row 1
+		// note: row 1 is the second row from top,
+		// since row counting begins with 0
+		// if display has only 1 line, it will appear on that line
+		status = lcd.setCursor(0, 1);
+		if(status) // non zero status means it was unsuccesful
+		{
+			status = -status; // convert negative status to positive number
+			// setCursor() failed so call fatalError() with the error code.
+			hd44780::fatalError(status); // does not return
+		}
+
+		// print uptime on lcd device: (time since last reset)
+		PrintUpTime(lcd, secs);
+	}
+}
+
+// PrintUpTime(outdev, secs) - print uptime in HH:MM:SS format
+// outdev - the device to send output
+//   secs - the total number of seconds uptime
+//
+// This is a fancy output routine.
+// outdev is a Print class object which indicates
+// where the output should be sent.
+// PrintUpTime can be used with any object that uses the Print class.
+// This code will with Serial objects, as well as the the hd44780 lcd objects.
+
+void PrintUpTime(Print &outdev, unsigned long secs)
+{
+unsigned int hr, mins, sec;
+
+	// convert total seconds to hours, mins, seconds
+	mins =  secs / 60;	// how many total minutes
+	hr = mins / 60;		// how many total hours
+	mins = mins % 60;	// how many minutes within the hour
+	sec = secs % 60;	// how many seconds within the minute
+		
+	// print uptime in HH:MM:SS format
+
+	if(hr > 99)
+		hr %= 100; // limit hr to 0-99
+
+	// Print class does not support fixed width formatting
+	// so insert a zero if number smaller than 10
+		
+	if(hr < 10)
+		outdev.write('0');
+	outdev.print((int)hr);
+	outdev.write(':');
+	if(mins < 10)
+		outdev.write('0');
+	outdev.print((int)mins);
+	outdev.write(':');
+	if(sec < 10)
+		outdev.write('0');
+	outdev.print((int)sec);
+}

@@ -15,11 +15,14 @@ on the second row.
 Sketch to test lcd keypad shields for bad backlight circuitry
 
 - `LineWrap`<br>
-Sketch to demonstrate linewrap functionality
+Sketch to demonstrate automatic linewrap functionality
 
 - `ReadWrite`<br>
 The purpose of the sketch is to demonstrate the ability to read data from
 the LCD.
+
+- `UpTime`<br>
+Sketch prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains

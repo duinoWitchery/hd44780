@@ -13,7 +13,10 @@ and will print the amount of time since the Arduino has been reset
 on the second row.
 
 - `LineWrap`<br>
-Sketch to demonstrate linewrap functionality
+Sketch to demonstrate automatic linewrap functionality
+
+- `UpTime`<br>
+Sketch prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains

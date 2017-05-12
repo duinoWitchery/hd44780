@@ -15,18 +15,21 @@ on the second row.
 - `I2CexpDiag`<br>
 Sketch to verify configuation & operation of hd44780 LCDs based
 on the Hitachi HD44780 and compatible chipsets using I2C extension
-backpacks that use a simple I2C i/o expander chip.
+backpacks that use a simple I2C i/o expander chip. (PCF8574 or MCP23008)
 Sketch supports testing of multiple displays at once.
 
 - `LineWrap`<br>
-Sketch to demonstrate linewrap functionality
+Sketch to demonstrate automatic linewrap functionality
 
 - `MultiDisplay`<br>
-Sketch will display information on multiple displays at once.
+Sketch displays information on multiple displays at once.
 
 - `ReadWrite`<br>
 The purpose of the sketch is to demonstrate the ability to read data from
 the LCD.
+
+- `UpTime`<br>
+Sketch prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains
