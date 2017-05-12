@@ -185,8 +185,8 @@ can be found in the included examples.
 | **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
 | backlight()	                        | turn on backlight (max brightness)<br>returns zero on success |
 | noBacklight()                         | turn off backlight<br>returns zero on success    |
-| lineWrap                              | turn on automatic line wrapping<br>(wraps lines but does not scroll display)<br>returns zero on success
-| noLineWrap                            | turn off automatic line wrapping<br>returns zero on success
+| lineWrap()                            | turn on automatic line wrapping<br>(wraps lines but does not scroll display)<br>returns zero on success
+| noLineWrap()                          | turn off automatic line wrapping<br>returns zero on success
 | read()                                | read data byte from LCD<br>(requires r/w signal control)<br>returns negative value on failure |
 | setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
 |                                       ||

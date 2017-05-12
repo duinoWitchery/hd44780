@@ -1,6 +1,6 @@
 // vi:ts=4
 // ----------------------------------------------------------------------------
-// LineWrap - simple demonstration of linewrap functionality
+// LineWrap - simple demonstration of automatic linewrap functionality
 // Created by Bill Perry 2017-05-10
 // bperrybap@opensource.billsworld.billandterrie.com
 //
@@ -9,18 +9,8 @@
 //
 // This sketch is for the Nortake CU165ECBP-T2J display
 //
-// Sketch will demonstrate hd44780 library line wrapping functionality.
-// Background:
-// hd44780 LCDs do not use a linear continuous addresses for the characters
-// on the lines on the display.
-// This means that simply sending continuous characters to the
-// display will not fill lines and wrap appropriately as might be expected.
-// The hd44780 library solves this issue by adding a line wrapping capability
-// in s/w that can be enabled & disabled.
-// This allows the host to send characters to the display continuously and they
-// will wrap to the next lower line when the end of the visible line has been
-// reached. When on the bottom line it will wrap back to the top line.
-// 
+// Sketch demonstrates hd44780 library automatic line wrapping functionality.
+//
 // (Configure LCD_COLS & LCD_ROWS if desired/needed)
 // Expected behavior of the sketch:
 // - display a banner announcing the test.
@@ -36,16 +26,6 @@
 // NOTE:
 //	If the sketch fails to produce the expected results, or blinks the LED,
 //	run the included I2CexpDiag sketch to test the i2c signals and the LCD.
-//
-// Special note for certain 16x1 displays:
-// Some 16x1 displays are actually a 8x2 display that have both lines on
-// a single line on the display.
-// If you have one of these displays, simply set the geometry to 8x2 instead
-// of 16x1. 
-// In normal sketches, lineWrap() mode will allow this type of display to
-// properly function as a 16x1 display in that it will allow printing up to
-// 16 characters on the display without having to manually set the cursor
-// position to print the right characters on the half of the display.
 //
 // ----------------------------------------------------------------------------
 // Datasheet can be found here:
@@ -121,6 +101,15 @@ int status;
 		// begin() failed so blink error code using the onboard LED if possible
 		hd44780::fatalError(status); // does not return
 	}
+
+	// turn on automatic line wrapping
+	// which automatically wraps lines to the next lower line and wraps back
+	// to the top when at the bottom line
+	// NOTE: 
+	// noLineWrap() can be used to disable automatic line wrapping.
+	// _write() can be called instead of write() to send data bytes
+	// to the display bypassing any special character or line wrap processing.
+	lcd.lineWrap();
 }
 
 void loop()
@@ -136,15 +125,6 @@ void loop()
 	lcd.print(LCD_ROWS);
 	delay(3000);
 	lcd.clear();
-
-	// turn on line wrapping
-	// which automatically wraps lines to the next lower line and wraps back
-	// to the top when at the bottom line
-	// NOTE: 
-	// noLineWrap() can be used to disable automatic line wrapping.
-	// _write() can be called instead of write() to send data bytes
-	// to the display bypassing any special character or line wrap processing.
-	lcd.lineWrap();
 
 	// print a long text string
 	// without line wrapping enabled, the text would not wrap properly

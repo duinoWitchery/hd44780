@@ -1,6 +1,6 @@
 // vi:ts=4
 // ----------------------------------------------------------------------------
-// LineWrap - simple demonstration of linewrap functionality
+// LineWrap - simple demonstration of automatic linewrap functionality
 // Created by Bill Perry 2017-05-10
 // bperrybap@opensource.billsworld.billandterrie.com
 //
@@ -9,9 +9,10 @@
 //
 // This sketch is for LCDs that are directly controlled with Arduino pins.
 //
-// Sketch will demonstrate hd44780 library line wrapping functionality.
+// Sketch demonstrates hd44780 library automatic line wrapping functionality.
+//
 // Background:
-// hd44780 LCDs do not use a linear continuous addresses for the characters
+// hd44780 LCDs do not use linear continuous memory for the characters
 // on the lines on the display.
 // This means that simply sending continuous characters to the
 // display will not fill lines and wrap appropriately as might be expected.
@@ -117,6 +118,16 @@ int status;
 		// begin() failed so blink error code using the onboard LED if possible
 		hd44780::fatalError(status); // does not return
 	}
+
+	// turn on automatic line wrapping
+	// which automatically wraps lines to the next lower line and wraps back
+	// to the top when at the bottom line
+	// NOTE: 
+	// noLineWrap() can be used to disable automatic line wrapping.
+	// _write() can be called instead of write() to send data bytes
+	// to the display bypassing any special character or line wrap processing.
+	lcd.lineWrap();
+
 }
 
 void loop()
@@ -132,15 +143,6 @@ void loop()
 	lcd.print(LCD_ROWS);
 	delay(3000);
 	lcd.clear();
-
-	// turn on line wrapping
-	// which automatically wraps lines to the next lower line and wraps back
-	// to the top when at the bottom line
-	// NOTE: 
-	// noLineWrap() can be used to disable automatic line wrapping.
-	// _write() can be called instead of write() to send data bytes
-	// to the display bypassing any special character or line wrap processing.
-	lcd.lineWrap();
 
 	// print a long text string
 	// without line wrapping enabled, the text would not wrap properly
