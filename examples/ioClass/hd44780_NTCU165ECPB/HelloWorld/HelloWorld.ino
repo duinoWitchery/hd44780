@@ -9,9 +9,7 @@
 // 
 // This sketch is for the Nortake CU165ECBP-T2J display
 //
-// Sketch will print "Hello, World!" on top row of lcd
-// and will print the amount of time since the Arduino has been reset
-// on the second row.
+// Sketch prints "Hello, World!" on the LCD
 //
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED.
@@ -29,7 +27,12 @@
 // 4 CLK  (SCK)  - Digital Pin 13 on Uno
 // 5 DATA (MOSI) - Digital Pin 11 on Uno
 //
-//
+// ----------------------------------------------------------------------------
+// LiquidCrystal compability:
+// Since hd44780 is LiquidCrystal API compatible, most existing LiquidCrystal
+// sketches should work with hd44780 hd44780_NTCU165ECPB i/o class once the
+// includes are changed to use hd44780 and the lcd object constructor is
+// changed to use the hd44780_I2CNTCU165ECPB i/o class/
 
 #include <SPI.h> // optional, include to use h/w spi
 #include <hd44780.h>
@@ -70,72 +73,20 @@ const int LCD_COLS = 16;
 
 void setup()
 {
-	// initialize LCD with number of columns and rows: 
-	if( lcd.begin(LCD_COLS, LCD_ROWS))
-	{
-		// begin() failed so blink the onboard LED if possible
+	// Special Note:
+	// =============
+	// Since this device uses a write only SPI interface, there is no way for
+	// the library/sketch to know if the device is present or if there is any
+	// type of issue communicating with the device.
+	// So while begin() returns a status as to whether it was successful,
+	// the library will never report a failure since it has no way of detecting
+	// a communication or initialization issue.
 
-		fatalError(1); // this never returns
-	}
+	// initialize LCD with number of columns and rows: 
+	lcd.begin(LCD_COLS, LCD_ROWS);
 	
 	// Print a message to the LCD
 	lcd.print("Hello, World!");
-	delay(2000);
-	lcd.clear();
 }
 
-void loop()
-{
-static unsigned long lastsecs = -1; // pre-initialize with non zero value
-unsigned long secs;
-
-	secs = millis() / 1000;
-
-	// see if 1 second has passed
-	// so the display is only updated once per second
-	if(secs != lastsecs)
-	{
-		lastsecs = secs; // keep track of last seconds
-
-		lcd.setCursor(0, 0);
-
-		// print uptime on lcd device: (time since last reset)
-		PrintUpTime(lcd, secs);
-	}
-}
-
-// PrintUpTime(outdev, secs) - print uptime in HH:MM:SS format
-// outdev - the device to send output
-//   secs - the total number of seconds uptime
-void PrintUpTime(Print &outdev, unsigned long secs)
-{
-unsigned int hr, mins, sec;
-
-	// convert total seconds to hours, mins, seconds
-	mins =  secs / 60;	// how many total minutes
-	hr = mins / 60;		// how many total hours
-	mins = mins % 60;	// how many minutes within the hour
-	sec = secs % 60;	// how many seconds within the minute
-		
-
-	// print uptime in HH:MM:SS format
-	// Print class does not support fixed width formatting
-	// so insert a zero if number smaller than 10
-	if(hr < 10)
-		outdev.write('0');
-	outdev.print((int)hr);
-	outdev.write(':');
-	if(mins < 10)
-		outdev.write('0');
-	outdev.print((int)mins);
-	outdev.write(':');
-	if(sec < 10)
-		outdev.write('0');
-	outdev.print((int)sec);
-}
-
-// fatalError() - loop & blink and error code
-void fatalError(int ecode)
-{
-	hd44780::fatalError(ecode); // does not return
-}
+void loop(){}

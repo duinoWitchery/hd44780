@@ -9,14 +9,9 @@
 // 
 // This sketch is for LCDs that are directly controlled with Arduino pins.
 //
-// Sketch will print "Hello, World!" on top row of lcd
-// and will print the amount of time since the Arduino has been reset
-// on the second row.
+// Sketch prints "Hello, World!" on the lcd
 //
 // See below for configuring the Arduino pins used.
-//
-// If initialization of the LCD fails and the arduino supports a built in LED,
-// the sketch will simply blink the built in LED.
 //
 // While not all hd44780 use the same pinout, here is the one that most use:
 // pin 1 is the pin closest to the edge of the PCB
@@ -36,6 +31,13 @@
 // 14 - Data 7 (db7)
 // 15 - Backlight Anode (+5v)
 // 16 - Backlight Cathode (Gnd)
+//
+// ----------------------------------------------------------------------------
+// LiquidCrystal compability:
+// Since hd44780 is LiquidCrystal API compatible, most existing LiquidCrystal
+// sketches should work with hd44780 hd44780_pinIO i/o class once the
+// includes are changed to use hd44780 and the lcd object constructor is
+// changed to use the hd44780_pinIO class.
 
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
@@ -46,6 +48,8 @@
 // Note: this can be with or without backlight control:
 
 // without backlight control:
+// The parameters used by hd44780_pinIO are the same as those used by
+// the IDE bundled LiquidCrystal library
 const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
 hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
@@ -55,105 +59,37 @@ hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 //	- backlight active level which tells the library the level
 //		needed to turn on the backlight.
 //		note: If the backlight control pin supports PWM, dimming can be done
+//			using setBacklight(dimvalue);
+//
 //	WARNING: some lcd keypads have a broken backlight circuit
 //		If you have a lcd keypad, it is recommended that you first run the
 //		LCDKeypadCheck sketch to verify that the backlight circuitry
 //		is ok before enabling backlight control.
+//		However, the hd44780_PinIO class will autodetect the issue and
+//		work around it in s/w. If the backlight circuitry is broken,
+//		dimming will not be possible even if the backlight pin supports PWM.
 //
 //const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
 //hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
 
 // LCD geometry
-const int LCD_ROWS = 2;
 const int LCD_COLS = 16;
+const int LCD_ROWS = 2;
 
 void setup()
 {
-	// -----------------------------------------------------------------------
-	// hd44780 API function: setExecTimes
-	//
-	// setExecTimes(chExecTimeus, insExecTimeUs)
-	// chExecTimeUs  - time in microseconds of clear & home commands
-	// insExecTimeUs - time in microseconds of all other instructions
-	//
-	// configures execution times in Us for clear/home commands and all other
-	// command or data instructions.
-	// if the lcd module needs more execution time for operations.
-	// NOTE: These execution times are not global so when using multiple
-	// lcd objects, each lcd object can have its own seperate execution times.
-	//
-	// The execution times can be set before calling begin() to ensure that
-	// the initialization code in begin() uses the proper execution times.
-	// -----------------------------------------------------------------------
-
-	// lcd.setExecTimes(2000, 37);  // uncomment this to use custom times
-
 	// initialize LCD with number of columns and rows: 
-	if( lcd.begin(LCD_COLS, LCD_ROWS))
-	{
-		// begin() failed so blink the onboard LED if possible
-		fatalError(1); // this never returns
-	}
-	
+	//
+	// note:
+	//	begin() will automatically turn on the backlight if backlight
+	// 	control is specified in the lcd object constructor
+	//
+	lcd.begin(LCD_COLS, LCD_ROWS);
+
+	// if backlight control was specified, the backlight should be on now
+
 	// Print a message to the LCD
 	lcd.print("Hello, World!");
 }
 
-void loop()
-{
-static unsigned long lastsecs = -1; // pre-initialize with non zero value
-unsigned long secs;
-
-	secs = millis() / 1000;
-
-	// see if 1 second has passed
-	// so the display is only updated once per second
-	if(secs != lastsecs)
-	{
-		lastsecs = secs; // keep track of last seconds
-
-		// set the cursor position to column 0, row 1
-		// note: row 1 is the second row from top,
-		// since row counting begins with 0
-		lcd.setCursor(0, 1);
-
-		// print uptime on lcd device: (time since last reset)
-		PrintUpTime(lcd, secs);
-	}
-}
-
-// PrintUpTime(outdev, secs) - print uptime in HH:MM:SS format
-// outdev - the device to send output
-//   secs - the total number of seconds uptime
-void PrintUpTime(Print &outdev, unsigned long secs)
-{
-unsigned int hr, mins, sec;
-
-	// convert total seconds to hours, mins, seconds
-	mins =  secs / 60;	// how many total minutes
-	hr = mins / 60;		// how many total hours
-	mins = mins % 60;	// how many minutes within the hour
-	sec = secs % 60;	// how many seconds within the minute
-		
-
-	// print uptime in HH:MM:SS format
-	// Print class does not support fixed width formatting
-	// so insert a zero if number smaller than 10
-	if(hr < 10)
-		outdev.write('0');
-	outdev.print((int)hr);
-	outdev.write(':');
-	if(mins < 10)
-		outdev.write('0');
-	outdev.print((int)mins);
-	outdev.write(':');
-	if(sec < 10)
-		outdev.write('0');
-	outdev.print((int)sec);
-}
-
-// fatalError() - loop & blink and error code
-void fatalError(int ecode)
-{
-	hd44780::fatalError(ecode); // does not return
-}
+void loop() {}

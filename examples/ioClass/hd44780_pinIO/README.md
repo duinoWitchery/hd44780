@@ -7,9 +7,7 @@ The hd44780_pinIO i/o class is used to control an LCD using direct Arduino pin c
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch will print "Hello, World!" on top row of lcd
-and will print the amount of time since the Arduino has been reset
-on the second row.
+Sketch prints "Hello, World!" on the lcd
 
 - `LCDKeypadCheck`<br>
 Sketch to test lcd keypad shields for bad backlight circuitry

@@ -7,9 +7,7 @@ The hd44780_I2Clcd i/o class controls an LCD with a native i2c interface that us
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch will print "Hello, World!" on top row of lcd
-and will print the amount of time since the Arduino has been reset
-on the second row.
+Sketch prints "Hello, World!" on the lcd
 
 - `LineWrap`<br>
 Sketch to demonstrate automatic linewrap functionality

@@ -8,9 +8,7 @@ The hd44780_I2Cexp i/o class controls an LCD using an i2c i/o exapander backpack
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch will print "Hello, World!" on top row of lcd
-and will print the amount of time since the Arduino has been reset
-on the second row.
+Sketch prints "Hello, World!" on the lcd
 
 - `I2CexpDiag`<br>
 Sketch to verify configuation & operation of hd44780 LCDs based
