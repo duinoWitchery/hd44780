@@ -37,6 +37,13 @@
 // 14 - Data 7 (db7)
 // 15 - Backlight Anode (+5v)
 // 16 - Backlight Cathode (Gnd)
+// ----------------------------------------------------------------------------
+// LiquidCrystal compability:
+// Since hd44780 is LiquidCrystal API compatible, most existing LiquidCrystal
+// sketches should work with hd44780 hd44780_pinIO i/o class once the
+// includes are changed to use hd44780 and the lcd object constructor is
+// changed to use the hd44780_pinIO class.
+
 
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
@@ -47,6 +54,8 @@
 // Note: this can be with or without backlight control:
 
 // without backlight control:
+// The parameters used by hd44780_pinIO are the same as those used by
+// the IDE bundled LiquidCrystal library
 const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
 hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
@@ -76,6 +85,12 @@ int status;
 	// hd44780 returns a status from begin() that can be used
 	// to determine if initalization failed.
 	// the actual status codes are defined in <hd44780.h>
+	//
+	// note:
+	//	begin() will automatically turn on the backlight if backlight
+	// 	control is specified in the lcd object constructor
+	//
+
 	status = lcd.begin(LCD_COLS, LCD_ROWS);
 	if(status) // non zero status means it was unsuccesful
 	{
@@ -85,6 +100,8 @@ int status;
 		// begin() failed so call fatalError() with the error code.
 		hd44780::fatalError(status); // does not return
 	}
+
+	// if backlight control was specified, the backlight should be on now
 
 	// Print a message to the LCD
 	lcd.print(" UpTime");
@@ -132,7 +149,8 @@ int status;
 // outdev is a Print class object which indicates
 // where the output should be sent.
 // PrintUpTime can be used with any object that uses the Print class.
-// This code will with Serial objects, as well as the the hd44780 lcd objects.
+// This code works with Serial objects, as well as the the hd44780 lcd objects.
+// i.e. you can call with Serial: PrintUpTime(Serial, seconds);
 
 void PrintUpTime(Print &outdev, unsigned long secs)
 {

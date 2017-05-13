@@ -64,6 +64,11 @@ int status;
 	// hd44780 returns a status from begin() that can be used
 	// to determine if initalization failed.
 	// the actual status codes are defined in <hd44780.h>
+	// See the values RV_XXXX
+	//
+	// looking at the return status from begin() is optional
+	// it is being done here to provide feedback should there be an issue
+	//
 	status = lcd.begin(LCD_COLS, LCD_ROWS);
 	if(status) // non zero status means it was unsuccesful
 	{
@@ -119,7 +124,8 @@ int status;
 // outdev is a Print class object which indicates
 // where the output should be sent.
 // PrintUpTime can be used with any object that uses the Print class.
-// This code will with Serial objects, as well as the the hd44780 lcd objects.
+// This code works with Serial objects, as well as the the hd44780 lcd objects.
+// i.e. you can call with Serial: PrintUpTime(Serial, seconds);
 
 void PrintUpTime(Print &outdev, unsigned long secs)
 {

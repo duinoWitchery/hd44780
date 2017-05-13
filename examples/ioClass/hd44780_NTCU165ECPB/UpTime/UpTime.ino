@@ -29,14 +29,6 @@
 // 4 CLK  (SCK)  - Digital Pin 13 on Uno
 // 5 DATA (MOSI) - Digital Pin 11 on Uno
 //
-// Special Note:
-// =============
-// Since this device uses a write only SPI interface, there is now way for
-// the library/sketch to know if the device is present or if there is any
-// type of issue communicating with the device.
-// So while the code below check for errors, no detectable errors will ever
-// occur.
-//
 
 #include <SPI.h> // optional, include to use h/w spi
 #include <hd44780.h>                            // main hd44780 header
@@ -79,19 +71,15 @@ void setup()
 {
 int status;
 
-	// initialize LCD with number of columns and rows: 
-	// hd44780 returns a status from begin() that can be used
-	// to determine if initalization failed.
-	// the actual status codes are defined in <hd44780.h>
-	status = lcd.begin(LCD_COLS, LCD_ROWS);
-	if(status) // non zero status means it was unsuccesful
-	{
-		status = -status; // convert negative status value to positive number
+	// Special Note:
+	// =============
+	// Since this device uses a write only SPI interface, there is no way for
+	// the library/sketch to know if the device is present or if there is any
+	// type of issue communicating with the device.
+	//
 
-		// hd44780 has a fatalError() routine that blinks an led if possible
-		// begin() failed so call fatalError() with the error code.
-		hd44780::fatalError(status); // does not return
-	}
+	// initialize LCD with number of columns and rows: 
+	lcd.begin(LCD_COLS, LCD_ROWS);
 
 	// Print banner message to the LCD
 	lcd.print("UpTime:");
@@ -136,7 +124,8 @@ int status;
 // outdev is a Print class object which indicates
 // where the output should be sent.
 // PrintUpTime can be used with any object that uses the Print class.
-// This code will with Serial objects, as well as the the hd44780 lcd objects.
+// This code works with Serial objects, as well as the the hd44780 lcd objects.
+// i.e. you can call with Serial: PrintUpTime(Serial, seconds);
 
 void PrintUpTime(Print &outdev, unsigned long secs)
 {
