@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.8.6-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.0-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -221,7 +221,18 @@ directory and its subdirectories to see each readme file.
 CHANGELOG
 ----------------------
 
+[0.9.0] - 2017-05-12
+ * Simplification of HelloWorld sketch examples
+ * comment clarifications to UpTime example sketches
+ * Updates to work around TinyWireM library bugs
+ * Added UpTime example sketch for all bundled i/o classes
+ * linewrap examples updates for better redibility
+ * setCursor() wraps when auto linewrap enabled and col beyond end of line
+ * turn on cursor during LineWrap examples
+ * linewrap tweak for better visual cursor positio
+
 [0.8.6] - 2017-05-11
+ * update version info for 0.8.6 release
  * updated examples README
  * renamed examples/OtherLibraries to examples/otherLibraries
  * Added LineWrap examples
