@@ -188,7 +188,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // ============================================================================
 
 unsigned long timeFPS(uint8_t iter, uint8_t cols, uint8_t rows);
-void showFPS(unsigned long etime, const char *fpstype, const char *fttype);
+void showFPS(unsigned long etime, int cols, int rows, const char *fpstype);
 void showByteXfer(unsigned long FPStime);
 void fatalError(int ecode);
 
@@ -236,7 +236,6 @@ void setup(void)
 void loop(void)
 {
 unsigned long etime;
-char buf[8];
 
 	delay(10);		// delay to ensure no previous commands still pending
 
@@ -255,8 +254,7 @@ char buf[8];
 	 * show FPS rate and Frame update time for this display
 	 */
 
-	sprintf(buf, "%dx%d", LCD_COLS, LCD_ROWS);
-	showFPS(etime, buf, 0);
+	showFPS(etime, LCD_COLS, LCD_ROWS, 0);
 
 #ifdef iLCD
 	/*
@@ -274,8 +272,7 @@ char buf[8];
 		/*
 		 * show independent FPS rate & Frame update time
 		 */
-		sprintf(buf, "%dx%di", iLCD_COLS, iLCD_ROWS);
-		showFPS(etime, buf, "i");
+		showFPS(etime, iLCD_COLS, iLCD_COLS, "i");
 	}
 #endif
 
@@ -304,7 +301,7 @@ unsigned long stime, etime;
 	etime = micros();
 	return((etime-stime));
 }
-void showFPS(unsigned long etime, const char *fpstype, const char* fttype)
+void showFPS(unsigned long etime, int cols, int rows, const char* fpstype)
 {
 float fps;
 
@@ -319,7 +316,9 @@ float fps;
 
 
 	lcd.clear();
-	lcd.print(fpstype);
+	lcd.print(cols);
+	lcd.print('x');
+	lcd.print(rows);
 	lcd.print("FPS:");
 	if(fps < 1000)
 		lcd.print(" ");
@@ -334,8 +333,8 @@ float fps;
 		delay(DELAY_TIME);
 		lcd.clear();
 	}
-	if(fttype)
-		lcd.print(fttype);
+	if(fpstype)
+		lcd.print(fpstype);
 	lcd.print("Ftime: ");
 	lcd.print((etime)/10.0/FPS_iter/1000);
 	lcd.print("ms");
