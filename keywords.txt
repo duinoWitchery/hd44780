@@ -17,6 +17,7 @@
 hd44780	KEYWORD1
 hd44780_I2Cexp	KEYWORD1
 hd44780_I2Clcd	KEYWORD1
+hd44780_NTCU165ECPB	KEYWORD1
 hd44780_pinIO	KEYWORD1
 iotype	KEYWORD1
 
@@ -27,34 +28,35 @@ iotype	KEYWORD1
 begin	KEYWORD2
 clear	KEYWORD2
 home	KEYWORD2
-noDisplay	KEYWORD2
-display	KEYWORD2
-noBlink	KEYWORD2
-blink	KEYWORD2
-noCursor	KEYWORD2
-cursor	KEYWORD2
-scrollDisplayLeft	KEYWORD2
-scrollDisplayRight	KEYWORD2
-leftToRight	KEYWORD2
-rightToLeft	KEYWORD2
-moveCursorLeft	KEYWORD2
-moveCursorRight	KEYWORD2
-autoscroll	KEYWORD2
-noAutoscroll	KEYWORD2
-setRowOffsets	KEYWORD2
-createChar	KEYWORD2
 setCursor	KEYWORD2
+write	KEYWORD2
 print	KEYWORD2
 println	KEYWORD2
-on	KEYWORD2
-off	KEYWORD2
-write	KEYWORD2
-command	KEYWORD2
+cursor	KEYWORD2
+noCursor	KEYWORD2
+blink	KEYWORD2
+noBlink	KEYWORD2
+display	KEYWORD2
+noDisplay	KEYWORD2
+scrollDisplayLeft	KEYWORD2
+scrollDisplayRight	KEYWORD2
+autoscroll	KEYWORD2
+noAutoscroll	KEYWORD2
+leftToRight	KEYWORD2
+rightToLeft	KEYWORD2
+createChar	KEYWORD2
+moveCursorLeft	KEYWORD2
+moveCursorRight	KEYWORD2
 setRowOffsets	KEYWORD2
+command	KEYWORD2
 
-# LCD 1.0 API functions
+
+# optional LCD 1.0 API functions
 setBacklight	KEYWORD2
 setContrast	KEYWORD2
+on	KEYWORD2
+off	KEYWORD2
+status	KEYWORD2
 
 # deprecacted LCD 1.0 API functions
 blink_on	KEYWORD2
@@ -65,13 +67,16 @@ load_custom_char	KEYWORD2
 setDelay	KEYWORD2
 
 # hd44780 extensions
-read	KEYWORD2
-status	KEYWORD2
 backlight	KEYWORD2
 noBacklight	KEYWORD2
+lineWrap	KEYWORD2
+noLineWrap	KEYWORD2
+read	KEYWORD2
 setExecTimes	KEYWORD2
+fatalError	KEYWORD2
+blinkLED	KEYWORD2
 
-# hd44780 internal virtual functions
+# hd44780 internal i/o class virtual functions
 ioinit	KEYWORD2
 ioread	KEYWORD2
 iowrite	KEYWORD2
