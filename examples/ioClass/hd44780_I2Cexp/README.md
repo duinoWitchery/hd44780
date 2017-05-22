@@ -16,6 +16,9 @@ on the Hitachi HD44780 and compatible chipsets using I2C extension
 backpacks that use a simple I2C i/o expander chip. (PCF8574 or MCP23008)
 Sketch supports testing of multiple displays at once.
 
+- `LCDCustomChars`<br>
+Sketch to demonstrate using custom characters as well as show the full available character set.
+
 - `LineWrap`<br>
 Sketch to demonstrate automatic linewrap functionality
 

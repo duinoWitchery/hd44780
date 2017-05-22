@@ -45,6 +45,7 @@ with most of the LCD API 1.0 Specification (some of which is nearly obsolete).
 The hd44780 API also provides some addtional extensions and all the API
 functions provided by hd44780 are common across all i/o subclasses.
 The most most significant extensions being:
+- ability to enable automatic line wrapping
 - ability to modify the libraries expected command execution times.
 - API functions return a status to indicate whether successful
 - ability to tell if lcd initialization failed
@@ -188,7 +189,7 @@ can be found in the included examples.
 | lineWrap()                            | turn on automatic line wrapping<br>(wraps lines but does not scroll display)<br>returns zero on success
 | noLineWrap()                          | turn off automatic line wrapping<br>returns zero on success
 | read()                                | read data byte from LCD<br>(requires r/w signal control)<br>returns negative value on failure |
-| setExecTimes(chUs, insUs)             | configure cmd and instruction/data times |
+| setExecTimes(chUs, insUs)             | configure clear/home and instruction/data times |
 |                                       ||
 | **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
 | setBacklight(dimvalue)                | set backlight brightness (0-255)<br> **hd44780 extension**: returns zero on success |

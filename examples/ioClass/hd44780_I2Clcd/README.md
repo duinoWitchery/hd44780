@@ -9,6 +9,9 @@ The hd44780_I2Clcd i/o class controls an LCD with a native i2c interface that us
 - `HelloWorld`<br>
 Sketch prints "Hello, World!" on the lcd
 
+- `LCDCustomChars`<br>
+Sketch to demonstrate using custom characters as well as show the full available character set.
+
 - `LineWrap`<br>
 Sketch to demonstrate automatic linewrap functionality
 

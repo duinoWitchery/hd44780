@@ -1,13 +1,15 @@
 static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // vi:ts=4
 // ----------------------------------------------------------------------------
-// CustomChars - simple demonstration of lcd
+// LCDCustomChars - simple demonstration of lcd custom characters
 // Created by Bill Perry 2016-10-06
 // bperrybap@opensource.billsworld.billandterrie.com
 //
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 // 
+// This sketch is for LCDs that are directly controlled with Arduino pins.
+//
 // Sketch demonstrates how to assign custom characters to the eight hd44780
 // custom character code points.
 // It will display some custom characters and then fall into a loop
@@ -19,79 +21,70 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // http://www.quinapalus.com/hd44780udg.html
 // https://omerk.github.io/lcdchargen
 //
+// See below for configuring the Arduino pins used.
+//
+// While not all hd44780 use the same pinout, here is the one that most use:
+// pin 1 is the pin closest to the edge of the PCB
+//  1 - LCD gnd
+//  2 - VCC (5v)
+//  3 - Vo Contrast Voltage
+//  4 - RS Register Select (rs)
+//  5 - Read/Write
+//  6 - Enable (en)
+//  7 - Data 0 (db0) ----
+//  8 - Data 1 (db1)     |-------- Not used in 4 bit mode
+//  9 - Data 2 (db2)     |
+// 10 - Data 3 (db3) ----
+// 11 - Data 4 (db4)
+// 12 - Data 5 (db5)
+// 13 - Data 6 (db6)
+// 14 - Data 7 (db7)
+// 15 - Backlight Anode (+5v)
+// 16 - Backlight Cathode (Gnd)
+//
+// ----------------------------------------------------------------------------
+// LiquidCrystal compability:
+// Since hd44780 is LiquidCrystal API compatible, most existing LiquidCrystal
+// sketches should work with hd44780 hd44780_pinIO i/o class once the
+// includes are changed to use hd44780 and the lcd object constructor is
+// changed to use the hd44780_pinIO class.
 
-/*
- * Define your LCD size
- */
-#ifndef LCD_COLS
-#define LCD_COLS 16
-#endif
+#include <hd44780.h>
+#include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
 
-#ifndef LCD_ROWS
-#define LCD_ROWS 2
-#endif
+// declare Arduino pins used for LCD functions
+// and the lcd object
 
+// Note: this can be with or without backlight control:
 
-#ifndef HD44780_LCDOBJECT
-/*
- * If not using a hd44780 library i/o class wrapper example sketch,
- * you must modify the sketch to include any needed header files  for the
- * intended library and define the lcd object.
- *
- * Add your includes and constructor.
- * The lcd object must be named "lcd"
- * and comment out the #error message.
- */
-
-#error "Use i/o class wrapper sketch instead; otherwise, edit appropriately."
-
-// Examples
-
-// hd44780 with hd44780_I2Cexp i/o class
-//#include <Wire.h>
-//#include <hd44780.h> // include hd44780 library header file
-//#include <hd44780ioClass/hd44780_I2Cexp.h> // i/o expander/backpack class
-//hd44780_I2Cexp lcd; // auto detect backpack and pin mappings
-
-// hd44780 with hd44780_pinIO class is for 4 pin directly connected interface
-// initialize the library with the Arduino pin numbers of the LCD interface pins
-//#include <Wire.h>
-//#include <hd44780.h> // include hd44780 library header file
-//#include <hd44780ioClass/hd44780_pinIO.h> // hd44780 i/o class for pin control
 // without backlight control:
-//const int rs=12, en=11, db4=5, db5=4, db6=3, db7=2; // IDE LiquidCrystal pins
-//const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7; // lcd keypad shield pins
-//hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
+// The parameters used by hd44780_pinIO are the same as those used by
+// the IDE bundled LiquidCrystal library
+const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
+hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
+
 //with backlight control:
+//	backlight control requires two additional parameters
+//	- an additional pin to control the backlight
+//	- backlight active level which tells the library the level
+//		needed to turn on the backlight.
+//		note: If the backlight control pin supports PWM, dimming can be done
+//			using setBacklight(dimvalue);
+//
+//	WARNING: some lcd keypads have a broken backlight circuit
+//		If you have a lcd keypad, it is recommended that you first run the
+//		LCDKeypadCheck sketch to verify that the backlight circuitry
+//		is ok before enabling backlight control.
+//		However, the hd44780_PinIO class will autodetect the issue and
+//		work around it in s/w. If the backlight circuitry is broken,
+//		dimming will not be possible even if the backlight pin supports PWM.
+//
 //const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
 //hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
 
-//const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7; // pins for lcd keypad shield
-//hd44780_pinIO lcd(rs, en, d4, d5, d6, d7);
-
-// LiquidCrystal class is for 4 pin directly connected interface
-// initialize the library with the Arduino pin numbers of the LCD interface pins
-//#include <LiquidCrystal.h>
-//const int rs=8, en=9, d4=4, d5=5, d6=6, d7=7;
-//LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-
-// LiquidTWI 'faster' adafruit i2c library
-//#include <Wire.h>
-//#include <LiquidTWI.h>
-//LiquidTWI lcd(0); // Connect via i2c, default address #0 (A0-A2 not jumpered)
-//#define WIRECLOCK 400000
-
-// Adafruit I2C for their #292 i2c/spi backpack
-//#include <Wire.h>
-//#include <Adafruit_LiquidCrystal.h>
-//Adafruit_LiquidCrystal lcd(0); // use default i2c address
-
-
-//#include <PCF8574_I2C_LCD.h>
-////PCF8574_I2C_LCD lcd((PCF8574_address)0x27);
-
-
-#endif
+// LCD geometry
+const int LCD_COLS = 16;
+const int LCD_ROWS = 2;
 
 
 // some custom characters for demonstration
@@ -135,11 +128,43 @@ uint8_t sigbar[][8] = {
 
 void setup()
 {
- 	lcd.begin(LCD_COLS,LCD_ROWS);                      // initialize the lcd 
-  
+int status;
+
+	// initialize LCD with number of columns and rows: 
+	// hd44780 returns a status from begin() that can be used
+	// to determine if initalization failed.
+	// the actual status codes are defined in <hd44780.h>
+	// See the values RV_XXXX
+	//
+	// looking at the return status from begin() is optional
+	// it is being done here to provide feedback should there be an issue
+	//
+	// note:
+	//	begin() will automatically turn on the backlight
+	//
+	status = lcd.begin(LCD_COLS, LCD_ROWS);
+	if(status) // non zero status means it was unsuccesful
+	{
+		status = -status; // convert negative status value to positive number
+
+		// begin() failed so blink error code using the onboard LED if possible
+		hd44780::fatalError(status); // does not return
+	}
+
+	// initalization was successful, the backlight should be on now
+
 	// create 8 custom characters
+	// int rval = createChar(charval, charmap[]);
+	//
+	// createChar() creates a custom character
+	// for the character at the charval codepoint.
+	// It returns zero if successful.
+	//
+	// The display must be initialized *before* you attempt
+	// to create custom characters.
+	//
 	// Note: On hd44780 displays there are 8 custom characters.
-	// They assigned to character code point values 0x00 to 0x0f
+	// They are assigned to character code point values 0x00 to 0x0f
 	// The code points 0x08 to 0x0f are duplicates for 0x00 to 0x07
 	// i.e. 0x08 is the same as 0x00, 0x09 same as 0x01, etc...
 
@@ -154,12 +179,10 @@ void setup()
 
 	lcd.home();
   
-#if LCD_COLS > 8
-	lcd.print("Custom Chars");
-#else
-	lcd.print("CustChrs");
-#endif
-
+	if(LCD_COLS > 8)
+		lcd.print("Custom Chars");
+	else
+		lcd.print("CustChrs");
 
 	if(LCD_ROWS > 1)
 	{

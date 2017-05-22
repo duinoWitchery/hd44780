@@ -10,6 +10,9 @@ The hd44780_NTCU165ECPB i/o class is used to control a Noritake CU165ECBP-T2J LC
 - `HelloWorld`<br>
 Sketch prints "Hello, World!" on the lcd
 
+- `LCDCustomChars`<br>
+Sketch to demonstrate using custom characters as well as show the full available character set.
+
 - `LineWrap`<br>
 Sketch to demonstrate automatic linewrap functionality
 

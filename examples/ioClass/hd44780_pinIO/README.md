@@ -12,6 +12,9 @@ Sketch prints "Hello, World!" on the lcd
 - `LCDKeypadCheck`<br>
 Sketch to test lcd keypad shields for bad backlight circuitry
 
+- `LCDCustomChars`<br>
+Sketch to demonstrate using custom characters as well as show the full available character set.
+
 - `LineWrap`<br>
 Sketch to demonstrate automatic linewrap functionality
 
