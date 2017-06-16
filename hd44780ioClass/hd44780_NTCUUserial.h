@@ -25,16 +25,31 @@
 // ---------------------------------------------------------------------------
 //
 // It implements all the hd44780 library i/o methods to control a Noritake
-// CU-U Series VFD, in serial mode. Serial mode must be enabled on the board by
-// setting a jumper.
+// CU-U Series VFD, in serial mode. Some CU-U boards are serial-only, some have
+// a jumper that must be set to enable serial mode, and some do not support
+// serial communication. See the application note for more information.
 //
 // This device has extended function set commands that are not directly
 // supported by the library but can be used through the command() API
+//
+// The device uses a kind of 3-wire SPI for communication.
+// Pinout:
+// 1 VCC
+// 2 SI/SO (DATA)
+// 3 GND
+// 4 STB (CS)
+// 5 SCK (CLK)
+// 6 NC
 //
 // The interface consists of sending 2 bytes serially for each hd44780
 // data/cmd.
 //  The first byte is a control byte which sets the RS signal
 //  The second byte is the data.
+//
+// The application note for CU-U series boards is here:
+//     https://www.noritake-elec.com/includes/documents/brochure/CU-U_Application_Note.pdf
+// Datasheets for specific boards, code samples, and more can be found here:
+//     https://www.noritake-elec.com/products/vfd-display-module/character-display/cu-u-series
 //
 //
 // @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
@@ -52,9 +67,7 @@ public:
 	// ====================
 	
 	// supply pins for chip select, clock, and data
-	hd44780_NTCUUserial(uint8_t cs, uint8_t clk, uint8_t data):
-		_cs(cs), _clk(clk), _data(data)
-	{ }
+	hd44780_NTCUUserial(uint8_t cs, uint8_t clk, uint8_t data): _cs(cs), _clk(clk), _data(data) { }
 	
 private:
 	// ====================
@@ -63,9 +76,16 @@ private:
 	
 	// Arduino Pin information
 	
-	const uint8_t _cs;	// arduino pin for chip select
-	const uint8_t _clk;	// arduino pin for clock
+	const uint8_t _cs;   // arduino pin for chip select
+	const uint8_t _clk;  // arduino pin for clock
 	const uint8_t _data; // arduino pin for data i/o
+	
+	
+	// Control byte values
+	
+	static const uint8_t CUU_startByte = 0xf8;
+	static const uint8_t CUU_RS = (1 << 1); // RS bit. set for data, clear for command
+	static const uint8_t CUU_RW = (1 << 2); // RW bit. set for read, clear for write
 	
 	
 	// ==================================================
@@ -76,25 +96,28 @@ private:
 	// ioinit() - Returns non zero if initialization failed.
 	int ioinit()
 	{
-		delay(500);      // wait for device to power up
-
+		// App note says "Wait at least 260 ms after VCC > 4.75VDC"
+		// See also the delay in hd44780::begin()
+		// In practice little or no delay at all may work fine
+		delay(260);
+		
 		// setup pins
 		digitalWrite(_cs, HIGH);
 		digitalWrite(_clk, HIGH);
 		digitalWrite(_data, HIGH);
-
+		
 		pinMode(_cs, OUTPUT);
 		pinMode(_clk, OUTPUT);
 		pinMode(_data, OUTPUT);
 		
 		/*
-		 * this device only runs in 8 bit mode
+		 * Serial interface of this device is always 8 bit
 		 */
 		_displayfunction = HD44780_8BITMODE;
-
+		
 		return(hd44780::RV_ENOERR); // all is good
 	}
-
+	
 	
 	// ioread(type) - read a byte from VFD DDRAM
 	//
@@ -115,7 +138,7 @@ private:
 		
 		return data;
 	}
-
+	
 	
 	//
 	// iowrite(type, value) - send either a command or data byte to lcd
@@ -142,7 +165,7 @@ private:
 	// use the backlight brightness to set the pixel intensity.
 	//
 	// Note:
-	// The dimmer value on the CUU is 2 bit value
+	// The dimmer value on the CU-U Series is a 2 bit value
 	// 00 is 100%
 	// 01 is 75%
 	// 10 is 50%
@@ -153,19 +176,23 @@ private:
 	// API dimvalue is zero.
 	int iosetBacklight(uint8_t dimvalue)
 	{
+		int status = RV_ENOERR;
+		
 		if(dimvalue)
 		{
-			devicewrite(0x30, false);
-			// the dim value is 0-255 so devide by 64 to get a value 0-3
-			devicewrite(3 - (dimvalue / 64), true);
-
+			// Data which follows the FunctionSet command is considered as brightness data.
+			command(HD44780_FUNCTIONSET | _displayfunction);
+			// the dim value is 0-255 so divide by 64 to get a value 0-3
+			if (_write(3 - dimvalue / 64))
+				status = RV_EIO;
+			
 			display();
 		}
 		else
 		{
 			noDisplay();
 		}
-		return(RV_ENOERR);
+		return(status);
 	}
 	
 	// ================================
@@ -175,7 +202,7 @@ private:
 	// deviceread() - send control and read data byte from the device
 	uint8_t deviceread(bool rs)
 	{
-		uint8_t	data = 0xfc + 2*rs;
+		uint8_t	data = CUU_startByte | CUU_RW | (CUU_RS * rs);
 		
 		digitalWrite(_cs,LOW);	// select device
 		
@@ -201,17 +228,17 @@ private:
 	// devicewrite() - send control and data byte to the device
 	void devicewrite(uint8_t data, bool rs)
 	{
-		uint8_t	x = 0xf8 + 2*rs;
+		uint8_t	startByte = CUU_startByte | (CUU_RS * rs);
 		
-		digitalWrite(_cs,LOW);	// select device
+		digitalWrite(_cs, LOW);	// select device
 		
 		digitalWrite(_clk, LOW);
-		shiftOut(_data, _clk, MSBFIRST, x);
+		shiftOut(_data, _clk, MSBFIRST, startByte);
 		
 		digitalWrite(_clk, LOW);
 		shiftOut(_data, _clk, MSBFIRST, data);
 		
-		digitalWrite(_cs,HIGH);	// deselect device
+		digitalWrite(_cs, HIGH);	// deselect device
 		
 		delayMicroseconds(5);
 	}
