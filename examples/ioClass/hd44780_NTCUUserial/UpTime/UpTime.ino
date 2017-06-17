@@ -17,14 +17,38 @@
 // the sketch will simply blink the built in LED.
 //
 
-#include <hd44780.h>                       // main hd44780 header
+#include <SPI.h>                                // optional, include to use h/w spi
+#include <hd44780.h>                            // main hd44780 header
 #include <hd44780ioClass/hd44780_NTCUUserial.h> // Noritake CU-U serial i/o class header
 
+// constructor parameters:
+// lcd([cs], [clock, data])
+// If no parameters, then library will use SS, SCK, and MOSI pins
+// If cs parameter specified, then use it for chip select then SCK and MOSI
+// If <SPI.h> is included and clock & data pins match h/w SPI pins SCK and MOSI,
+//  h/w spi will be used
+// If h/w spi is not possible, then the code will fall back to bit banging.
+//
+// NOTE:
+//  - Leonardo h/w is "stupid" and does not bring out SS
+//     (it only drives an LED)
+//  - Leonardo does not bring SPI signals to female headers,
+//     they are only on 6 pin ISP header.
+//  - ESP8266 is does not use naked constants for digital pin numbers
+//
+//
+// To work around these pin issues in this sketch,
+// Leonardo will use uno digital pins for SPI h/w which means it will
+// not use h/w spi. All the other boards will use the h/w SPI pins.
+// Consult board pinout diagram to see where SS, SCK, and MOSI are available.
+//
 
-// declare Arduino pins used for LCD functions
-// and the lcd object
-const int stb=5, sck=6, sio=4;
-hd44780_NTCUUserial lcd(stb, sck, sio);
+#if defined(ARDUINO_AVR_LEONARDO) || ( (USB_VID == 0x2341) && (USB_PID == 0x8036) )
+const int cs=10, clk=13, data=11; // uno SPI pins (s/w bit banging will be used)
+#else
+const int cs=SS, clk=SCK, data=MOSI; // use h/w SPI pins on all other boards
+#endif
+hd44780_NTCUUserial lcd(cs, clk, data); // declare lcd object
 
 // LCD geometry
 const int LCD_COLS = 16;
