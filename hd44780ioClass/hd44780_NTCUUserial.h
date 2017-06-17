@@ -66,8 +66,16 @@ public:
 	// === constructors ===
 	// ====================
 	
+	// no parameters: use h/w spi signals
+	// Note: This doesn't work for Leonardo since SS is not available and only drives an LED
+	hd44780_NTCUUserial() : _cs(SS), _clk(SCK), _data(MOSI) { }
+	
+	// supply alternate chip/slave select
+	// will use h/w spi with alternate chip select
+	hd44780_NTCUUserial(int cs) : _cs(cs), _clk(SCK), _data(MOSI) { }
+	
 	// supply pins for chip select, clock, and data
-	hd44780_NTCUUserial(uint8_t cs, uint8_t clk, uint8_t data): _cs(cs), _clk(clk), _data(data) { }
+	hd44780_NTCUUserial(uint8_t cs, uint8_t clk, uint8_t data) : _cs(cs), _clk(clk), _data(data) { }
 	
 private:
 	// ====================
@@ -110,6 +118,16 @@ private:
 		pinMode(_clk, OUTPUT);
 		pinMode(_data, OUTPUT);
 		
+		// check to see if SPI has beginTransaction() and endTransaction()
+		// this was added in IDE 1.06 and so if using an IDE older than that,
+		// H/W spi will not be used
+		// This requires that <SPI.h> be included prior to this header
+#if defined(SPI_HAS_TRANSACTION)
+		// check to see if h/w spi can be used
+		if((_data == MOSI) && (_clk == SCK))
+			SPI.begin();
+#endif
+
 		/*
 		 * Serial interface of this device is always 8 bit
 		 */
@@ -230,17 +248,35 @@ private:
 	{
 		uint8_t	startByte = CUU_startByte | (CUU_RS * rs);
 		
-		digitalWrite(_cs, LOW);	// select device
-		
-		digitalWrite(_clk, LOW);
-		shiftOut(_data, _clk, MSBFIRST, startByte);
-		
-		digitalWrite(_clk, LOW);
-		shiftOut(_data, _clk, MSBFIRST, data);
-		
-		digitalWrite(_cs, HIGH);	// deselect device
-		
-		delayMicroseconds(5);
+		// use h/w spi if we can
+#if defined(SPI_HAS_TRANSACTION)
+		if((_data == MOSI) && (_clk == SCK))
+		{
+			// NOTE: App note says min 500ns clock cycle, so 2Mhz is max, 4Mhz seems to work.
+			SPI.beginTransaction(SPISettings(4000000, MSBFIRST, SPI_MODE3));
+			digitalWrite(_cs, LOW);  // select device
+			SPI.transfer(startByte);
+			SPI.transfer(data);
+			delayMicroseconds(1);    // must delay at least 500ns before de-selecting
+			digitalWrite(_cs, HIGH); // deselect device
+			SPI.endTransaction();
+		}
+		else
+#endif
+		{
+			digitalWrite(_cs, LOW);  // select device
+			
+			digitalWrite(_clk, LOW);
+			shiftOut(_data, _clk, MSBFIRST, startByte);
+			
+			digitalWrite(_clk, LOW);
+			shiftOut(_data, _clk, MSBFIRST, data);
+			
+			delayMicroseconds(1);    // must delay at least 500ns before de-selecting
+			digitalWrite(_cs, HIGH); // deselect device
+			
+			delayMicroseconds(5);
+		}
 	}
 	
 }; // end of class definition
