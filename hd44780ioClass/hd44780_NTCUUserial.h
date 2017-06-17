@@ -222,6 +222,11 @@ private:
 	{
 		uint8_t	data = CUU_startByte | CUU_RW | (CUU_RS * rs);
 		
+#if defined(SPI_HAS_TRANSACTION)
+		if((_data == MOSI) && (_clk == SCK))
+			SPI.end();
+#endif
+
 		digitalWrite(_cs,LOW);	// select device
 		
 		digitalWrite(_clk, LOW);
@@ -239,6 +244,11 @@ private:
 		
 		delayMicroseconds(5);
 		
+#if defined(SPI_HAS_TRANSACTION)
+		if((_data == MOSI) && (_clk == SCK))
+			SPI.begin();
+#endif
+
 		return data;
 	}
 	
