@@ -89,6 +89,8 @@ The library currenly comes with the following i/o subclasses:
 
 * `hd44780_NTCU165ECPB` control Noritake CU165ECBP-T2J LCD display over SPI
 
+* `hd44780_NTCUUserial` control Noritake CU-U Series VFD display in serial mode
+
 
 Installation
 ============
