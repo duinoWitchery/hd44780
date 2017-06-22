@@ -125,7 +125,7 @@ The hd44780 sketchbook library must now be renamed. (see below)
 On these versions of the IDE, the install must be done manually.
 To install the library simply extract it into your sketchbook/libraries directory.
 If you don't know where you sketchbook/libraries directory is simply click on:
-[File]-Prefernces
+[File]->Prefernces
 or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The location of your sketchbook directory will be in the text box.
 The zip image must be installed in a directory called "libraries" under that directory.<br>
@@ -140,7 +140,7 @@ The downloaded zip file and internal directory will have a name like hd44780-X.Y
 While the IDE will usually allow this to work, the proper name should be simply "hd44780" and not using its real name can cause issues in the future.<br>
 To rename the library directory, simply go to the sketchbook library location and rename it.
 If you don't know where you sketchbook/libraries directory is simply click on:
-[File]-Prefernces
+[File]->Prefernces
 or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The location of your sketchbook directory will be in the text box.<br>
 Use your favorite tool to rename it.
@@ -156,6 +156,7 @@ can be found in the included examples.
 |Function                               | Description                           |
 | --------------------------------------| --------------------------------------|
 | **LiquidCrystal API**                 | https://www.arduino.cc/en/Reference/LiquidCrystal |
+| init(...)                             | **not supported**
 | begin(cols, rows)                     | initialize communication interface and LCD<br> **hd44780 extension**: returns zero on success |
 | clear()                               | clear the display and home the cursor<br> **hd44780 extension**: returns zero on success |
 | home()	                        | home the cursor<br> **hd44780 extension**: returns zero on success |
@@ -178,8 +179,6 @@ can be found in the included examples.
 | leftToRight()                         | write left to right, set autoshift to left<br> **hd44780 extension**: returns zero on success |
 | rightToLeft()                         | write right to left, set autoshift to right<br> **hd44780 extension**: returns zero on success |
 | createChar(charval, charmap[])        | create a custom character<br> **hd44780 extension**: returns zero on success |
-| moveCursorLeft()                      | move cursor one space to right<br> **hd44780 extension**: returns zero on success |
-| moveCursorRight()                     | move cursor one space to left<br> **hd44780 extension**: returns zero on success |
 | setRowOffsets(row0, row1, row2, row3) | set address for start of each line                                        |
 | command(cmd)                          | send raw 8bit hd44780 command to LCD<br> **hd44780 extension**: returns zero on success |
 |                                       ||
@@ -188,6 +187,8 @@ can be found in the included examples.
 | noBacklight()                         | turn off backlight<br>returns zero on success    |
 | lineWrap()                            | turn on automatic line wrapping<br>(wraps lines but does not scroll display)<br>returns zero on success
 | noLineWrap()                          | turn off automatic line wrapping<br>returns zero on success
+| moveCursorLeft()                      | move cursor one space to right<br>returns zero on success |
+| moveCursorRight()                     | move cursor one space to left<br>returns zero on success |
 | read()                                | read data byte from LCD<br>(requires r/w signal control)<br>returns negative value on failure |
 | setExecTimes(chUs, insUs)             | configure clear/home and instruction/data times |
 |                                       ||
@@ -210,8 +211,10 @@ can be found in the included examples.
 
 Examples
 ========
-Examples for the included i/o classes are provided to demonstrate how to use hd44780.<br>
-hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780.
+Examples for the included hd44780 i/o classes are provided to demonstrate how to use LCDs with various h/w interfaces.<br>
+Each i/o class included in the hd44780 library pacakge has its own examples.<br>
+You can access i/o class examples from the IDE from [File]->Examples->hd44780->ioClass and then choose the desired i/o class.<br>
+hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780 which can be found under otherLibraries.
 
 See the included readme files under the examples directory for additional information
 about the included examples.<br>

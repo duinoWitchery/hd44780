@@ -7,16 +7,16 @@ The hd44780_I2Clcd i/o class controls an LCD with a native i2c interface that us
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch prints "Hello, World!" on the lcd
+Prints "Hello, World!" on the lcd
 
 - `LCDCustomChars`<br>
-Sketch to demonstrate using custom characters as well as show the full available character set.
+demonstrates using custom characters as well as show the full available character set.
 
 - `LineWrap`<br>
-Sketch to demonstrate automatic linewrap functionality
+Demonstrates automatic linewrap functionality
 
 - `UpTime`<br>
-Sketch prints the amount of time since the Arduino has been reset.
+Prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains

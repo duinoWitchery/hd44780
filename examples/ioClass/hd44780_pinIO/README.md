@@ -7,23 +7,22 @@ The hd44780_pinIO i/o class is used to control an LCD using direct Arduino pin c
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch prints "Hello, World!" on the lcd
+Prints "Hello, World!" on the lcd
 
 - `LCDKeypadCheck`<br>
-Sketch to test lcd keypad shields for bad backlight circuitry
+Tests lcd keypad shields for bad backlight circuitry
 
 - `LCDCustomChars`<br>
-Sketch to demonstrate using custom characters as well as show the full available character set.
+Demonstrates using custom characters as well as show the full available character set.
 
 - `LineWrap`<br>
-Sketch to demonstrate automatic linewrap functionality
+Demonstrates automatic linewrap functionality
 
 - `ReadWrite`<br>
-The purpose of the sketch is to demonstrate the ability to read data from
-the LCD.
+Demonstrate the ability to read data from the LCD.
 
 - `UpTime`<br>
-Sketch prints the amount of time since the Arduino has been reset.
+Prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains

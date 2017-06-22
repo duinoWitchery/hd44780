@@ -8,16 +8,16 @@ The hd44780_NTCU165ECPB i/o class is used to control a Noritake CU165ECBP-T2J LC
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch prints "Hello, World!" on the lcd
+Prints "Hello, World!" on the lcd
 
 - `LCDCustomChars`<br>
-Sketch to demonstrate using custom characters as well as show the full available character set.
+Demonstrates using custom characters as well as show the full available character set.
 
 - `LineWrap`<br>
-Sketch to demonstrate automatic linewrap functionality
+Demonstrates automatic linewrap functionality
 
 - `UpTime`<br>
-Sketch prints the amount of time since the Arduino has been reset.
+Prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains

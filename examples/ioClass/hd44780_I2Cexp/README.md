@@ -8,29 +8,28 @@ The hd44780_I2Cexp i/o class controls an LCD using an i2c i/o exapander backpack
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch prints "Hello, World!" on the lcd
+Prints "Hello, World!" on the lcd
 
 - `I2CexpDiag`<br>
-Sketch to verify configuation & operation of hd44780 LCDs based
+Verifies configuation & operation of hd44780 LCDs based
 on the Hitachi HD44780 and compatible chipsets using I2C extension
 backpacks that use a simple I2C i/o expander chip. (PCF8574 or MCP23008)
 Sketch supports testing of multiple displays at once.
 
 - `LCDCustomChars`<br>
-Sketch to demonstrate using custom characters as well as show the full available character set.
+Demonstrates using custom characters as well as show the full available character set.
 
 - `LineWrap`<br>
-Sketch to demonstrate automatic linewrap functionality
+Demonstrates automatic linewrap functionality
 
 - `MultiDisplay`<br>
-Sketch displays information on multiple displays at once.
+Displays information on multiple displays at once.
 
 - `ReadWrite`<br>
-The purpose of the sketch is to demonstrate the ability to read data from
-the LCD.
+Demonstrates the ability to read data from the LCD.
 
 - `UpTime`<br>
-Sketch prints the amount of time since the Arduino has been reset.
+Prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains
