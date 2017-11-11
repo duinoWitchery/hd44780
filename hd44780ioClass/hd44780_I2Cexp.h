@@ -513,7 +513,7 @@ int rval = hd44780::RV_EIO;
 	if(Wire.endTransmission(1))
 		goto returnStatus;
 
-	// read the expander port to get the upper lower of the byte
+	// read the expander port to get the lower nibble of the byte
 	// We can't look at the return value from requestFrom() on the TineyWireM
 	// library as it doesn't work like it is supposed to.
 	// So we look at the return status from read() instead.
@@ -522,6 +522,11 @@ int rval = hd44780::RV_EIO;
 	iodata = Wire.read();
 
 	if(iodata < 0) // did we not receive a byte?
+		goto returnStatus;
+
+	Wire.beginTransmission(_addr);
+	Wire.write(gpioValue); // lower E after reading nibble
+	if(Wire.endTransmission(1))
 		goto returnStatus;
 
 	// map i/o expander port bits into lower nibble of byte
@@ -999,7 +1004,7 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 	else
 	{
 		// couldn't figure it out
-		return(-1);
+		return(hd44780::RV_ENOTSUP);
 	}
 	config(_addr, _expType, rs, rw, en, d4, d5, d6, d7, bl, blLevel);
 	return(0);
