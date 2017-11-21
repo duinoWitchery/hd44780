@@ -193,10 +193,11 @@ public:
 	int scrollDisplayLeft();
 	int scrollDisplayRight();
 	int autoscroll(); 			// auto horizontal scrolling
-	int noAutoscroll();		// no auto horizontal scrolling
+	int noAutoscroll();			// no auto horizontal scrolling
 	int leftToRight();
 	int rightToLeft();
-	int createChar(uint8_t charval, uint8_t charmap[]);
+	int createChar(uint8_t charval, uint8_t charmap[]); // no PROGMEM
+
 	int moveCursorLeft();
 	int moveCursorRight();
 	// sets memory address for each row, added in IDE 1.6.0
@@ -302,11 +303,26 @@ public:
 	// These are hd44780 lib extensions that are
 	// not part of LCD 1.0 or LiquidCrystal
 	// note:
-	// status() is exists in LCD 1.0 API but is different
-	// This status() function will be consistent across all i/o subclasses
+	// status() exists in LCD 1.0 API but is different
+	// hd44780 status() function will be consistent across all i/o subclasses
 	// ===================================================================
 	int backlight(void);		// turn on Backlight (max brightness)
 	int noBacklight(void);		// turn off Backlight
+
+	// PROGMEM is wreck on AVR, as there is no way to detect its use.
+	// for now:
+	// hd44780 assumes that const stores data in flash and 
+	// on processors that use/need PROGMEM it must be used on the declaration
+	inline int createChar(uint8_t charval, char charmap[])	// does not assume PROGMEM
+		{ return(createChar(charval, (uint8_t *) charmap)); }
+
+	// on processors that don't use/need PROGMEM it can be left off the declaration
+	int createChar(uint8_t charval, const uint8_t charmap[]); // assumes PROGMEM
+
+	// this function is for compatibilty with other libraries like fm's newliquidCrystal
+	inline int createChar(uint8_t charval, const char charmap[]) // assumes PROGMEM
+		{ return(createChar(charval, (const uint8_t *) charmap)); }
+
 	int read(void);
 	// enable automatic line wrapping (only works in left 2 right mode)
 	int lineWrap(void)  { if(_displaymode & HD44780_ENTRYLEFT2RIGHT) {_wraplines=1; return(RV_ENOERR);}else{return(RV_ENOTSUP);}}

@@ -660,6 +660,37 @@ int ddramaddr;
 	return(setCursor(ddramaddr , 0));
 }
 
+// special version of code to support wimpy AVR parts that can't directly access
+// const data in flash like all the other processors
+// Note that most other Arduino cores have adopted to support the
+// AVR proprietary PROGMEM macros to be compatible with AVR specific code.
+// Since the macro PROGMEM is defined when proprietary AVR progmem support is
+// implememented (even on non AVR cores),
+// this code will look for that macro to enable special code to deal with it.
+// While at this time, this is only needed for AVR parts, it will work on
+// non AVR parts that have implemented support for the proprietary
+// AVR progmem crap.
+//
+#if defined (PROGMEM)
+int hd44780::createChar(uint8_t location, const uint8_t *charmap)
+{
+uint8_t buf[8];
+	// fetch/read the full 8 byte glyph data into RAM
+	for(int i= 0; i< 8; i++)
+	{
+		buf[i] = pgm_read_byte(charmap++);
+	}
+	// call the RAM based function to actually send it to the LCD
+	return(createChar(location, buf));
+}
+#else
+int hd44780::createChar(uint8_t location, const uint8_t *charmap)
+{
+	return(createChar(location, (uint8_t *)charmap));
+}
+
+#endif
+
 // turn on backlight at full intensity
 int hd44780::backlight(void)
 {
