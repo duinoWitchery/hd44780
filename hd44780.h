@@ -183,6 +183,11 @@ public:
 	int setCursor(uint8_t col, uint8_t row); 
 	size_t write(uint8_t value);	// does char & line processing
 	size_t _write(uint8_t value);	// does not do char & line processing
+// write() overloads for 0 or null which is an int
+// This is only because Print class doesn't do it.
+	inline size_t write(int value) { return(write((uint8_t)value)); }
+	inline size_t _write(int value) { return(_write((uint8_t)value)); }
+
 	using Print::write; // for other Print Class write() functions
 	int cursor();
 	int noCursor();
