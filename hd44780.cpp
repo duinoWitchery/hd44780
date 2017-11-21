@@ -93,7 +93,6 @@ hd44780::hd44780(uint8_t cols, uint8_t rows) : _cols(cols), _rows(rows)
 hd44780::hd44780(uint8_t cols, uint8_t rows, uint32_t chExecTimeUs, uint32_t insExecTimeus) :
 		 _cols(cols), _rows(rows), _chExecTime(chExecTimeUs), _insExecTime(insExecTimeus)
 {
-	setExecTimes(HD44780_CHEXECTIME, HD44780_INSEXECTIME);
 	markStart(0); // initialize last start time to 'now'
 }
 
