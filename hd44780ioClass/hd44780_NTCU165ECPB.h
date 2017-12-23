@@ -46,6 +46,10 @@
 // 4 CLK  (SCK)
 // 5 DATA (MOSI)
 //
+// ---------------------------------------------------------------------------
+// history
+//
+// 2017.12.23  bperrybap - added support LCD API 1.0 init()
 // 2016.08.22  bperrybap - initial creation
 //
 // @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
@@ -63,14 +67,14 @@ public:
 
 // no parameters: use h/w spi signals
 // Note: This doesn't work for Leonardo since SS is not available and only drives an LED
-hd44780_NTCU165ECPB() : _cs(SS), _clk(SCK), _data(MOSI) { }
+hd44780_NTCU165ECPB() : hd44780(16,1), _cs(SS), _clk(SCK), _data(MOSI) { }
 
 // supply alternate chip/slave select
 // will use h/w spi with alternate chip select
-hd44780_NTCU165ECPB(int cs) : _cs(cs), _clk(SCK), _data(MOSI) { }
+hd44780_NTCU165ECPB(int cs) : hd44780(16,1), _cs(cs), _clk(SCK), _data(MOSI) { }
 
 // supply pins for chip select, clock, and data
-hd44780_NTCU165ECPB(int cs, int clock, int data) : _cs(cs), _clk(clock), _data(data) { }
+hd44780_NTCU165ECPB(int cs, int clock, int data) : hd44780(16,1), _cs(cs), _clk(clock), _data(data) { }
 
 
 private:

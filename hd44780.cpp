@@ -43,6 +43,10 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// -----------------------------------------------------------------------
+// History
+//
+// 2017.12.23  bperrybap - added LCD API 1.0 init() function
 // 2017.05.11  bperrybap - setCursor() wraps when auto linewrap enabled
 //                         and col beyond end of line
 // 2017.05.11  bperrybap - linewrap tweak for better visual cursor position
@@ -96,6 +100,25 @@ hd44780::hd44780(uint8_t cols, uint8_t rows, uint32_t chExecTimeUs, uint32_t ins
 	markStart(0); // initialize last start time to 'now'
 }
 
+// undocumented init() function to allow compatibilty with certain
+// other "liquidcrystal" libraries like LiquidCrystal_I2C
+//
+// It is different than the IDE bundled LiquidCrystal library in that 
+// it takes no parameters to be consistent across all i/o classes.
+// If there is no default geometry for the i/o class and
+// rows & cols has not been previously set, then the default will be 16x2
+//
+int hd44780::init()
+{
+uint8_t cols, rows;
+
+	cols = _cols;
+	if(!_cols) cols = 16;
+	rows = _rows;
+	if(!rows) rows = 2;
+	return(begin(cols, rows));
+}
+
 //
 // initialize the LCD
 // Note: The hd44780 spec uses the term "line" whereas the
@@ -110,7 +133,7 @@ int hd44780::begin(uint8_t cols, uint8_t rows, uint8_t dotsize)
 {
 int rval = 0;
 
-	_cols = cols; // FIXME, this may not be needed anymore
+	_cols = cols;
 	_rows = rows;
 	/*
 	 * Limit lines/rows to max in the row offset table
@@ -630,8 +653,12 @@ int hd44780::noAutoscroll(void)
 	return(command(HD44780_ENTRYMODESET | _displaymode));
 }
 
-// Allows us to fill the first 8 CGRAM locations
+// Allows filling in the first 8 CGRAM locations
 // with custom characters
+// note that it is not possible to support more than 8 locations
+// since SETCGRAMADDR instruction is bit 6 and there no room
+// for any more address bits.
+// (location is bits 3-5 and data row is bits 0-2 of the instruction)
 int hd44780::createChar(uint8_t location, uint8_t charmap[])
 {
 int rval;
@@ -776,7 +803,7 @@ size_t rval;
 	rval = _write(value);
 	if(_wraplines)
 	{
-		// currently onl works for left to right mode
+		// currently only works for left to right mode
 		if(++_curcol >= _cols)
 		{
 			_curcol = 0;

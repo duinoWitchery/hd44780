@@ -43,6 +43,11 @@
 // The hd44780 API also provides some addtional extensions and all the API
 // functions provided by hd44780 are common across all i/o subclasses.
 //
+// -----------------------------------------------------------------------
+// History
+//
+// 2017.12.23  bperrybap - added LCD API 1.0 init() function
+// 2017.12.23  bperrybap - allow write() to use 0 as a value without cast
 // 2017.05.11  bperrybap - added auto linewrap functionality
 // 2016.12.26  bperrybap - new BUSY error status, new constructors
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
@@ -171,7 +176,7 @@ public:
 
 #if 0
 	// init ()
-	// This will NEVER be implemented in this class as it is
+	// This version will NEVER be implemented in this class as it is
 	// not conformant to LCD API 1.0 and is hardware i/o specific
 	void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
 	    uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
@@ -185,7 +190,9 @@ public:
 	size_t _write(uint8_t value);	// does not do char & line processing
 // write() overloads for 0 or null which is an int
 // This is only because Print class doesn't do it.
+	inline size_t write(unsigned int value) { return(write((uint8_t)value)); }
 	inline size_t write(int value) { return(write((uint8_t)value)); }
+	inline size_t _write(unsigned int value) { return(_write((uint8_t)value)); }
 	inline size_t _write(int value) { return(_write((uint8_t)value)); }
 
 	using Print::write; // for other Print Class write() functions
@@ -211,7 +218,8 @@ public:
 	// Mandatory LCD API 1.0 functions
 	// ================================
 
-	// init(); // not implemented
+	int init(); // uses defaults; using begin(cols, rows) is recommended
+
 #if ( __GNUC__ >= 4) && (__GNUC_MINOR__ >= 5)
 	inline void __attribute__((deprecated("Use setExecTimes() instead"))) setDelay(uint32_t CmdDelay, uint32_t CharDelay)
 			 {setExecTimes(CmdDelay, CharDelay);}
