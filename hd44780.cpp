@@ -143,6 +143,7 @@ int rval = 0;
 
 	/*
 	 * create default row/line offset table of addresses for each row/line
+	 * if not set by user before begin() is called.
 	 * See here for further explanation of lcd memory addressing:
 	 * http://web.alfredstate.edu/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
 	 * This default will handle:
@@ -152,7 +153,9 @@ int rval = 0;
 	 *   (This requires ugly mods to the library to make work)
 	 * - 40x4 is dual 40x2 displays using dual E signals which is not supported.
 	 */
-	setRowOffsets(0x00, 0x40, 0x00 + cols, 0x40 + cols);
+
+	if(!_rowOffsets[0] && !_rowOffsets[1] && !_rowOffsets[2] && !_rowOffsets[3])
+		setRowOffsets(0x00, 0x40, 0x00 + cols, 0x40 + cols);
 
 	/*
 	 * SEE PAGE 45/46 of Hitachi HD44780 spec FOR INITIALIZATION SPECIFICATION.
