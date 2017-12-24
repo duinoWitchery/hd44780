@@ -27,6 +27,7 @@
 // (2) lcd device does not support reads
 // (3) error reading data from lcd device
 // (4) error writing data to lcd device
+// (5) read data mismatch
 //
 
 #include <Wire.h>
@@ -94,7 +95,7 @@ unsigned long secs;
 			// check for ':' characters in col 2 and 5
 			// if not there, consider it a fatal read error
 			if((col == 2 || col == 5) && c != ':')
-				fatalError(3);
+				fatalError(5);
 
 			lcd.setCursor(col, 1);
 			if(lcd.write((uint8_t) c) != 1)
@@ -133,7 +134,7 @@ unsigned int hr, mins, sec;
 	outdev.print((int)sec);
 }
 
-// fatalError() - loop & blink an error code
+// fatalError() - loop & blink and error code
 void fatalError(int ecode)
 {
 	hd44780::fatalError(ecode); // does not return

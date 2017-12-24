@@ -17,13 +17,14 @@
 // on the top row and then read the data from the LCD to print it on the
 // second row
 //
-// If there are errors the arduino supports a built in LED,
+// If there are errors and the arduino supports a built in LED,
 // an error status code will blink on the built in LED.
 // Error codes:
 // (1) lcd device initalization failed
 // (2) lcd device does not support reads
 // (3) error reading data from lcd device
 // (4) error writing data to lcd device
+// (5) read data mismatch
 //
 
 #include <hd44780.h>
@@ -114,7 +115,7 @@ unsigned long secs;
 			{
 				lcd.clear();
 				lcd.print("read fail");
-				fatalError(3);
+				fatalError(5);
 			}
 
 			lcd.setCursor(col, 1);
