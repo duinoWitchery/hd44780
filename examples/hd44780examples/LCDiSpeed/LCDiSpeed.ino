@@ -225,12 +225,22 @@ void setup(void)
 #endif
 
 #ifdef WIRECLOCK
-#if (ARDUINO >= 157) && !defined(MPIDE)
+#if defined(WIRE_HAS_SETCLOCK) || ((ARDUINO >= 157) && !defined(MPIDE))
 	Wire.setClock(WIRECLOCK); // set i2c clock bit rate, if asked
 #else
 #error attempting to use Wire.setClock on IDE that does not support it
 #endif
 #endif
+
+#if defined (WIRE_HAS_GETCLOCK)
+	lcd.print("i2c clock:");
+	lcd.setCursor(0,1);
+	lcd.print(Wire.getClock());
+	lcd.print(" Hz");
+	delay(3000);
+#endif
+
+
 }
 
 void loop(void)
@@ -272,7 +282,7 @@ unsigned long etime;
 		/*
 		 * show independent FPS rate & Frame update time
 		 */
-		showFPS(etime, iLCD_COLS, iLCD_COLS, "i");
+		showFPS(etime, iLCD_COLS, iLCD_ROWS, "i");
 	}
 #endif
 
@@ -319,6 +329,8 @@ float fps;
 	lcd.print(cols);
 	lcd.print('x');
 	lcd.print(rows);
+	if(fpstype)
+		lcd.print(fpstype);
 	lcd.print("FPS:");
 	if(fps < 1000)
 		lcd.print(" ");
