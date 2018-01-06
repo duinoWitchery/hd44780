@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.0-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.1-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -207,7 +207,38 @@ directory and its subdirectories to see each readme file.
 CHANGELOG
 ----------------------
 
+[0.9.1] - 2018-01-06
+ * added missing LCDcharset sketch to hd44780_NTCU165ECPB i/o class
+ * updated keyword file, readme files, and added comments to some sketches
+ * LCDiSpeed prints actual i2c clock rate when core supports access to it
+ * fixed timing issue in status()
+ * Updated LCDCustomChars sketch - no longer shows full lcd character set
+ * added LCDcharset template sketch to hd44780examples
+ * report read data mismatch in ReadWrite Sketch
+ * setRowOffsets() can now be called before begin()
+ * Added LiquidCrystal_I2C compatible constructor to hd44780_I2Cexp
+ * Added LCD API 1.0 init() function
+ * 3rd party otherLibraries now only have LCDiSpeed example
+ * Fixed bug in LiquidCrystal hd44780examples
+ * fixed bug in a hd44780 constructor
+ * overload to allow write(0) without having to use a cast
+ * createChar() support for AVR PROGMEM data
+ * I2Cexp fixed issue with handling of E signal on read of 2nd nibble
+ * readme updates
+ * Use h/w SPI pins for examples, when possible
+ * Have to stop SPI for s/w read
+ * Use hardware SPI for CU-U iowrite
+ * add CU-U examples
+ * add CU-U to READMEs
+ * Cleanup and add documentation for Noritake CU-U series
+ * Add io class for Noritake CU-U Series VFD (in serial mode)
+ * removed old hd44780examples/CustomChars wrapper scketch from all i/o classes
+ * updated Arduino IDE keywords
+ * move hd44780 example CustomChars to each i/o class as LCDCustomChars
+ * removed sprintf() from LCDiSpeed
+
 [0.9.0] - 2017-05-12
+ * update version info for 0.9.0 release
  * Simplification of HelloWorld sketch examples
  * comment clarifications to UpTime example sketches
  * Updates to work around TinyWireM library bugs
