@@ -781,7 +781,11 @@ int status;
 int hd44780::status()
 {
 int rvalue = ioread(HD44780_IOcmd);
-	markStart(0); // status reads do not require execution time
+	// markStart() is not called here as status reads do not
+	// require any execution time.
+	// setting the start time to now, which is 0, can potentially erase
+	// the execution time of a previous command if status reads
+	// are not supported therefore, just leave the previous start time.
 	return(rvalue);
 }
 
@@ -792,6 +796,11 @@ int rvalue = ioread(HD44780_IOcmd);
 int hd44780::read()
 {
 int rvalue = ioread(HD44780_IOdata);
+	// it apears that even though the read operation actually completed
+	// when the data has been read, i.e. ioread() returns,
+	// that the chip cannot take another instruction
+	// until after the normal instruction execution time.
+	// See Table 6 page 25 of Hitachi hd44780 datasheet
 	markStart(_insExecTime);
 	return(rvalue);
 }
