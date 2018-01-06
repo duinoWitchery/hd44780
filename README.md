@@ -2,17 +2,7 @@
 
 CurrentStatus
 =============
-The library is currently in an alpha state.
-
-While the API and underlying code is stable and has been tested, there are
-possibly some changes in the constructors for the included i/o classes that will
-not be backward compatible, particuarly for the `hd44780_I2Cexp` i/o class.
-
-Any potential changes are not anticipated to affect lcd `hd44780_I2Cexp` autoconfiguration object definitions or main line sketch code.
-
-After these potential changes are finalized, the project will move to a beta state
-and should quickly move to a 1.0.0 release candidate followed by a
-1.0.0 release.
+The library is currently in a beta state very close to a 1.0.0 release
 
 Licensing
 =========
@@ -54,23 +44,12 @@ The most most significant extensions being:
 
 S/W requirements
 ================
-- ### IDE version 1.0 or later (versions 1.6.9 and higher are recommended)
+- ### IDE version 1.0.1 or later (versions 1.6.9 and higher are recommended)
 
 - ### IDE versions that should be avoided:
 	- IDE versions 1.5 to 1.55 (unnecessary file name restrictions, breaks many libraries)
 	- IDE version 1.6.6 (has function prototyping issues that can break some sketches)
 	- IDE version 1.6.8 (has serial port issues that breaks on certain boards)
-
-**NOTE**<br>
-There are two "Ardino" entities. arduino.cc and arduino.org
-While things appear to be converging/merging, and on Dec 20, 2016 there was a big merging of the two code bases
-for the 1.8.0 release, for the time being,
-IDEs from arduino.org are still not recommended as arduino.org 1.8.0 is not the same as arduino.cc 1.8.0
-and the 1.8.0 arduino.org IDE does not work at all in some OS environments.
-Also, IDEs from Arduino.org  prior to 1.8.0 are quite far behind IDEs from arduino.cc interms of 
-of features and have function prototyping issues that prevent some of the example sketches in
-this library from compiling. 
-Therefore, for the time being, it is recommend that Arduino IDEs be obtained from arduino.cc
 
 H/W support
 ===========
@@ -185,6 +164,7 @@ can be found in the included examples.
 | command(cmd)                          | send raw 8bit hd44780 command to LCD<br> **hd44780 extension**: returns zero on success |
 |                                       ||
 | **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
+| createChar(charval, charmap[])        | create a custom character<br>(supports charmap in AVR PROGMEM)<br>returns zero on success |
 | backlight()	                        | turn on backlight (max brightness)<br>returns zero on success |
 | noBacklight()                         | turn off backlight<br>returns zero on success    |
 | lineWrap()                            | turn on automatic line wrapping<br>(wraps lines but does not scroll display)<br>returns zero on success

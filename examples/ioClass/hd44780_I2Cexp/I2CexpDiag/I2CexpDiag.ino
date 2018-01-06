@@ -703,7 +703,7 @@ void showSystemConfig(void)
 	Serial.println(F_CPU);
 
 	Serial.println(hline);
-#if NUM_ANALOG_INPUTS > 4
+#if NUM_ANALOG_INPUTS > 5
 	Serial.print(F(" A4: digital pin: "));
 	Serial.println(A4);
 	Serial.print(F(" A5: digital pin: "));

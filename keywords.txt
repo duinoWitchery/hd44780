@@ -8,6 +8,13 @@
 # old IDEs only support a single tab
 # new IDES support mutiple tabs
 # as of 1.6.9 no IDE supports using space
+# or multiple spaces.
+# This is mess because of the obstinance of
+# the Arduino team developers refusing to
+# change a single line of code in the IDE
+# to use whitespace which is space(s)/tab(s)
+# rather than explicitly requiring a single
+# tab as a seperator
 ###########################################
 
 ###########################################
@@ -18,6 +25,7 @@ hd44780	KEYWORD1
 hd44780_I2Cexp	KEYWORD1
 hd44780_I2Clcd	KEYWORD1
 hd44780_NTCU165ECPB	KEYWORD1
+hd44780_NTCUUserial	KEYWORD1
 hd44780_pinIO	KEYWORD1
 iotype	KEYWORD1
 
@@ -50,6 +58,8 @@ moveCursorRight	KEYWORD2
 setRowOffsets	KEYWORD2
 command	KEYWORD2
 
+# mandatory LCD 1.0 API functions
+init	KEYWORD2
 
 # optional LCD 1.0 API functions
 setBacklight	KEYWORD2
@@ -62,19 +72,20 @@ status	KEYWORD2
 blink_on	KEYWORD2
 blink_off	KEYWORD2
 cursor_on	KEYWORD2
-cursor_on	KEYWORD2
+cursor_off	KEYWORD2
 load_custom_char	KEYWORD2
 setDelay	KEYWORD2
 
 # hd44780 extensions
+_write	KEYWORD2
 backlight	KEYWORD2
 noBacklight	KEYWORD2
 lineWrap	KEYWORD2
 noLineWrap	KEYWORD2
 read	KEYWORD2
 setExecTimes	KEYWORD2
-fatalError	KEYWORD2
 blinkLED	KEYWORD2
+fatalError	KEYWORD2
 
 # hd44780 internal i/o class virtual functions
 ioinit	KEYWORD2

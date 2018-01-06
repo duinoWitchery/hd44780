@@ -14,6 +14,21 @@
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED.
 //
+// The application note for CU-U series boards is here:
+//     https://www.noritake-elec.com/includes/documents/brochure/CU-U_Application_Note.pdf
+// Datasheets for specific boards, code samples, and more can be found here:
+//     https://www.noritake-elec.com/products/vfd-display-module/character-display/cu-u-series
+//
+//
+// The device uses a kind of 3-wire SPI for communication.
+// Pinout:
+// 1 VCC
+// 2 SI/SO (DATA) MOSI - Digital Pin 11 on Uno & Leonardo
+// 3 GND
+// 4 STB (CS) SS       - Digital Pin 10 on Uno & Leonardo
+// 5 SCK (CLK) SCK     - Digital Pin 13 on Uno & Leonardo
+// 6 NC
+//
 // ----------------------------------------------------------------------------
 // LiquidCrystal compability:
 // Since hd44780 is LiquidCrystal API compatible, most existing LiquidCrystal
