@@ -8,17 +8,19 @@ The hd44780_NTCUUserial i/o class controls the Noritake CU-U series VFD with a n
 #### The following examples are included:
 
 - `HelloWorld`<br>
-Sketch prints "Hello, World!" on the vfd
+Prints "Hello, World!" on the vfd
+
+- `LCDCustomChars`<br>
+Demonstrates using custom characters
 
 - `LineWrap`<br>
-Sketch to demonstrate automatic linewrap functionality
+Demonstrates automatic linewrap functionality
 
 - `ReadWrite`<br>
-The purpose of the sketch is to demonstrate the ability to read data from
-the VFD.
+Demonstrates the ability to read data from the VFD.
 
 - `UpTime`<br>
-Sketch prints the amount of time since the Arduino has been reset.
+Prints the amount of time since the Arduino has been reset.
 
 - `hd44780examples`<br>
 The hd44780examples subdirectory contains

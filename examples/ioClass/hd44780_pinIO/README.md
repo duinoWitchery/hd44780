@@ -13,7 +13,7 @@ Prints "Hello, World!" on the lcd
 Tests lcd keypad shields for bad backlight circuitry
 
 - `LCDCustomChars`<br>
-Demonstrates using custom characters as well as show the full available character set.
+Demonstrates using custom characters
 
 - `LineWrap`<br>
 Demonstrates automatic linewrap functionality

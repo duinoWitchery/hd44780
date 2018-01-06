@@ -1,4 +1,3 @@
-static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // vi:ts=4
 // ----------------------------------------------------------------------------
 // LCDCustomChars - simple demonstration of lcd custom characters
@@ -8,7 +7,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 // 
-// This sketch is for LCDs that are directly controlled with Arduino pins.
+// This sketch is for the Noritake CU-U series VFDs, in native serial mode
 //
 // Sketch demonstrates how to assign custom characters to the eight hd44780
 // custom character codepoints and how to display on the LCD using
@@ -20,66 +19,59 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // http://www.quinapalus.com/hd44780udg.html
 // https://omerk.github.io/lcdchargen
 //
-// See below for configuring the Arduino pins used.
+// If initialization of the LCD fails and the arduino supports a built in LED,
+// the sketch will simply blink the built in LED.
 //
-// While not all hd44780 use the same pinout, here is the one that most use:
-// pin 1 is the pin closest to the edge of the PCB
-//  1 - LCD gnd
-//  2 - VCC (5v)
-//  3 - Contrast Voltage (Vo) (use center pin of contrast pot)
-//  4 - Register Select (rs)
-//  5 - Read/Write
-//  6 - Enable (en)
-//  7 - Data 0 (db0) ----
-//  8 - Data 1 (db1)     |-------- Not used in 4 bit mode
-//  9 - Data 2 (db2)     |
-// 10 - Data 3 (db3) ----
-// 11 - Data 4 (db4)
-// 12 - Data 5 (db5)
-// 13 - Data 6 (db6)
-// 14 - Data 7 (db7)
-// 15 - Backlight Anode (+5v)
-// 16 - Backlight Cathode (Gnd)
+//
+// The device uses a kind of 3-wire SPI for communication.
+// Pinout:
+// 1 VCC
+// 2 SI/SO (DATA) MOSI - Digital Pin 11 on Uno & Leonardo
+// 3 GND
+// 4 STB (CS) SS       - Digital Pin 10 on Uno & Leonardo
+// 5 SCK (CLK) SCK     - Digital Pin 13 on Uno & Leonardo
+// 6 NC
 //
 // ----------------------------------------------------------------------------
 // LiquidCrystal compability:
 // Since hd44780 is LiquidCrystal API compatible, most existing LiquidCrystal
-// sketches should work with hd44780 hd44780_pinIO i/o class once the
+// sketches should work with hd44780 hd44780_NTCUUserial i/o class once the
 // includes are changed to use hd44780 and the lcd object constructor is
-// changed to use the hd44780_pinIO class.
-
-#include <hd44780.h>
-#include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
-
-// declare Arduino pins used for LCD functions
-// and the lcd object
-
-// Note: this can be with or without backlight control:
-
-// without backlight control:
-// The parameters used by hd44780_pinIO are the same as those used by
-// the IDE bundled LiquidCrystal library
-const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
-hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
-
-//with backlight control:
-//	backlight control requires two additional parameters
-//	- an additional pin to control the backlight
-//	- backlight active level which tells the library the level
-//		needed to turn on the backlight.
-//		note: If the backlight control pin supports PWM, dimming can be done
-//			using setBacklight(dimvalue);
+// changed to use the hd44780_NTCUUserial i/o class.
 //
-//	WARNING: some lcd keypads have a broken backlight circuit
-//		If you have a lcd keypad, it is recommended that you first run the
-//		LCDKeypadCheck sketch to verify that the backlight circuitry
-//		is ok before enabling backlight control.
-//		However, the hd44780_PinIO class will autodetect the issue and
-//		work around it in s/w. If the backlight circuitry is broken,
-//		dimming will not be possible even if the backlight pin supports PWM.
+
+#include <SPI.h>                                // optional, include to use h/w spi
+#include <hd44780.h>                            // main hd44780 header
+#include <hd44780ioClass/hd44780_NTCUUserial.h> // Noritake CU-U serial i/o class header
+
+// constructor parameters:
+// lcd([cs], [clock, data])
+// If no parameters, then library will use SS, SCK, and MOSI pins
+// If cs parameter specified, then use it for chip select then SCK and MOSI
+// If <SPI.h> is included and clock & data pins match h/w SPI pins SCK and MOSI,
+//  h/w spi will be used
+// If h/w spi is not possible, then the code will fall back to bit banging.
 //
-//const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
-//hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
+// NOTE:
+//  - Leonardo h/w is "stupid" and does not bring out SS
+//     (it only drives an LED)
+//  - Leonardo does not bring SPI signals to female headers,
+//     they are only on 6 pin ISP header.
+//  - ESP8266 is does not use naked constants for digital pin numbers
+//
+//
+// To work around these pin issues in this sketch,
+// Leonardo will use uno digital pins for SPI h/w which means it will
+// not use h/w spi. All the other boards will use the h/w SPI pins.
+// Consult board pinout diagram to see where SS, SCK, and MOSI are available.
+//
+
+#if defined(ARDUINO_AVR_LEONARDO) || ( (USB_VID == 0x2341) && (USB_PID == 0x8036) )
+const int cs=10, clk=13, data=11; // uno SPI pins (s/w bit banging will be used)
+#else
+const int cs=SS, clk=SCK, data=MOSI; // use h/w SPI pins on all other boards
+#endif
+hd44780_NTCUUserial lcd(cs, clk, data); // declare lcd object
 
 // LCD geometry
 const int LCD_COLS = 16;
