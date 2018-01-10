@@ -50,7 +50,13 @@
 // without backlight control:
 // The parameters used by hd44780_pinIO are the same as those used by
 // the IDE bundled LiquidCrystal library
-const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
+// note that ESP8266 based arduinos must use the Dn defines rather than
+// raw pin numbers.
+#if defined (ARDUINO_ARCH_ESP8266)
+const int rs=D8, en=D9, db4=D4, db5=D5, db6=D6, db7=D7; // for esp8266 devices
+#else
+const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;       // for all other devices
+#endif
 hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
 //with backlight control:
@@ -69,7 +75,11 @@ hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 //		work around it in s/w. If the backlight circuitry is broken,
 //		dimming will not be possible even if the backlight pin supports PWM.
 //
+#if defined (ARDUINO_ARCH_ESP8266)
+//const int rs=D8, en=D9, db4=D4, db5=D5, db6=D6, db7=D7, bl=D10, blLevel=HIGH;
+#else
 //const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
+#endif
 //hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
 
 // LCD geometry

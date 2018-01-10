@@ -78,7 +78,13 @@
 // Note: this can be with or without backlight control:
 
 // without backlight control:
-const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;
+// note that ESP8266 based arduinos must use the Dn defines rather than
+// raw pin numbers.
+#if defined (ARDUINO_ARCH_ESP8266)
+const int rs=D8, en=D9, db4=D4, db5=D5, db6=D6, db7=D7; // for esp8266 devices
+#else
+const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7;       // for all other devices
+#endif
 hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 
 //with backlight control:
@@ -92,7 +98,11 @@ hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 //		LCDKeypadCheck sketch to verify that the backlight circuitry
 //		is ok before enabling backlight control.
 //
+#if defined (ARDUINO_ARCH_ESP8266)
+//const int rs=D8, en=D9, db4=D4, db5=D5, db6=D6, db7=D7, bl=D10, blLevel=HIGH;
+#else
 //const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
+#endif
 //hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
 
 // LCD geometry

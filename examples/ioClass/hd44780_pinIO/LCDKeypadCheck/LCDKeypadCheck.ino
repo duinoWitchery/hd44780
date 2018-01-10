@@ -66,14 +66,20 @@
 #include <hd44780ioClass/hd44780_pinIO.h> // Arduino pin i/o class header
 
 // initialize the library with the numbers of the interface pins
+// note that ESP8266 based arduinos must use the Dn defines rather than
+// raw pin numbers.
+#if defined (ARDUINO_ARCH_ESP8266)
+const int rs=D8, en=D9, db4=D4, db5=D5, db6=D6, db7=D7; // for esp8266 devices
+const int pin_BL = D10; // arduino pin wired to LCD backlight circuit
+#else
 const int rs = 8; // arduino pin wired to LCD RS
 const int en = 9; // arduino pin wired to LCD EN
 const int db4 = 4;// arduino pin wired to LCD db4
 const int db5 = 5;// arduino pin wired to LCD db5
 const int db6 = 6;// arduino pin wired to LCD db6
 const int db7 = 7;// arduino pin wired to LCD db7
-
 const int pin_BL = 10; // arduino pin wired to LCD backlight circuit
+#endif
 
 hd44780_pinIO lcd( rs, en, db4,  db5,  db6, db7);
 
