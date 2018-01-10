@@ -16,6 +16,7 @@
 // You can create your own custom characters.
 // Here are a couple of web pages that have a tool that will generate the data
 // values needed for custom character.
+// https://kakedev.github.io/GlyphGenerator/
 // http://www.quinapalus.com/hd44780udg.html
 // https://omerk.github.io/lcdchargen
 //
