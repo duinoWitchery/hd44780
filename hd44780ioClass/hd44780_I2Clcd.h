@@ -30,7 +30,7 @@
 // such as a PCF8574 or MCP23008
 //
 // Here is a example of such a device: 
-// http://www.seeedstudio.com/wiki/images/0/03/JHD1214Y_YG_1.0.pdf
+// https://seeeddoc.github.io/Grove-LCD_RGB_Backlight/res/JHD1214Y_YG_1.0.pdf
 // This device uses address 0x3E and incorrectly responds to read requests
 // It overlaps with the addresses for the PCF8574A
 // It will lock up module and/or the AVR i2c h/w and require a power cycle to reset.
