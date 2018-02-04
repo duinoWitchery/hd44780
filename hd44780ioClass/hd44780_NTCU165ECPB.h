@@ -1,7 +1,7 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
 //  hd44780_NTCU165ECPB.h - hd44780_NTCU165ECPB i/o subclass for hd44780 library
-//  Copyright (c) 2016  Bill Perry
+//  Copyright (c) 2016-2018  Bill Perry
 //
 // The API functionality provided by this library class is compatible
 // with the API functionality of the Arduino LiquidCrystal library.

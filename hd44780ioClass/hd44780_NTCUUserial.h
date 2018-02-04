@@ -1,7 +1,7 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
 //  hd44780_NTCUUserial.h - hd44780_NTCUUserial i/o subclass for hd44780 library
-//  Copyright (c) 2013-2017  Bill Perry
+//  Copyright (c) 2013-2018  Bill Perry
 //
 // The API functionality provided by this library class is compatible
 // with the API functionality of the Arduino LiquidCrystal library.

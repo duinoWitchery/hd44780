@@ -1,7 +1,7 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
 //  hd44780_I2Cexp.h - hd44780_I2Cexp i/o subclass for hd44780 library
-//  Copyright (c) 2013-2017  Bill Perry
+//  Copyright (c) 2013-2018  Bill Perry
 // ---------------------------------------------------------------------------
 //
 //  This file is part of the hd44780 library

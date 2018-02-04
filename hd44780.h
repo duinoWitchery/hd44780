@@ -1,7 +1,7 @@
 //  vi:ts=4
 // -------------------------------------------------------------------------
 //  hd44780.h - hd44780 base class
-//  Copyright (c) 2014-2016  Bill Perry
+//  Copyright (c) 2014-2018  Bill Perry
 //  (Derivative work of arduino.cc IDE LiquidCrystal library)
 //  Note:
 //    Original Copyrights for LiquidCrystal are a mess as originally none were
