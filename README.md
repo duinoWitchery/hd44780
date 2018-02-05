@@ -38,6 +38,8 @@ The most most significant extensions being:
 - ability to enable automatic line wrapping
 - ability to modify the libraries expected command execution times.
 - API functions return a status to indicate whether successful
+- automatic detection and s/w work around for LCD keypad shields with bad backlight circuit
+- self configuration of i2c address and pin mappings for i2c backpacks
 - ability to tell if lcd initialization failed
 - ability to read data or status from the LCD (requires r/w control)
 - ability to tell if sending a raw command to the LCD failed
@@ -194,9 +196,13 @@ can be found in the included examples.
 Examples
 ========
 Examples for the included hd44780 i/o classes are provided to demonstrate how to use LCDs with various h/w interfaces.<br>
-Each i/o class included in the hd44780 library pacakge has its own examples.<br>
+Each i/o class included in the hd44780 library package has its own examples.<br>
 You can access i/o class examples from the IDE from [File]->Examples->hd44780->ioClass and then choose the desired i/o class.<br>
-hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780 which can be found under otherLibraries.
+hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780 which can be found under otherLibraries.<br>
+The examples in the hd44780exmaples area are special purpose example sketches that are used as include files for the i/o class examples.
+While the hd44780examples sketches can be modified to work standalone with any LiquidCrystal API compatible library, their primary purpose, as shipped in the hd44780 library package, is to act as an include file for the i/o class wrapper sketches and are not intended to be used directly.  
+**See the ioClass specific subdirectories for the examples for each ioClass.**
+
 
 See the included readme files under the examples directory for additional information
 about the included examples.<br>
