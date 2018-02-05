@@ -29,7 +29,7 @@
 repodir=../..
 
 # location of where Documenation files are stored
-HTMLdocs=./examples/Documentation/Docs
+HTMLdocs=./examples/Documentation/docs
 
 #get name & location of this script
 progname=`basename $0`
@@ -49,7 +49,7 @@ cd $repodir
 # this script is running in the root of repository
 # so all files being used/updated need to be relative to that location
 
-echo Creating README html file in Docs area
+echo Creating README html file in docs area
 grip --quiet --title=README README.md --export $HTMLdocs/README.html
 
 exit 0
