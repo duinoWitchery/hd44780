@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# vi:ts=4
+#=============================================================================
+# This version of the script patches files for the hd44780 arduino library
+#=============================================================================
+#
+# mkreleasePostPatcher - do things after patcher has run
+#
+# SYNOPSIS
+#    mkreleasePostPatcher
+#
+# DESCRIPTION
+#  mkreleasePostPatcher is called by the mkRelease script that controls the
+#  process for making a new release.
+#  mkrelease will call it after mkreleasePatch has been run
+#  It massages patched files like the README.md markdown file to html for use
+#  in the documentation
+#
+#  This script depends on the tool 'grip' which can be found here:
+#  https://github.com/joeyespo/grip
+#
+# AUTHOR
+#    Created by Bill Perry 2018-02-03
+#    bperrybap@opensource.billsworld.billandterrie.com
+#
+#=============================================================================
+
+# location of root repository directory relative to directory where script lives
+repodir=../..
+
+# location of where Documenation files are stored
+HTMLdocs=./examples/Documentation/Docs
+
+#get name & location of this script
+progname=`basename $0`
+progwd=`dirname $0`
+
+#make sure script running in root repo directory where script lives
+# note: this is done in two steps since progwd might or might not be a full path
+cd $progwd
+#make sure progwd is full path
+progwd=`pwd`
+cd $repodir
+
+#######################################################################
+# Create the README.html file from the README.md file
+#######################################################################
+
+# this script is running in the root of repository
+# so all files being used/updated need to be relative to that location
+
+echo Creating README html file in Docs area
+grip --quiet --title=README README.md --export $HTMLdocs/README.html
+
+exit 0
