@@ -12,7 +12,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // WARNING:
 //	Use caution when using 3v only processors like arm and ESP8266 processors
 //	when interfacing with 5v modules as not doing proper level shifting or
-//  incorrectly hooking things up can damage the processor.
+//	incorrectly hooking things up can damage the processor.
 // 
 // Sketch demonstrates how to assign custom characters to the eight hd44780
 // custom character codepoints and how to display on the LCD using

@@ -11,7 +11,7 @@
 // WARNING:
 //	Use caution when using 3v only processors like arm and ESP8266 processors
 //	when interfacing with 5v modules as not doing proper level shifting or
-//  incorrectly hooking things up can damage the processor.
+//	incorrectly hooking things up can damage the processor.
 // 
 // Sketch prints "Hello, World!" on the lcd
 //

@@ -31,7 +31,7 @@
 // WARNING:
 //	Use caution when using 3v only processors like arm and ESP8266 processors
 //	when interfacing with 5v modules as not doing proper level shifting or
-//  incorrectly hooking things up can damage the processor.
+//	incorrectly hooking things up can damage the processor.
 //
 // It requires the hd44780 library which can be installed using the
 // Arduino IDE library manager starting with IDE 1.6.2 or can found here:
