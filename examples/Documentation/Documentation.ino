@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// hd44780 Extensible hd44780 LCD Library Version 0.0.0
+// hd44780 Extensible hd44780 LCD Library Version 0.9.2
 //
 // hd44780 Library ReadMe: file://./docs/README.html
 //

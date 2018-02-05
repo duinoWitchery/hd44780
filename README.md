@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.1-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.2-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -213,7 +213,20 @@ directory and its subdirectories to see each readme file.
 CHANGELOG
 ----------------------
 
+[0.9.2] - 2018-02-04
+ * Bug fix to mkreleasePostPatcher
+ * Added initial README.html file
+ * updates to various readme files
+ * TAB/space alignment correction in comments of many sketches.
+ * update mkrelease tools to auto update version info in Documentation files
+ * Added Documenation sketch to provide links to documenation
+ * Updated Copyright year
+ * updated documenation link in hd44780_i2Clcd.h
+ * tweaks to hd44780_pinIO class code and examples for esp8266 based boards.
+ * LCDCustomChars - added additional custom character builder website link
+
 [0.9.1] - 2018-01-06
+ * update version info for 0.9.1 release
  * added missing LCDcharset sketch to hd44780_NTCU165ECPB i/o class
  * updated keyword file, readme files, and added comments to some sketches
  * LCDiSpeed prints actual i2c clock rate when core supports access to it
