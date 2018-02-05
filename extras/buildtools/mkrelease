@@ -29,9 +29,12 @@ repodir=../..
 progname=`basename $0`
 progwd=`dirname $0`
 
-# patcher script
+# pre/post/patcher scripts
 # (assume in same dirctory with this scketh)
+PREPATCHER=$progwd/mkreleasePrePatcher
 PATCHER=$progwd/mkreleasePatcher
+POSTPATCHER=$progwd/mkreleasePostPatcher
+
 
 #make sure script running where script lives
 cd $progwd
@@ -145,6 +148,19 @@ fi
 #echo $progname: "setting    VERSION to $VERSION"
 #echo $progname: "setting VERSIONSTR to $VERSIONSTR"
 
+# check to see if a prepatcher script exists, if does does,
+# call prepatcher script to do anything needed before doing patching
+if [ -e $PREPATCHER ]
+then
+	$PREPATCHER
+	if [ $? -ne 0 ]
+	then
+		echo "$progname: error pre patching files"
+		exit 1
+	fi
+fi
+
+
 # call patcher script to do the actual file patching
 # hand patch all the version information and let it do its thing...
 $PATCHER "$VERSIONSTR" "$VERSION" "$MAJ" "$MIN" "$PT"
@@ -152,6 +168,18 @@ if [ $? -ne 0 ]
 then
 	echo "$progname: error patching version files"
 	exit 1
+fi
+
+# check to see if a postpatcher script exists, if does does,
+# call postpatcher script to do anything needed after doing patching
+if [ -e $POSTPATCHER ]
+then
+	$POSTPATCHER
+	if [ $? -ne 0 ]
+	then
+		echo "$progname: error post patching files"
+		exit 1
+	fi
 fi
 
 # ask if changes should be committed and tagged

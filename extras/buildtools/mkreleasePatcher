@@ -73,6 +73,7 @@ echo $progname: "setting HD44780_VERSIONSTR to $VERSIONSTR"
 # patch the files that have version information in them
 # - hd44780.h
 # - library.properties
+# - examples/Documentation/Documentation.ino
 # - README.md
 #######################################################################
 
@@ -93,6 +94,15 @@ EOF
 # patch library.properties version
 ed -s library.properties << EOF
 ,s/\(version=\).*$/\1$VERSIONSTR/
+w
+q
+EOF
+#######################################################################
+
+#######################################################################
+# patch Documentation sketch used to display documentation links
+ed -s examples/Documentation/Documentation.ino << EOF
+,s/\(Version \).*$/\1$VERSIONSTR/
 w
 q
 EOF
