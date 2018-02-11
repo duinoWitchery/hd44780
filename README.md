@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.2-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.3-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -214,7 +214,15 @@ directory and its subdirectories to see each readme file.
 CHANGELOG
 ----------------------
 
+[0.9.3] - 2018-02-11
+ * I2CexpDiag updates to output esp8266 specific i2c pin information.
+ * mkreleasePatcher tool updates
+ * Documenation sketch updates
+ * README, comment, and error message udpates for hd44780examples
+ * Added README for the Documentation.ino sketch
+
 [0.9.2] - 2018-02-04
+ * update version info for 0.9.2 release
  * Bug fix to mkreleasePostPatcher
  * Added initial README.html file
  * updates to various readme files

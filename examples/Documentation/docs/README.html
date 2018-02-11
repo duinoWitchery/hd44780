@@ -67,7 +67,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/19ca76679f47ada36d232b11e3b6cfba23e4d7a5/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d302e392e322d79656c6c6f772e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/19ca76679f47ada36d232b11e3b6cfba23e4d7a5/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d302e392e322d79656c6c6f772e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-0.9.2-yellow.svg?style=plastic" style="max-width:100%;"></a>
+<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/3c2174c708659fffeb9f811b87eefc28faf04b42/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d302e392e332d79656c6c6f772e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/3c2174c708659fffeb9f811b87eefc28faf04b42/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d302e392e332d79656c6c6f772e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-0.9.3-yellow.svg?style=plastic" style="max-width:100%;"></a>
 </h1>
 <h1>
 <a id="user-content-currentstatus" class="anchor" href="#currentstatus" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CurrentStatus</h1>
@@ -184,7 +184,7 @@ The zip image must be installed in a directory called "libraries" under that dir
 <p>After the zip file has been extracted and the hd44780 sketchbook library has been created,
 the library must now be renamed. (see below)</p>
 <h3>
-<a id="user-content-renaming-hd44780-libary-directory-name-after-installation-wo-library-manager" class="anchor" href="#renaming-hd44780-libary-directory-name-after-installation-wo-library-manager" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Renaming hd44780 libary directory name after installation w/o library manager</h3>
+<a id="user-content-renaming-hd44780-libary-directory-name-after-manual-installation-wo-library-manager" class="anchor" href="#renaming-hd44780-libary-directory-name-after-manual-installation-wo-library-manager" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Renaming hd44780 libary directory name after manual installation w/o library manager</h3>
 <p>When not using the library manager, the hd44780 library directory created in your sketchbook libary area will not be the correct name.
 This is due to the way github creates its zip files and the way the IDE library manager works.
 The downloaded zip file and internal directory will have a name like hd44780-X.Y.Z which causes the sketchbook library name to also be hd44780-X.Y.Z
@@ -199,7 +199,7 @@ Use your favorite tool to rename it.</p>
 <a id="user-content-api-summary" class="anchor" href="#api-summary" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API Summary</h1>
 <p>The table below is a summary of all the available API functions in the hd44780 library.</p>
 <p>Additional information about the API functions and how to use them
-can be found in the included examples.</p>
+can be found in the examples.</p>
 <table>
 <thead>
 <tr>
@@ -435,17 +435,27 @@ can be found in the included examples.</p>
 Each i/o class included in the hd44780 library package has its own examples.<br>
 You can access i/o class examples from the IDE from [File]-&gt;Examples-&gt;hd44780-&gt;ioClass and then choose the desired i/o class.<br>
 hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780 which can be found under otherLibraries.<br>
-The examples in the hd44780exmaples area are special purpose example sketches that are used as include files for the i/o class examples.
+<strong>The examples in the hd44780exmaples area are special purpose sketches that are used as include files for the i/o class examples.
+They should not be looked at as examples for how to use the library.</strong>
 While the hd44780examples sketches can be modified to work standalone with any LiquidCrystal API compatible library, their primary purpose, as shipped in the hd44780 library package, is to act as an include file for the i/o class wrapper sketches and are not intended to be used directly.<br>
 <strong>See the ioClass specific subdirectories for the examples for each ioClass.</strong></p>
-<p>See the included readme files under the examples directory for additional information
-about the included examples.<br>
+<p>See the readme files under the examples directory and the wiki for
+additional information about the examples.<br>
 If browsing on the hd44780 github repository, you can click on the examples
 directory and its subdirectories to see each readme file.</p>
 <h2>
 <a id="user-content-changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CHANGELOG</h2>
+<p>[0.9.3] - 2018-02-11</p>
+<ul>
+<li>I2CexpDiag updates to output esp8266 specific i2c pin information.</li>
+<li>mkreleasePatcher tool updates</li>
+<li>Documenation sketch updates</li>
+<li>README, comment, and error message udpates for hd44780examples</li>
+<li>Added README for the Documentation.ino sketch</li>
+</ul>
 <p>[0.9.2] - 2018-02-04</p>
 <ul>
+<li>update version info for 0.9.2 release</li>
 <li>Bug fix to mkreleasePostPatcher</li>
 <li>Added initial README.html file</li>
 <li>updates to various readme files</li>
