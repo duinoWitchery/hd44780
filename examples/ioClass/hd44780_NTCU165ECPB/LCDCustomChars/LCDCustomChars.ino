@@ -222,7 +222,7 @@ void loop(void)
 	if(LCD_ROWS < 2)
 	{
 		customcharRow = 0;
-    	delay(LongDelay);
+		delay(LongDelay);
 		lcd.clear();
 	}
 
