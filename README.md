@@ -116,7 +116,7 @@ The zip image must be installed in a directory called "libraries" under that dir
 After the zip file has been extracted and the hd44780 sketchbook library has been created,
 the library must now be renamed. (see below)
 
-### Renaming hd44780 libary directory name after installation w/o library manager
+### Renaming hd44780 libary directory name after manual installation w/o library manager
 When not using the library manager, the hd44780 library directory created in your sketchbook libary area will not be the correct name.
 This is due to the way github creates its zip files and the way the IDE library manager works.
 The downloaded zip file and internal directory will have a name like hd44780-X.Y.Z which causes the sketchbook library name to also be hd44780-X.Y.Z
@@ -133,7 +133,7 @@ API Summary
 The table below is a summary of all the available API functions in the hd44780 library.
 
 Additional information about the API functions and how to use them
-can be found in the included examples.
+can be found in the examples.
 
 
 |Function                               | Description                           |
@@ -199,13 +199,14 @@ Examples for the included hd44780 i/o classes are provided to demonstrate how to
 Each i/o class included in the hd44780 library package has its own examples.<br>
 You can access i/o class examples from the IDE from [File]->Examples->hd44780->ioClass and then choose the desired i/o class.<br>
 hd44780 also includes some examples that use other 3rd party LCD libraries rather than hd44780 which can be found under otherLibraries.<br>
-The examples in the hd44780exmaples area are special purpose example sketches that are used as include files for the i/o class examples.
+**The examples in the hd44780exmaples area are special purpose sketches that are used as include files for the i/o class examples.
+They should not be looked at as examples for how to use the library.**
 While the hd44780examples sketches can be modified to work standalone with any LiquidCrystal API compatible library, their primary purpose, as shipped in the hd44780 library package, is to act as an include file for the i/o class wrapper sketches and are not intended to be used directly.  
 **See the ioClass specific subdirectories for the examples for each ioClass.**
 
 
-See the included readme files under the examples directory for additional information
-about the included examples.<br>
+See the readme files under the examples directory and the wiki for
+additional information about the examples.<br>
 If browsing on the hd44780 github repository, you can click on the examples
 directory and its subdirectories to see each readme file.
 

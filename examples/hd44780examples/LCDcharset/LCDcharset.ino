@@ -23,10 +23,10 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 
 #ifndef HD44780_LCDOBJECT
 
-#error "Use i/o class wrapper sketch instead; otherwise, edit appropriately."
+#error "Special purpose sketch: Use i/o class example wrapper sketch instead."
 
 /*
- * If not using a hd44780 library i/o class wrapper example sketch,
+ * If not using a hd44780 library i/o class example wrapper sketch,
  * you must modify the sketch to include any needed header files for the
  * intended library and define the lcd object.
  *
