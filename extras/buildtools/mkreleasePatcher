@@ -101,8 +101,15 @@ EOF
 
 #######################################################################
 # patch Documentation sketch used to display documentation links
+# patch "Version #" 
 ed -s examples/Documentation/Documentation.ino << EOF
-,s/\(Version \).*$/\1$VERSIONSTR/
+,s/\(Version \)[0-9]\.*[0-9]*\.*[0-9]*\(.*$\)/\1$VERSIONSTR\2/
+w
+q
+EOF
+# patch github link to specific vesion tree: "https://.../tree/{tag}"
+ed -s examples/Documentation/Documentation.ino << EOF
+,s/\(tree\/\).*$/\1$VERSIONSTR/
 w
 q
 EOF
