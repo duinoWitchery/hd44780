@@ -103,11 +103,16 @@
 //	- probe the i2c bus to check for external pullup resistors 
 //	- scan the i2c bus and show all devices found
 //		NOTE: Arduino 2560 boards have 10k external pullups on the arduino board
+//		      Arduino DUE V3 boards have 1.5k external pullups on the arduino board
 //	- attempt to initalize each LCD device detected
 //	- attempt to blink backlight of each initalized LCD 3 times
 //	- display information about each each initialized LCD device
 //		this includes i2c address and configuration information
 //		and information about missing pullups.
+//		Note that pins work differently for some of the ESP8266 boards.
+//		The ESP8266 core use GPIO bit numbers and a few boards use Dn or Pn defines
+//		to do do pin # mapping to bit numbers.
+//		The code attempts to accurately report that information.
 //	- test internal LCD display memory
 //		 LCD expander must be able to control r/w line
 //	- perform a backlight blink test
@@ -169,6 +174,10 @@ hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
 // Even if display is larger the sketch should still work correctly
 const int LCD_ROWS = 2;
 const int LCD_COLS = 16;
+
+// turn on ESP8266 specific pin decoding
+// Turn this off if it creates issues.
+#define I2CEXPDIAG_CFG_DECODE_ESP8266PINS
 
 // if you have slow displays uncomment these defines
 // to override the default execution times.
@@ -663,6 +672,167 @@ unsigned int hr, mins, sec;
 	outdev.print((int)sec);
 }
 
+
+
+// printDigitalPin(outdev, pin) - print digital pin #
+// outdev - the device to send output
+//    pin - pin number
+//
+// This function will also print the digital pin number "symbol name" as
+// it can be different from the naked constant.
+// So far the only core where this happens is the ESP8266.
+// It is messy and ugly and won't be 100% accurate at
+// detecting the use of Dn or Pn mappings used by the ESP8266 variants.
+// For ESP8266 modules it will print GPIO# and if it detects a variant
+// that uses Dn or Pn mapping will print the associated symbol.
+// If more than a single symbol is used for the pin value, it will print
+// all symbols associated with the pin value.
+// 
+// Details:
+//
+// ESP8266 core does not use naked pin#s as Arduino pin numbers like other
+// cores.
+// in the ESP8266 core, naked constants are bit numbers in the GPIO output
+// port register.  While this makes things MUCH faster, This can make things
+// confusing since some variants (notably WeMos D1 and NodeMCU) decided to include
+// Dn defines to do pin to bit mapping.
+// This means that using pin N is the not same as using Dn with those
+// variants.
+// i.e. D5 may not be the same pin as 5
+// 
+// This makes things very difficult as there is no direct way to map the
+// naked constant values back to the Dn symbol names for those particular
+// variants. This is very unfortunate since boards that use Dn pin mapping
+// print Dn numbers on them rather than the GPIO bit# and for most pins,
+// Dn is the not the same as N.
+// This mismatched mapping is usually the case for Pn mapping variants for the i2c
+// pins.
+// Most variants use GPIO 4 for SDA and GPIO 5 for SCL and do not use or/
+// include Dn pin mapping defines.
+// The Wemos D1 and NodeMCU board variants have really made a mess of things.
+// Those variants include Dn pin mappings and D4 is sometimes 4 and D5 is
+// not 5.
+// And some boards have a D14 and D15 labels on the I2C SDA and SCL header
+// pins that map to GPIO 4 and GPIO 5. On those boards D14 is the same as
+// D4 and D15 is the same as D3
+//
+void printDigitalPin(Print &outdev, int pin)
+{
+	// On all cores, print the pin value
+	outdev.print(pin);
+
+#if defined(ARDUINO_ARCH_ESP8266)
+	// print GPIO# for all ESP8266 boards since that core uses GPIO bit numbers
+	// as the pin number.
+	outdev.print(F(" (GPIO"));
+	outdev.print(pin);
+	outdev.print(')');
+#endif
+
+#if defined(I2CEXPDIAG_CFG_DECODE_ESP8266PINS)
+
+	// this next part is ugly.
+	// It is trying to convert the GPIO bit number back to a pin define name
+	// It is dependent on the boards.txt file which is subject to change
+	// it also makes certain assumptions about the symbols in the variant
+	// pins_arduino.h file
+	// based on the board define in the boards.txt file all of which is
+	// also subject to change.
+
+	// In older ESP8266 cores, two different WeMos boards 
+	// "WeMos D1 R1" and "WeMos D1 R1 & mini" use the same board define
+	// ESP8266_WEMOS_D1MINI so there is no way to tell them apart.
+	// Bug filed:  https://github.com/esp8266/Arduino/issues/4303
+	// and fixed. New define is ESP8266_WEMOS_D1R1
+	// When compiled on older ESP8266 cores, this code will end up only look for
+	// Dn pins 0-8 on D1R1 boards.
+	// luckily i2c pins fall inside of this range on these variants.
+	
+
+// These boards have D0 to D8 symbols
+#if defined(ARDUINO_ESP8266_WEMOS_D1MINI) || defined(ARDUINO_ESP8266_WEMOS_D1MINIPRO) || \
+	defined(ARDUINO_ESP8266_WEMOS_D1MINILITE) || defined(ARDUINO_ESP8266_NODEMCU) || \
+	defined(ARDUINO_ESP8266_WEMOS_D1R1)
+
+	if(pin == D0)
+		outdev.print(F(" D0"));
+	if(pin == D1)
+		outdev.print(F(" D1"));
+	if(pin == D2)
+		outdev.print(F(" D2"));
+	if(pin == D3)
+		outdev.print(F(" D3"));
+	if(pin == D4)
+		outdev.print(F(" D4"));
+	if(pin == D5)
+		outdev.print(F(" D5"));
+	if(pin == D6)
+		outdev.print(F(" D6"));
+	if(pin == D7)
+		outdev.print(F(" D7"));
+	if(pin == D8)
+		outdev.print(F(" D8"));
+#endif
+
+// boards that support D9 and D10
+// Note that older ESP8266 cores don't define ARDUINO_ESP8266_WEMOS_D1R1
+// so boards using older cores won't see these pins.
+#if defined(ARDUINO_ESP8266_NODEMCU) || defined(ARDUINO_ESP8266_WEMOS_D1R1)
+	if(pin == D9)
+		outdev.print(F(" D9"));
+	if(pin == D10)
+		outdev.print(F(" D10"));
+#endif
+
+// Boards that support D10 to D15
+// Note that older ESP8266 cores don't define ARDUINO_ESP8266_WEMOS_D1R1
+// so those boards won't see these pins.
+#if defined(ARDUINO_ESP8266_WEMOS_D1R1)
+	if(pin == D11)
+		outdev.print(F(" D11"));
+	if(pin == D12)
+		outdev.print(F(" D12"));
+	if(pin == D13)
+		outdev.print(F(" D13"));
+	if(pin == D14)
+		outdev.print(F(" D14"));
+	if(pin == D15)
+		outdev.print(F(" D15"));
+#endif
+
+// This define is for the DigiStump Oak board that stupidly uses Pn names
+#if defined(ARDUINO_ESP8266_OAK)
+	if(pin == P0)
+		outdev.print(F(" P0"));
+	if(pin == P1)
+		outdev.print(F(" P1"));
+	if(pin == P2)
+		outdev.print(F(" P2"));
+	if(pin == P3)
+		outdev.print(F(" P3"));
+	if(pin == P4)
+		outdev.print(F(" P4"));
+	if(pin == P5)
+		outdev.print(F(" P5"));
+	if(pin == P6)
+		outdev.print(F(" P6"));
+	if(pin == P7)
+		outdev.print(F(" P7"));
+	if(pin == P8)
+		outdev.print(F(" P8"));
+	if(pin == P9)
+		outdev.print(F(" P9"));
+	if(pin == P10)
+		outdev.print(F(" P10"));
+	if(pin == P10)
+		outdev.print(F(" P10"));
+#endif
+
+#endif // I2CEXPDIAG_CFG_DECODE_ESP8266PINS
+
+	return;
+}
+
 /*
  * dump everthying we know about the system environment
  */
@@ -689,6 +859,10 @@ void showSystemConfig(void)
 #endif
 
 #endif
+#if defined(ARDUINO_BOARD)
+	Serial.print(F("Arduino Board: "));
+	Serial.println(ARDUINO_BOARD);
+#endif
 #if defined(__AVR__)
 	Serial.print(F("CPU ARCH: AVR - "));
 #elif defined(__arm__)
@@ -710,11 +884,13 @@ void showSystemConfig(void)
 	Serial.println(A5);
 #endif
 
-	Serial.print(F("SDA: digital pin: "));
-	Serial.println(SDA);
 
+	Serial.print(F("SDA: digital pin: "));
+	printDigitalPin(Serial, SDA);
+	Serial.println();
 	Serial.print(F("SCL: digital pin: "));
-	Serial.println(SCL);
+	printDigitalPin(Serial, SCL);
+	Serial.println();
 
 }
 
