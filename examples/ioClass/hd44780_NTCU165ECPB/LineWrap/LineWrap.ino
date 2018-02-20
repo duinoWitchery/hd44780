@@ -23,10 +23,6 @@
 // the sketch will simply blink the built in LED with the initalization error
 // code.
 //
-// NOTE:
-//	If the sketch fails to produce the expected results, or blinks the LED,
-//	run the included I2CexpDiag sketch to test the i2c signals and the LCD.
-//
 // ----------------------------------------------------------------------------
 // Datasheet can be found here:
 //	http://www.blog.zapro.dk/wp-content/CU165.pdf

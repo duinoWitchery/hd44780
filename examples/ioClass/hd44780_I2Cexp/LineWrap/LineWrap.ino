@@ -52,7 +52,11 @@
 // properly function as a 16x1 display in that it will allow printing up to
 // 16 characters on the display without having to manually set the cursor
 // position to print the right characters on the half of the display.
-
+// However, when using this 8x2 display as a 16x1 display, 
+// scrollDisplayLeft() and scrollDisplayRight() will not work as intended.
+// They will shift the two halves of the display rather than the entire display.
+// This is because the hd44780 chip is doing the shift and chip is hard coded
+// internally for two lines.
 
 // include the needed headers.
 #include <Wire.h>
