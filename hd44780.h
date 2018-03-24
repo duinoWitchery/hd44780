@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2018.03.23  bperrybap - bumped default instruction time from 37us to 38us
 // 2017.12.23  bperrybap - added LCD API 1.0 init() function
 // 2017.12.23  bperrybap - allow write() to use 0 as a value without cast
 // 2017.05.11  bperrybap - added auto linewrap functionality
@@ -92,9 +93,11 @@ public:
 	// default execute times in us for clear/home and instructions/data
 	// The hd44780 spec uses 1520 and 37 in table 6 page 24
 	// note: the spec does not specify the time for Clear display
+	// 38us is used vs 37 as 37 had issues on VERY fast processors that could
+	// send data to the LCD that fast.
 	// these can be overridden using setExecTimes(chUs, insUs)
 	static const int HD44780_CHEXECTIME = 2000; // time in us for clear&home
-	static const int HD44780_INSEXECTIME = 37;
+	static const int HD44780_INSEXECTIME = 38;
 
 	// API return values
 	// 0 means successful, less than zero means unsuccessful

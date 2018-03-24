@@ -62,6 +62,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // The actual low level hardware times are obviously lower.
 //
 // History
+// 2018.03.23 bperrybap - bumped default instruction time to 38us
 // 2012.04.01 bperrybap - Original creation
 //
 // @author Bill Perry - bperrybap@opensource.billsworld.billandterrie.com
@@ -112,7 +113,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // on all displays.
 
 //#define LCD_CHEXECTIME 2000
-//#define LCD_INSEXECTIME 37
+//#define LCD_INSEXECTIME 38
 
 
 /*

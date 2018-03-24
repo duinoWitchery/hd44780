@@ -62,6 +62,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // The actual low level hardware times are obviously lower.
 //
 // History
+// 2018.03.23 bperrybap - bumped default instruction time to 38us
 // 2016.04.14 bperrybap - slimmed down for inclusion as hd44780 example
 // 2013.09.01 bperrbap  - refactored to make it easier to select interface
 // 2013.06.01 bperrybap - added support for I2C class and ADAFRUIT i2c/spi board
@@ -115,7 +116,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // on all displays.
 
 //#define LCD_CHEXECTIME 2000
-//#define LCD_INSEXECTIME 37
+//#define LCD_INSEXECTIME 38
 
 
 /*----------------------------------------------------------------------------*

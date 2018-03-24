@@ -61,9 +61,10 @@
 //	starting with IDE 1.6.2 or can found here:
 //		https://github.com/duinoWitchery/hd44780
 //
-// 2. Hookup up i2c i/o expander backpack based LCD devices.
+// 2. Hookup up i2c i/o expander backpack based LCD devices
+//    and only the i2c LCD backpack(s) if possible.
 //	Currently supports PCF8574 or MCP32008 devices
-//	(can test more than one LCD at a time)
+//	(can test more than one LCD device at a time)
 //	WARNING: 3v only systems like ARM/Teensy3/ESP8266 devices will need to take
 //		precautions on SDA and SCL connections if using 5V I2C devices.
 //		Level shifters are recommended and should be used.
@@ -150,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2018.03.23 bperrybap - bumped default instruction time to 38us
 // 2016.12.25 bperrybap  - updates for ESP8266
 // 2016.08.07 bperrybap  - added lcd memory tests
 // 2016.07.27 bperrybap  - added defines for setting execution times
@@ -189,7 +191,7 @@ const int LCD_COLS = 16;
 // on all displays.
 
 //#define LCD_CHEXECTIME 2000
-//#define LCD_INSEXECTIME 37
+//#define LCD_INSEXECTIME 38
 
 // ============================================================================
 // End of user configurable options
