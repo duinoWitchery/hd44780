@@ -1160,6 +1160,7 @@ int rdata;
 			Serial.print(F(" Read Error after writing "));
 			Serial.println((unsigned int)pat, HEX);
 			errors++;
+			delay(1); // easy way to allow some cores to call yield()
 		}
 		else if((rdata != pat))
 		{
@@ -1173,6 +1174,7 @@ int rdata;
 			Serial.println((unsigned int)pat, HEX);
 
 			errors++;
+			delay(1); // easy way to allow some cores to call yield()
 		}
 	}
 	return(errors);
@@ -1204,6 +1206,7 @@ int rdata;
 			Serial.print(F("\tRead Error addr: "));
 			Serial.println((unsigned int)addr, HEX);
 			errors++;
+			delay(1); // easy way to allow some cores to call yield()
 		}
 	}
 
@@ -1226,6 +1229,7 @@ int rdata;
 			Serial.print(F("\tRead Error addr: "));
 			Serial.println((unsigned int)addr, HEX);
 			errors++;
+			delay(1); // easy way to allow some cores to call yield()
 		}
 		else if((rdata != addr))
 		{
@@ -1239,6 +1243,7 @@ int rdata;
 			Serial.println((unsigned int)addr, HEX);
 
 			errors++;
+			delay(1); // easy way to allow some cores to call yield()
 		}
 	}
 	return(errors);
