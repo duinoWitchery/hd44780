@@ -464,7 +464,12 @@ int nopullups;
 			else
 				Serial.print(PASSED);
 #endif
-		
+			if(errors)
+			{
+				Serial.println();
+				Serial.println(F("Memory test failures are usually due to poor solder connections"));
+				Serial.println(F("Most common cause is poor solder joints on pins soldered to the LCD"));
+			}
 		}
 		else
 		{
