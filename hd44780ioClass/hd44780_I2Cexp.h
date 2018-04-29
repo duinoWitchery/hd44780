@@ -366,6 +366,18 @@ static uint8_t AutoInst;
 	// auto locate i2c expander and magically detect pin mappings
 
 	if(!_addr) // locate next instance
+	{
+		_addr = LocateDevice(AutoInst++);
+	}
+	else
+	{
+		// check to see if device at specified address is really there
+		Wire.beginTransmission(_addr);
+		if(Wire.endTransmission(1))
+			return(hd44780::RV_ENXIO);
+	}
+
+	if(!_addr) // locate next instance
 		_addr = LocateDevice(AutoInst++);
 
 	if(!_addr) // if we couldn't locate it, return error
@@ -1141,7 +1153,8 @@ uint8_t blLevel;
 	}
 	else
 	{
-		return(-1); // could not identify board
+		// could not identify board
+		return(hd44780::RV_ENOTSUP);
 	}
 	// currently writes are disabled for all MCP23008 devices
 	config(_addr, _expType, rs, 0xff, en, d4, d5, d6, d7, bl, blLevel);
