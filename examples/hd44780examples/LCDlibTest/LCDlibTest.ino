@@ -197,6 +197,7 @@ unsigned long etime;
 	// this is for sytems that use virtual serial over USB.
 		if(millis() > 3000) // millis starts at 0 after reset
 			break;
+		delay(10); // easy way to allow some cores to call yield()
 	} while(!Serial);
 #endif
 #endif

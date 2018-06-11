@@ -292,6 +292,7 @@ int nopullups;
 	// this is for sytems that use virtual serial over USB.
 		if(millis() > 5000) // millis starts at 0 after reset
 			break;
+		delay(10); // easy way to allow some cores to call yield()
 	} while(!Serial);
 #endif
 
@@ -520,7 +521,7 @@ int nopullups;
 	}
 	Serial.println(F("Each working display should have its backlight on"));
 	Serial.println(F("and be displaying its #, address, and config information"));
-	Serial.println(F("If display is blank, but backlight is on, try adjusting contrast pot"));
+	Serial.println(F("If all pixels are on, or no pixels are showing, but backlight is on, try adjusting contrast pot"));
 	Serial.println(F("If backlight is off, wait for next test"));
 	delay(10000);
 	Serial.println(hline);
