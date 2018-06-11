@@ -33,7 +33,29 @@
 #include <hd44780.h>                       // main hd44780 header
 #include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
 
-hd44780_I2Cexp lcd; // declare lcd object: auto locate & config exapander chip
+hd44780_I2Cexp lcd; // declare lcd object: auto locate & auto config expander chip
+
+// If you wish to use an i/o expander at a specific address, you can specify the
+// i2c address and let the library auto configure it. If you don't specify
+// the address, or use an address of zero, the library will search for the
+// i2c address of the device.
+// hd44780_I2Cexp lcd(i2c_address); // specify a specific i2c address
+//
+// It is also possible to create multiple/seperate lcd objects
+// and the library can still automatically locate them.
+// Example:
+// hd4480_I2Cexp lcd1;
+// hd4480_I2Cexp lcd2;
+// The individual lcds would be referenced as lcd1 and lcd2
+// i.e. lcd1.home() or lcd2.clear()
+//
+// It is also possible to specify the i2c address
+// when declaring the lcd object.
+// Example:
+// hd44780_I2Cexp lcd1(0x20);
+// hd44780_I2Cexp lcd2(0x27);
+// This ensures that each each lcd object is assigned to a specific
+// lcd device rather than letting the library automatically asign it.
 
 // LCD geometry
 const int LCD_COLS = 16;

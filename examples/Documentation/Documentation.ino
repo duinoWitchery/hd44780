@@ -14,8 +14,9 @@
 //
 // Overview
 // ========
-// The hd44780 arduino library is more than a simple library to run a specific
-// h/w. It is actually an expandable library package that can communicate with
+// The hd44780 arduino library is a library package.
+// It is more than a simple library to run a specific h/w.
+// It is actually an expandable library package that can communicate with
 // many different types of LCD hardware and interfaces.
 //
 // The library is designed to allow communication and interfacing with hd44780
@@ -32,14 +33,13 @@
 //
 // Examples
 // ========
-// hd44780examples:
-// These are not really example sketches. They should not be looked at as
-// examples for how to use the library. They are special purpose sketches
-// that are used as include files for the i/o class examples.
-// See the ioClass specific examples for each ioClass.
+// Because the hd44780 library package is more than a simple library, the examples
+// are not all together in a single location. 
+// The examples are seperated and grouped in to areas as follows:
 //
 // ioClass: 
-//    Contains subdirectories for each included hd44780 i/o class containing
+//    All the hd44780 library package examples are under here.
+//    ioClass contains subdirectories for each included hd44780 i/o class containing
 //    sketches that are specific to the i/o class.
 //    The examples for each i/o class are grouped together in a directory by
 //    the name of the i/o class.
@@ -52,7 +52,13 @@
 // otherLibraries:
 //     Contains subdirectories for other (non hd44780) libraries that contain
 //     wrapper sketches for various hd44780examples sketches. This is intended
-//     to allow easy benchmarking of other libraries for comparison purposes.
+//     to allow easy benchmarking of other 3rd party LCD libraries for comparison purposes.
+//
+// hd44780examples:
+//    These are not really example sketches. They should not be looked at as
+//    examples for how to use the library. They are special purpose sketches
+//    that are used as include files for the i/o class examples.
+//    See the ioClass specific examples for each ioClass.
 //
 // See the readme files under the examples directory and the wiki for
 // additional information about the examples.
@@ -72,6 +78,7 @@
 //
 // Arduino Links
 // =============
+//    Arduino LiquidCrystal API: https://www.arduino.cc/en/Reference/LiquidCrystal
 //    Arduino: http://arduino.cc
 //    Arduino Forum: http://www.arduino.cc/forum/
 //    Arduino Software: https://www.arduino.cc/en/Main/Software

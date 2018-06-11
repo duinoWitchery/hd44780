@@ -40,8 +40,8 @@ const int LCD_COLS = 16;
 hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
 int NumLcd;		// number of LCD displays found.
 
-// It is also possible to create seperate lcd objects
-// and the library will still automatically find them.
+// It is also possible to create multiple/seperate lcd objects
+// and the library can still automatically locate them.
 // Example:
 // hd4480_I2Cexp lcd1;
 // hd4480_I2Cexp lcd2;
@@ -49,7 +49,7 @@ int NumLcd;		// number of LCD displays found.
 // i.e. lcd1.home() or lcd2.clear()
 //
 // It is also possible to specify the i2c address
-// when specifying the lcd object.
+// when defining the lcd object.
 // Example:
 // hd44780_I2Cexp lcd1(0x20);
 // hd44780_I2Cexp lcd2(0x27);

@@ -32,7 +32,7 @@
 // Examples
 // ========
 // Because the hd44780 library package is more than a simple library, the examples
-// are not put all together into a single location. 
+// are not all together in a single location. 
 // The examples are seperated and grouped in to areas as follows:
 //
 // ioClass: 
