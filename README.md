@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.3-yellow.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.4-yellow.svg?style=plastic)
 
 CurrentStatus
 =============
@@ -225,7 +225,20 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[0.9.4] - 2018-06-12
+ * README tweaks for release
+ * readme and sketch documentation/comment updates
+ * Added hd44780examples sketch to document examples and hide hd44780examples sketches
+ * loops that wait on Serial now call delay() which calls yield()
+ * hd44780_I2Cexp now returns RV_ENXIO error if device not at specified address
+ * I2CexpDiag prints messsage about potential poor solder joints on memory errors
+ * added delay(1) to error output which calls yield() to avoid watchdog on some cores
+ * bumped default instruction time from 37us to 38us
+ * LineWrap example explains limitations when using 16x1 / 8x2 displays
+ * Correct indention issue in LCDCustomChars example
+
 [0.9.3] - 2018-02-11
+ * update version info for 0.9.3 release
  * I2CexpDiag updates to output esp8266 specific i2c pin information.
  * mkreleasePatcher tool updates
  * Documenation sketch updates
