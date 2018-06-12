@@ -2,7 +2,8 @@
 
 CurrentStatus
 =============
-The library is currently in a beta state very close to a 1.0.0 release
+The library is is now in a release candididate state.
+Barring any issues, it will be re-released as 1.0.0
 
 Licensing
 =========
@@ -204,7 +205,7 @@ They should not be looked at as examples for how to use the library.**
 While the hd44780examples sketches can be modified to work standalone with any LiquidCrystal API compatible library, their primary purpose, as shipped in the hd44780 library package, is to act as an include file for the i/o class wrapper sketches and are not intended to be used directly.  
 **See the ioClass specific subdirectories for the examples for each ioClass.**
 
-See hd44780examples sketch along with the readme files under the examples directory and the wiki for
+See **hd44780examples** sketch along with the readme files under the examples directory and the wiki for
 additional information about the examples.<br>
 If browsing on the hd44780 github repository, you can click on the examples
 directory and its subdirectories to see each readme file.
