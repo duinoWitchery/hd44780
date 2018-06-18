@@ -151,7 +151,8 @@
 // -----------------------------------------------------------------------
 // 
 // History
-// 2018.03.23 bperrybap - bumped default instruction time to 38us
+// 2018.06.17 bperrybap  - check for SDA and SCL shorted together
+// 2018.03.23 bperrybap  - bumped default instruction time to 38us
 // 2016.12.25 bperrybap  - updates for ESP8266
 // 2016.08.07 bperrybap  - added lcd memory tests
 // 2016.07.27 bperrybap  - added defines for setting execution times
@@ -163,6 +164,10 @@
 #include <Wire.h>
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
+
+#ifndef INPUT_PULLUP
+#error Sketch requires INPUT_PULLUP which is not supported by this IDE/core version
+#endif
 
 // ============================================================================
 // user configurable options below this point
@@ -917,18 +922,17 @@ int pullupOnPin(uint8_t pin)
 {
 
 	// test to see if pin is pulled/stuck low
-	// this is more complicated that it should be because
-	// Arduino 1.0 didn't support INPUT_PULLUP
-	// it was added in the next releast 1.0.1
-	// but this code *should* still work even on 1.0 or if the pin
-	// doesn't have a built in pullup.
 #ifdef INPUT_PULLUP
 	pinMode(pin, INPUT_PULLUP);
 	delay(20);
 	if(digitalRead(pin) == LOW)
 		return(-1); // pin appears to be driven low
 #else
-	// this code is for Arduion 1.0 which didn't support INPUT_PULLUP
+	// this is more complicated that it should be because
+	// Arduino 1.0 didn't support INPUT_PULLUP
+	// it was added in the next release 1.0.1
+	// but this code *should* still work even on 1.0 or if the pin
+	// doesn't have a built in pullup.
 	{
 	int t = 0;
 		pinMode(pin, INPUT);
@@ -956,13 +960,40 @@ int pullupOnPin(uint8_t pin)
 
 	return(1); // pin appears to NOT have an external pullup
 }
+/*
+ * test of two pins are shorted together
+ * returns non zero if pins are shorted
+ * returns zero if pins are not shorted
+ */
+int pinsShorted(uint8_t p1, uint8_t p2)
+{
+int rval = 0; // assume not shorted
+
+	pinMode(p1, INPUT_PULLUP);
+	pinMode(p2, INPUT_PULLUP);
+	delay(20);
+
+	pinMode(p1, OUTPUT);
+	digitalWrite(p1, LOW);
+	delay(5);
+	if(digitalRead(p2) == LOW)
+		rval = -1;
+
+	// put back into input state
+	pinMode(p1, INPUT);
+	pinMode(p2, INPUT);
+
+	return(rval);
+}
 
 /*
  * Test for external pullups on i2c signals
  *
  * returns 0 if both pullups appear ok
  * returns positive if no pullup exist on either pin (soft error on AVR)
- * returns negative if either pin is driven low (I2C cannot function)
+ * returns negative if I2C cannot function
+ * 	-1 if either pin is driven low
+ * 	-2 if pins are shorted together
  */
 int i2cpulluptest()
 {
@@ -1006,6 +1037,17 @@ int s;
 	{
     	Serial.println(F("YES"));
 	}
+   	Serial.print(F("Checking for I2C pins shorted together - "));
+	if(pinsShorted(SDA, SCL))
+	{
+    	Serial.println(F("Shorted"));
+		rval = -2;
+	}
+	else
+	{
+        Serial.println(F("Not Shorted"));
+	}
+	
 	if(rval)
 	{
         Serial.println(hstar);
@@ -1018,8 +1060,10 @@ int s;
 		}
 		else
 		{
-        	Serial.println(F("ERROR: SDA or SCL stuck pin"));
-			rval = -1;
+			if(rval == -1)
+        		Serial.println(F("ERROR: SDA or SCL stuck pin"));
+			else
+        		Serial.println(F("ERROR: SDA and SCL shorted together"));
 		}
         Serial.println(hstar);
     }
