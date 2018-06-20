@@ -843,6 +843,72 @@ void printDigitalPin(Print &outdev, int pin)
 
 #endif // I2CEXPDIAG_CFG_DECODE_ESP8266PINS
 
+// print the analog pin if it matches the pin #
+#if defined(A0) || defined(PIN_A0)
+	if(pin == A0)
+		outdev.print(F(" A0"));
+#endif
+#if defined(A1) || defined(PIN_A1)
+	if(pin == A1)
+		outdev.print(F(" A1"));
+#endif
+#if defined(A2) || defined(PIN_A2)
+	if(pin == A2)
+		outdev.print(F(" A2"));
+#endif
+#if defined(A3) || defined(PIN_A3)
+	if(pin == A3)
+		outdev.print(F(" A3"));
+#endif
+#if defined(A4) || defined(PIN_A4)
+	if(pin == A4)
+		outdev.print(F(" A4"));
+#endif
+#if defined(A5) || defined(PIN_A5)
+	if(pin == A5)
+		outdev.print(F(" A5"));
+#endif
+#if defined(A6) || defined(PIN_A6)
+	if(pin == A6)
+		outdev.print(F(" A6"));
+#endif
+#if defined(A7) || defined(PIN_A7)
+	if(pin == A7)
+		outdev.print(F(" A7"));
+#endif
+#if defined(A8) || defined(PIN_A8)
+	if(pin == A8)
+		outdev.print(F(" A8"));
+#endif
+#if defined(A9) || defined(PIN_A9)
+	if(pin == A9)
+		outdev.print(F(" A9"));
+#endif
+#if defined(A10) || defined(PIN_A10)
+	if(pin == A10)
+		outdev.print(F(" A10"));
+#endif
+#if defined(A11) || defined(PIN_A11)
+	if(pin == A11)
+		outdev.print(F(" A11"));
+#endif
+#if defined(A12) || defined(PIN_A12)
+	if(pin == A12)
+		outdev.print(F(" A12"));
+#endif
+#if defined(A13) || defined(PIN_A13)
+	if(pin == A13)
+		outdev.print(F(" A13"));
+#endif
+#if defined(A14) || defined(PIN_A14)
+	if(pin == A14)
+		outdev.print(F(" A14"));
+#endif
+#if defined(A15) || defined(PIN_A15)
+	if(pin == A15)
+		outdev.print(F(" A15"));
+#endif
+
 	return;
 }
 
@@ -890,18 +956,11 @@ void showSystemConfig(void)
 	Serial.println(F_CPU);
 
 	Serial.println(hline);
-#if NUM_ANALOG_INPUTS > 5
-	Serial.print(F(" A4: digital pin: "));
-	Serial.println(A4);
-	Serial.print(F(" A5: digital pin: "));
-	Serial.println(A5);
-#endif
 
-
-	Serial.print(F("SDA: digital pin: "));
+	Serial.print(F("SDA digital pin: "));
 	printDigitalPin(Serial, SDA);
 	Serial.println();
-	Serial.print(F("SCL: digital pin: "));
+	Serial.print(F("SCL digital pin: "));
 	printDigitalPin(Serial, SCL);
 	Serial.println();
 
@@ -971,11 +1030,12 @@ int rval = 0; // assume not shorted
 
 	pinMode(p1, INPUT_PULLUP);
 	pinMode(p2, INPUT_PULLUP);
-	delay(20);
+	delay(150); // this needs quite a while for chipkit/pic32 to let signals rise up
 
 	pinMode(p1, OUTPUT);
 	digitalWrite(p1, LOW);
 	delay(5);
+
 	if(digitalRead(p2) == LOW)
 		rval = -1;
 
@@ -1037,15 +1097,17 @@ int s;
 	{
     	Serial.println(F("YES"));
 	}
+
+	// check for short between SDA and SCL if there are no other issues
    	Serial.print(F("Checking for I2C pins shorted together - "));
 	if(pinsShorted(SDA, SCL))
 	{
-    	Serial.println(F("Shorted"));
+		Serial.println(F("Shorted"));
 		rval = -2;
 	}
 	else
 	{
-        Serial.println(F("Not Shorted"));
+		Serial.println(F("Not Shorted"));
 	}
 	
 	if(rval)
