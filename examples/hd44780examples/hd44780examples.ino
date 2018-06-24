@@ -31,14 +31,14 @@
 //
 // Examples
 // ========
-// Because the hd44780 library package is more than a simple library, the examples
-// are not all together in a single location. 
+// Because the hd44780 library package is more than a simple library, the
+// examples are not all together in a single location. 
 // The examples are seperated and grouped in to areas as follows:
 //
 // ioClass: 
 //    All the hd44780 library package examples are under here.
-//    ioClass contains subdirectories for each included hd44780 i/o class containing
-//    sketches that are specific to the i/o class.
+//    ioClass contains subdirectories for each included hd44780 i/o class
+//    containing sketches that are specific to the i/o class.
 //    The examples for each i/o class are grouped together in a directory by
 //    the name of the i/o class.
 //    In the Arduino IDE they can be found here:
@@ -50,9 +50,27 @@
 // otherLibraries:
 //     Contains subdirectories for other (non hd44780) libraries that contain
 //     wrapper sketches for various hd44780examples sketches. This is intended
-//     to allow easy benchmarking of other 3rd party LCD libraries for comparison purposes.
+//     to allow easy benchmarking of other 3rd party LCD libraries for
+//     comparison purposes.
 //
 // See the Documentation sketch for additional information.
+//
+// Note:
+//     The library package also includes some special purpose demonstration
+//     sketches that can be found under ioClass and otherLibraries
+//     - LCDcharset
+//        Shows the entire character set of the LCD.
+//        Miniture digits are used to show the custom characters.
+//
+//     - LCDisSpeed
+//        Shows the speed of writing characters to the display.
+//        It shows the transfer time of an individual character as well as
+//        updating the full display. If the geometry is different than 16x2,
+//        it will also show what the full display timing would be if the
+//        display were 16x2.
+//
+//        Since the sketch can work on many different libraries and h/w,
+//        it is useful for ccomparing the speed of various libraries and LCD h/w.
 //
 /////////////////////////////////////////////////////////////////////////
 
