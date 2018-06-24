@@ -1,10 +1,5 @@
 # `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-0.9.4-yellow.svg?style=plastic)
 
-CurrentStatus
-=============
-The library is is now in a release candididate state.
-Barring any issues, it will be re-released as 1.0.0
-
 Licensing
 =========
 ![GPLv3Logo](https://www.gnu.org/graphics/gplv3-127x51.png)
