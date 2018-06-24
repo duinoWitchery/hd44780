@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// hd44780 Extensible hd44780 LCD Library Version 0.9.4
+// hd44780 Extensible hd44780 LCD Library Version 1.0.0
 //
 // hd44780 is an open source project for open source projects. Those wishing to
 // create closed projects should seek an alternate solution.
@@ -71,7 +71,7 @@
 //
 // Github links
 // ============
-// Version 0.9.4 repository: https://github.com/duinoWitchery/hd44780/tree/0.9.4
+// Version 1.0.0 repository: https://github.com/duinoWitchery/hd44780/tree/1.0.0
 // Latest respository: https://github.com/duinoWitchery/hd44780
 // hd44780 wiki: https://github.com/duinoWitchery/hd44780/wiki
 // (note: Latest repository & wiki may be different from installed version)
