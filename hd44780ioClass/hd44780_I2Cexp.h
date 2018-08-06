@@ -63,6 +63,7 @@
 // ---------------------------------------------------------------------------
 // History
 //
+// 2018.08.06  bperrybap - removed TinyWireM work around (TinyWireM was fixed)
 // 2017.12.23  bperrybap - added LiquidCrystal_I2C compatible constructor
 // 2017.05.12  bperrybap - now requires IDE 1.0.1 or newer
 //                         This is to work around TinyWireM library bugs
@@ -93,16 +94,10 @@
 #ifndef hd44780_I2Cexp_h
 #define hd44780_I2Cexp_h
 
-// Arduino 1.0.1 or newer is required since the code uses
-// endTransmission(1) rather than endTransmission()
-// The reason being that the TineyWireM library F***d up and endTransmission()
-// returns a garbage status.
-// Rather than put conditionals all over the place for that library, the code
-// assumes endTransmission() supports the stop argument which came into being
-// in Arduinoi 1.0.1
-// Another bug in TinyWireM is that requestFrom() returns incorrect status
+// A bug in TinyWireM is that requestFrom() returns incorrect status
 // so its return status can't be used. Instead the code will check the return
 // from Wire.read() which will return -1 if there no data was transfered.
+
 #if (ARDUINO <  101) && !defined(MPIDE)
 #error hd44780_I2Cexp i/o class requires Arduino 1.0.1 or later
 #endif
@@ -373,7 +368,7 @@ static uint8_t AutoInst;
 	{
 		// check to see if device at specified address is really there
 		Wire.beginTransmission(_addr);
-		if(Wire.endTransmission(1))
+		if(Wire.endTransmission())
 			return(hd44780::RV_ENXIO);
 	}
 
@@ -416,7 +411,7 @@ static uint8_t AutoInst;
 		 */
 		Wire.write(5);	// point to IOCON
 		Wire.write(0x20);// disable sequential mode (enables BYTE mode)
-		Wire.endTransmission(1);
+		Wire.endTransmission();
 
 		/*
 		 * Now set up output port
@@ -424,7 +419,7 @@ static uint8_t AutoInst;
 		Wire.beginTransmission(_addr);
 		Wire.write((uint8_t)0); // point to IODIR
 		Wire.write((uint8_t)0); // all pins output
-		Wire.endTransmission(1);
+		Wire.endTransmission();
 	
 		/*
 		 * point chip to GPIO
@@ -434,7 +429,7 @@ static uint8_t AutoInst;
 		
 	}
 	Wire.write((uint8_t)0);  // Set the entire output port to LOW
-	if( (status = Wire.endTransmission(1)) ) // assignment
+	if( (status = Wire.endTransmission()) ) // assignment
 		status = hd44780::RV_EIO;
 
 	return ( status );
@@ -497,14 +492,14 @@ int rval = hd44780::RV_EIO;
 	
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue);		// d4-d7 are inputs, RS, r/w high, E LOW
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		goto returnStatus;
 
 
 	// raise E to read the data.
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue | _en); // Raises E 
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		goto returnStatus;
 
 	// read the expander port to get the upper nibble of the byte
@@ -515,7 +510,7 @@ int rval = hd44780::RV_EIO;
 
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue); // lower E after reading nibble
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		goto returnStatus;
 
 	// map i/o expander port bits into upper nibble of byte
@@ -533,7 +528,7 @@ int rval = hd44780::RV_EIO;
 	
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue | _en); // Raise E to read next nibble
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		goto returnStatus;
 
 	// read the expander port to get the lower nibble of the byte
@@ -549,7 +544,7 @@ int rval = hd44780::RV_EIO;
 
 	Wire.beginTransmission(_addr);
 	Wire.write(gpioValue); // lower E after reading nibble
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		goto returnStatus;
 
 	// map i/o expander port bits into lower nibble of byte
@@ -572,7 +567,7 @@ returnStatus:
 	// try to put gpio port back to all outputs state with WR signal low for writes
 	Wire.beginTransmission(_addr);
 	Wire.write(_blCurState);		// with E LOW
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		rval = hd44780::RV_EIO;
 
 	return(rval);
@@ -620,7 +615,7 @@ int iowrite(hd44780::iotype type, uint8_t value)
 	{
 		write4bits( (value & 0x0F), type); // lower nibble, if not 4bit cmd
 	}
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		return(hd44780::RV_EIO);
 
 	return(hd44780::RV_ENOERR);
@@ -651,7 +646,7 @@ int iosetBacklight(uint8_t dimvalue)
 		Wire.write(9); // point to GPIO
 	}
 	Wire.write( _blCurState );
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		return(hd44780::RV_EIO);
 
 	return(hd44780::RV_ENOERR); // all is good
@@ -712,7 +707,7 @@ uint8_t locinst = 0;
 	for(address = 0x20; address <= 0x27; address++ )
 	{
 		Wire.beginTransmission(address);
-		error = Wire.endTransmission(1);
+		error = Wire.endTransmission();
 		// chipkit stuff screws up if you do beginTransmission() too fast
 		// after an endTransmission()
 		// below 20us will cause it to fail
@@ -738,7 +733,7 @@ uint8_t locinst = 0;
 	for(address = 0x38; address <= 0x3f; address++ )
 	{
 		Wire.beginTransmission(address);
-		error = Wire.endTransmission(1);
+		error = Wire.endTransmission();
 		// chipkit stuff screws up if you do beginTransmission() too fast
 		// after an endTransmission()
 		// below 20us will cause it to fail.
@@ -807,7 +802,7 @@ I2CexpType chiptype;
 	Wire.beginTransmission(address);
 	Wire.write((uint8_t) 0);	// try to point to MCP23008 IODR
 	Wire.write((uint8_t) 0xff);	// try to write to MCP23008 IODR
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 
 	/*
 	 * Now try to point MCP23008 to IODIR for read
@@ -816,7 +811,7 @@ I2CexpType chiptype;
 
 	Wire.beginTransmission(address);
 	Wire.write((uint8_t) 0);	// try to point to MCP23008 IODR
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 
 	/*
 	 * Now read a byte
@@ -944,7 +939,7 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 
 	Wire.beginTransmission(_addr);
 	Wire.write((uint8_t) 0xff);
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 
 	// now read back from the port
 
@@ -956,7 +951,7 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 	
 	Wire.beginTransmission(_addr);
 	Wire.write((uint8_t) (~(1 << 2)) );
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 
 	// read back data
 	Wire.requestFrom((int)_addr, 1);
@@ -994,7 +989,7 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
 	
 		Wire.beginTransmission(_addr);
 		Wire.write((uint8_t) (~(1 << 4)) );
-		Wire.endTransmission(1);
+		Wire.endTransmission();
 
 		// read back data
 		Wire.requestFrom((int)_addr, 1);
@@ -1094,12 +1089,12 @@ uint8_t blLevel;
 	Wire.beginTransmission(_addr);
 	Wire.write((uint8_t)0); // point to IODIR
 	Wire.write(0xff); // all pins inputs
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 
 	Wire.beginTransmission(_addr);
 	Wire.write(6); // point to GPPU
 	Wire.write(0xff); // turn on pullups
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 
 	/*
 	 * read from the GPIO port
@@ -1107,7 +1102,7 @@ uint8_t blLevel;
 
 	Wire.beginTransmission(_addr);
 	Wire.write(9); // point to GPIO
-	Wire.endTransmission(1);
+	Wire.endTransmission();
 	Wire.requestFrom((int)_addr, 1);
 	data = Wire.read();
 

@@ -71,6 +71,7 @@
 // Attempting to read from some of these devices will lockup the AVR Wire
 // library.
 //
+// 2018.08.06  bperrybap - removed TinyWireM work around (TinyWireM was fixed)
 // 2017.05.12  bperrybap - now requires IDE 1.0.1 or newer
 //                         This is to work around TinyWireM library bugs
 // 2016.12.26  bperrybap - added auto i2c address location
@@ -91,15 +92,12 @@
 #ifndef hd44780_I2Clcd_h
 #define hd44780_I2Clcd_h
 
-// Arduino 1.0.1 or newer is required since the code uses
-// endTransmission(1) rather than endTransmission()
-// The reason being that the TineyWireM library F***d up and endTransmission()
-// returns a garbage status.
-// Rather than put conditionals all over the place for that library, the code
-// assumes endTransmission() supports the stop argument which came into being
-// in Arduinoi 1.0.1
+// A bug in TinyWireM is that requestFrom() returns incorrect status
+// so its return status can't be used. Instead the code will check the return
+// from Wire.read() which will return -1 if there no data was transfered.
+
 #if (ARDUINO <  101) && !defined(MPIDE)
-#error hd44780_I2Cexp i/o class requires Arduino 1.0.1 or later
+#error hd44780_I2Clcd i/o class requires Arduino 1.0.1 or later
 #endif
 
 class hd44780_I2Clcd : public hd44780 
@@ -173,7 +171,7 @@ int status;
 	 * Check to see if the device is responding
 	 */
 	Wire.beginTransmission(_Addr);
-	if( (status = Wire.endTransmission(1)) )
+	if( (status = Wire.endTransmission()) )
 	{
 		if(status == 1)
 			status = hd44780::RV_EMSGSIZE;
@@ -233,7 +231,7 @@ uint8_t ctlbyte;
 	Wire.write(ctlbyte);	// send control byte
 	Wire.write(value);		// send data/cmd
 
-	if(Wire.endTransmission(1))
+	if(Wire.endTransmission())
 		return(hd44780::RV_EIO);
 	else
 		return(hd44780::RV_ENOERR);
@@ -251,7 +249,7 @@ uint8_t error, address;
 	for(address = 0x3a; address <= 0x3f; address++ )
 	{
 		Wire.beginTransmission(address);
-		error = Wire.endTransmission(1);
+		error = Wire.endTransmission();
 
 		// chipkit i2c screws up if you do a beginTransmission() too quickly
 		// after an endTransmission()
