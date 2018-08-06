@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.0.0-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.0.1-green.svg?style=plastic)
 
 Licensing
 =========
@@ -220,7 +220,11 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[1.0.1] - 2018-08-06
+ * Removed I2C TinyWireM work around (TinyWireM was fixed)  works around Wire bug in ESP32 core
+
 [1.0.0] - 2018-06-24
+ * update version info for 1.0.0 release
  * change readme version badge to green
  * hd44780examples special sketch documentation updates
  * Updates to readme for non hd44780 library examples
