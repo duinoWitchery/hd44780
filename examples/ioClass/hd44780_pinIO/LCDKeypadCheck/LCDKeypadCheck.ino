@@ -2,7 +2,7 @@
 // vi:ts=4
 // ----------------------------------------------------------------------------
 // LCDKeypadCheck - LCD keypad shield backlight circuitry test
-// Copyright 2013-2016 Bill Perry
+// Copyright 2013-2018 Bill Perry
 // bperrybap@opensource.billsworld.billandterrie.com
 // ---------------------------------------------------------------------------
 //
@@ -28,7 +28,7 @@
 // NOTE:
 //	As of 2016-11-12 in release 0.8.1 the hd44780_pinIO class now
 //	automatically detects broken backlight circuits and will use backlight
-//	control methods to protect the AVR chip. The sketch can simply
+//	control methods to protect the Arduino processor. The sketch can simply
 //	use all the backlight API functions setbacklight(), backlight(), and
 //	noBacklight() without concern.
 //
@@ -38,11 +38,18 @@
 // upload the sketch.
 // The LCD display will show whether the backlight circuit is good/bad.
 //
-// If the sketch shows that the backlight hardware is bad, all is not
-// lost, the shield can still be used and the backlight can still
+// If the LCD shows that the backlight circuit is bad,
+// it means that the backlight control circuit on the shield is a bad design
+// and has a short circuit issue on the Arduino pin that controls the
+// backlight circuit. (usually digital pin 10)
+// This means that you need to be careful not to ever set the backlight control
+// pin (D10) to HIGH as the high current draw could damage the Arduino processor.
+//
+// All is not lost, the shield can still be used and the backlight can still
 // be controlled. Just keep in mind that unless the hardware is
 // modified, some precautions must be taken when controlling the backlight.
-// The main thing is that pin should never be set to HIGH.
+// The main thing is that backlight control pin (digital pin 10) should
+// never be set to HIGH.
 // This means that PWM or analogWrite() cannot be used to dim the backlight.
 //
 // If you are happy with the backlight on all the time, then nothing needs to
@@ -55,6 +62,8 @@
 // do this for the sketch when the backlight API functions are used.
 // 
 // History
+// 2018.09.18 bperrybap  - updated comments to clarify what
+//                         "BL Circuit BAD" means
 // 2017.01.07 bperrybap  - updated comments to reflect that library now
 //                         automatically detects bad backlight circuits
 // 2016.11.08 bperrybap  - updated for inclusion in hd44780 library
@@ -196,7 +205,7 @@ int val;
 	/*
 	 * If the level read back is not HIGH
 	 * Then there is a problem because the pin is
-	 * being driven HIGH by the AVR.
+	 * being driven HIGH by the Arduino processor.
 	 */
 	if (val != HIGH)
 		return(-1); // test failed
