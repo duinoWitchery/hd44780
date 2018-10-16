@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2018.10.16 bperrybap  - better shorted pin testing
 // 2018.06.17 bperrybap  - check for SDA and SCL shorted together
 // 2018.03.23 bperrybap  - bumped default instruction time to 38us
 // 2016.12.25 bperrybap  - updates for ESP8266
@@ -286,7 +287,11 @@ void setup()
 {
 int nopullups;
 
-	delay(5);	// allow the hardware time settle
+	// give lots of time to allow the main power to ramp up and
+	// allow all the hardware time settle
+	// this is because the procesors often start running before full VCC
+	// has been achieved.
+	delay(100);
 
 	Serial.begin(9600);
 
@@ -1021,8 +1026,9 @@ int pullupOnPin(uint8_t pin)
 }
 /*
  * test of two pins are shorted together
- * returns non zero if pins are shorted
+ * returns > zero if pins are shorted
  * returns zero if pins are not shorted
+ * returns < zero if indeterminate
  */
 int pinsShorted(uint8_t p1, uint8_t p2)
 {
@@ -1032,12 +1038,16 @@ int rval = 0; // assume not shorted
 	pinMode(p2, INPUT_PULLUP);
 	delay(150); // this needs quite a while for chipkit/pic32 to let signals rise up
 
+	// check to see if both pins are high
+	if((digitalRead(p1) != HIGH) || (digitalRead(p2) != HIGH))
+		return(-1);  // can't determine if pins are shorted
+
 	pinMode(p1, OUTPUT);
 	digitalWrite(p1, LOW);
 	delay(5);
 
 	if(digitalRead(p2) == LOW)
-		rval = -1;
+		rval = 1;
 
 	// put back into input state
 	pinMode(p1, INPUT);
@@ -1098,16 +1108,24 @@ int s;
     	Serial.println(F("YES"));
 	}
 
-	// check for short between SDA and SCL if there are no other issues
-   	Serial.print(F("Checking for I2C pins shorted together - "));
-	if(pinsShorted(SDA, SCL))
+	// check for short between SDA and SCL if no pins stuck low
+	if(rval >= 0)
 	{
-		Serial.println(F("Shorted"));
-		rval = -2;
-	}
-	else
-	{
-		Serial.println(F("Not Shorted"));
+   		Serial.print(F("Checking for I2C pins shorted together - "));
+		s = pinsShorted(SDA, SCL);
+		if(!s)
+		{
+			Serial.println(F("Not Shorted"));
+		}
+		else if(s > 0)
+		{
+			Serial.println(F("Shorted"));
+			rval = -2;
+		}
+		else
+		{
+			Serial.println(F("Undetermined"));
+		}
 	}
 	
 	if(rval)
