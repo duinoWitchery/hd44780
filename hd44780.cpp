@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2019.02.03  bperrybap - fatalError(errcode), accept negative errcode values
 // 2017.12.23  bperrybap - added LCD API 1.0 init() function
 // 2017.05.11  bperrybap - setCursor() wraps when auto linewrap enabled
 //                         and col beyond end of line
@@ -897,6 +898,8 @@ int hd44780::blinkLED(int blinks)
 // fatalError() - loop & blink an error code
 void hd44780::fatalError(int errcode)
 {
+	if(errcode < 0)
+		errcode = -errcode;
 	while(1)
 	{
 		blinkLED(errcode);	// blink LED if possible
