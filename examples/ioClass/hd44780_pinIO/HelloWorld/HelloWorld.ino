@@ -80,7 +80,7 @@ hd44780_pinIO lcd(rs, en, db4, db5, db6, db7);
 #else
 //const int rs=8, en=9, db4=4, db5=5, db6=6, db7=7, bl=10, blLevel=HIGH;
 #endif
-//hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLEvel);
+//hd44780_pinIO lcd(rs, en, db4, db5, db6, db7, bl, blLevel);
 
 // LCD geometry
 const int LCD_COLS = 16;
