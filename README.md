@@ -172,7 +172,7 @@ can be found in the examples.
 | read()                                | read data byte from LCD<br>(requires r/w signal control)<br>returns negative value on failure |
 | setExecTimes(chUs, insUs)             | configure clear/home and instruction/data times |
 |                                       ||
-| **Optional LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
+| **LCD API 1.0 Functions**    | http://playground.arduino.cc/Code/LCDAPI
 | setBacklight(dimvalue)                | set backlight brightness (0-255)<br> **hd44780 extension**: returns zero on success |
 | setContrast(contvalue)                | set contrast (0-255)<br> **hd44780 extension**: returns zero on success |
 | on()                                  | turn on LCD pixels and backlight<br> **hd44780 extension**: returns zero on success |
