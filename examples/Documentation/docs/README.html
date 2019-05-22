@@ -73,7 +73,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/cb66b38b8dfcb3f35e383bc5c24f521824c6b38d/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e302e312d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/cb66b38b8dfcb3f35e383bc5c24f521824c6b38d/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e302e312d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.0.1-green.svg?style=plastic" style="max-width:100%;"></a>
+<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/803be91a0307fe57762bcad87cadb4fbde91ece2/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e302e322d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/803be91a0307fe57762bcad87cadb4fbde91ece2/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e302e322d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.0.2-green.svg?style=plastic" style="max-width:100%;"></a>
 </h1>
 <h1>
 <a id="user-content-licensing" class="anchor" href="#licensing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Licensing</h1>
@@ -366,7 +366,7 @@ can be found in the examples.</p>
 <td></td>
 </tr>
 <tr>
-<td><strong>Optional LCD API 1.0 Functions</strong></td>
+<td><strong>LCD API 1.0 Functions</strong></td>
 <td><a href="http://playground.arduino.cc/Code/LCDAPI" rel="nofollow">http://playground.arduino.cc/Code/LCDAPI</a></td>
 </tr>
 <tr>
@@ -459,8 +459,18 @@ It provides hd44780 library information as well as links to further information 
 </ul>
 <h2>
 <a id="user-content-changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CHANGELOG</h2>
+<p>[1.0.2] - 2019-05-21</p>
+<ul>
+<li>Corrected table alignment issue from removing "Optional".</li>
+<li>Removed "Optional" word from LCD API functions section title (was confusing)</li>
+<li>fixed typo in constructor in hd44780_pinIO HelloWorld example</li>
+<li>fatalError(errcode) now accepts negative errcode values</li>
+<li>Better SDA/SCL pin shorted together testing</li>
+<li>updated comments in LCDKaypadCheck to better explain BL circuit bad</li>
+</ul>
 <p>[1.0.1] - 2018-08-06</p>
 <ul>
+<li>update version info for 1.0.1 release</li>
 <li>Removed I2C TinyWireM work around (TinyWireM was fixed)  works around Wire bug in ESP32 core</li>
 </ul>
 <p>[1.0.0] - 2018-06-24</p>
