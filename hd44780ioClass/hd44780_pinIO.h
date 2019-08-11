@@ -29,6 +29,7 @@
 // with the functionality of the Arduino LiquidCrystal library.
 //
 //
+// 2019.08.11  bperrybap - fixed bug introduced by broken backlight check tweak
 // 2016.12.26  bperrybap - tweak to broken backlight check code
 // 2016.11.12  bperrybap - added code to safely handle broken backlight circuits
 // 2016.09.08  bperrybap - changed param order of iowrite() to match ioread()
@@ -186,7 +187,7 @@ int ioinit()
 		// and protect Arduino if it appears to be broken
 		// code will do "safe" backlight control
 		
-		if((_bl == HIGH) && blPinTest(_bl))
+		if((_blLevel == HIGH) && blPinTest(_bl))
 			_blLevel = HIGHZ;
 
 		pinMode(_bl, OUTPUT);
