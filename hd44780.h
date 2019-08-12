@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2019.08.11  bperrybap - support for 1 and 2 lines in setRowOffsets()
 // 2018.03.23  bperrybap - bumped default instruction time from 37us to 38us
 // 2017.12.23  bperrybap - added LCD API 1.0 init() function
 // 2017.12.23  bperrybap - allow write() to use 0 as a value without cast
@@ -216,7 +217,8 @@ public:
 	int moveCursorLeft();
 	int moveCursorRight();
 	// sets memory address for each row, added in IDE 1.6.0
-	int setRowOffsets(int row0, int row1, int row2, int row3);
+	// hd44780 allows calls with 1, 2, 3, or 4 offsets
+	int setRowOffsets(int row0, int row1=0, int row2=0, int row3=0);
 
 	// Mandatory LCD API 1.0 functions
 	// ================================

@@ -158,7 +158,9 @@ can be found in the examples.
 | leftToRight()                         | write left to right, set autoshift to left<br> **hd44780 extension**: returns zero on success |
 | rightToLeft()                         | write right to left, set autoshift to right<br> **hd44780 extension**: returns zero on success |
 | createChar(charval, charmap[])        | create a custom character<br> **hd44780 extension**: returns zero on success |
-| setRowOffsets(row0, row1, row2, row3) | set address for start of each line                                        |
+| setRowOffsets(row0)                   | set address for start of line  <br> **hd44780 extension**: returns zero on success |
+| setRowOffsets(row0, row1)             | set address for start of each line  <br> **hd44780 extension**: returns zero on success |
+| setRowOffsets(row0, row1, row2, row3) | set address for start of each line  <br> **hd44780 extension**: returns zero on success |
 | command(cmd)                          | send raw 8bit hd44780 command to LCD<br> **hd44780 extension**: returns zero on success |
 |                                       ||
 | **hd44780 extensions**<br>Included in hd44780 but not part of LiquidCrytal or LCD 1.0 API ||
