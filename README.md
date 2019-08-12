@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.0.2-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.1.0-green.svg?style=plastic)
 
 Licensing
 =========
@@ -222,7 +222,16 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[1.1.0] - 2019-08-11
+ * updates for reinitalization using begin() & init() and use of "new"
+ * Added support for 1 and 2 lines/rows to setRowOffsets()
+ * Added build tool note about using grip tool for viewing README.md file
+ * hd44780_pinIO fixed backlight check tweak that broke backlight check
+ * Clarified define to disable ESP8266 specific pin decoding
+ * updates to support use of "new" for lcd objects
+
 [1.0.2] - 2019-05-21
+ * update version info for 1.0.2 release
  * Corrected table alignment issue from removing "Optional".
  * Removed "Optional" word from LCD API functions section title (was confusing)
  * fixed typo in constructor in hd44780_pinIO HelloWorld example
