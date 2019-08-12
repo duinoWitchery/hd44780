@@ -9,6 +9,8 @@ To create a new release:
 - commit all file changes
 - run mkrelease script (optionally pass in version string like 1.0.5 etc...)
 
+Note: use "grip" tool to view README file as html
+
 mkrelease can be run from the commandline or from a gui file manager
 
 The mkrelease script will:
