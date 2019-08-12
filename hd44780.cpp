@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2019.08.11  bperrybap - updates for reinitalization using begin() & init() and use of "new" 
 // 2019.05.30  bperrybap - updates to support use of "new" for lcd objects
 // 2019.02.03  bperrybap - fatalError(errcode), accept negative errcode values
 // 2017.12.23  bperrybap - added LCD API 1.0 init() function
@@ -76,26 +77,21 @@
 #include "hd44780.h"
 
 
-// Unfortunately, it cannot be assumed that the object is zereod out since
+// Unfortunately, it cannot be assumed that the hd44780 object is zereod out since
 // users can create the lcd object using "new".
-// Because of this, the constructor code must initalize certian variables 
+// Because of this, the constructor code must initalize certain variables 
 //
-// Note: default rows and cols is 16x2
-// which is different than LiquidCryal which is 16x1
-
-// Constructors create a default row/line offset/address table
+// One oddity is that constructors zero out the row/line offset/address table
 // of addresses for each row/line
-// users can override this at any time by calling setRowOffsets(r0,r1,r2,r3)
-//
-// This default will handle:
-//  40x2, 20x4, 20x2, 16x2, 16x1 (type 2), 16x4
-//  displays not supported by this:
-//  - 16x1 (type 1), This uses a discontigous memory for the single line
-//    (This requires ugly mods to the library to make work)
-//  - 40x4 is dual 40x2 displays using dual E signals which is not supported.
+// This is intentional to allow these capabilities:
+//  - user can call setRowOffsets() *before* begin()
+//  - user can call init() at any time to reinitialize and
+//    and the row offsets will be preserved.
+// To support this, begin() will look at the row offsets and assign defaults if
+// they have not been assigned. (still zero)
 //
 
-hd44780::hd44780() : _cols(16), _rows(2)
+hd44780::hd44780() : _cols(0), _rows(0)
 {
 	/*
  	 * Set up default execution times for clear/home and
@@ -107,8 +103,8 @@ hd44780::hd44780() : _cols(16), _rows(2)
 
 	setExecTimes(HD44780_CHEXECTIME, HD44780_INSEXECTIME);
 
-	// create default row offset addresses
-	setRowOffsets(0x00, 0x40, 0x00 + _cols, 0x40 + _cols);
+	// clear row offset addresses, will be set in begin()
+	setRowOffsets(0,0,0,0);
 
 	noLineWrap(); // no linewrap as default
 
@@ -117,8 +113,8 @@ hd44780::hd44780() : _cols(16), _rows(2)
 
 hd44780::hd44780(uint8_t cols, uint8_t rows) : _cols(cols), _rows(rows)
 {
-	// create default row offset addresses
-	setRowOffsets(0x00, 0x40, 0x00 + _cols, 0x40 + _cols);
+	// clear row offset addresses, will be set in begin()
+	setRowOffsets(0,0,0,0);
 
 	noLineWrap(); // no linewrap as default
 
@@ -129,8 +125,8 @@ hd44780::hd44780(uint8_t cols, uint8_t rows) : _cols(cols), _rows(rows)
 hd44780::hd44780(uint8_t cols, uint8_t rows, uint32_t chExecTimeUs, uint32_t insExecTimeus) :
 		 _cols(cols), _rows(rows), _chExecTime(chExecTimeUs), _insExecTime(insExecTimeus)
 {
-	// create default row offset addresses
-	setRowOffsets(0x00, 0x40, 0x00 + _cols, 0x40 + _cols);
+	// clear row offset addresses, will be set in begin()
+	setRowOffsets(0,0,0,0);
 
 	noLineWrap(); // no linewrap as default
 
@@ -143,8 +139,18 @@ hd44780::hd44780(uint8_t cols, uint8_t rows, uint32_t chExecTimeUs, uint32_t ins
 // It is different than the IDE bundled LiquidCrystal library in that 
 // it takes no parameters to be consistent across all i/o classes.
 //
+// This function can be called at any time to re-initialize the LCD
+// LCD rowoffset table values and the execution timings are preserved
+//
+// Note: default rows and cols is 16x2
+// which is different than LiquidCryal which is 16x1
+
 int hd44780::init()
 {
+	if(!_cols)
+		_cols = 16;
+	if(!_rows)
+		_rows = 2;
 	return(begin(_cols, _rows));
 }
 
@@ -162,20 +168,44 @@ int hd44780::begin(uint8_t cols, uint8_t rows, uint8_t dotsize)
 {
 int rval = 0;
 
-	_cols = cols;
-	_rows = rows;
 
 	/*
 	 * Limit lines/rows to max in the row offset table
 	 */
-	if(_rows > sizeof(_rowOffsets) / sizeof(_rowOffsets[0]))
-		_rows = sizeof(_rowOffsets) / sizeof(_rowOffsets[0]);
+	if(rows > sizeof(_rowOffsets) / sizeof(_rowOffsets[0]))
+		rows = sizeof(_rowOffsets) / sizeof(_rowOffsets[0]);
 
 	/*
-	 * Note: The row offset table is not created or modified here.
-	 * It is initially created by the constuctor
- 	 * and the user can override it at any time by calling setRowOffsets()
+	 * create default row/line offset table of addresses for each row/line
+	 * if not already set by user using setRowOffsets() before begin() is called.
+	 *	OR
+	 * if the user is changing the number of columns on the display since a previous
+	 * initialization
+	 * 
+	 * See here for further explanation of lcd memory addressing:
+	 * http://web.alfredstate.edu/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
+	 * This default will handle:
+	 * 40x2, 20x4, 20x2, 16x2, 16x1 (type 2), 16x4
+	 * displays not supported by this:
+	 * - 16x1 (type 1), This uses a discontigous memory for the single line
+	 *   (This requires ugly mods to the library to make work)
+	 * - 40x4 is dual 40x2 displays using dual E signals which is not suppo
+	 *
+	 * users can override this at any time by calling setRowOffsets(r0,r1,r2,r3)
 	 */
+
+	if((!_rowOffsets[0] && !_rowOffsets[1] && !_rowOffsets[2] && !_rowOffsets[3])
+	 || (_cols && (_cols != cols)))
+	{
+		setRowOffsets(0x00, 0x40, 0x00 + cols, 0x40 + cols);
+	}
+
+
+	/*
+	 * Save rows/cols
+	 */
+	_rows = rows;
+	_cols = cols;
 
 	/*
 	 * SEE PAGE 45/46 of Hitachi HD44780 spec FOR INITIALIZATION SPECIFICATION.
