@@ -100,8 +100,6 @@ int status;
 	status = lcd.begin(LCD_COLS, LCD_ROWS);
 	if(status) // non zero status means it was unsuccesful
 	{
-		status = -status; // convert negative status value to positive number
-
 		// begin() failed so blink error code using the onboard LED if possible
 		hd44780::fatalError(status); // does not return
 	}

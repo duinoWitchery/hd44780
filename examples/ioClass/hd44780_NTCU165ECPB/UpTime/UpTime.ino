@@ -106,7 +106,6 @@ int status;
 		status = lcd.setCursor(8, 0);
 		if(status) // non zero status means it was unsuccesful
 		{
-			status = -status; // convert negative status to positive number
 			// setCursor() failed so call fatalError() with the error code.
 			hd44780::fatalError(status); // does not return
 		}
