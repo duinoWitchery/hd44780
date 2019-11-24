@@ -1,7 +1,7 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
 //  hd44780_NTCUUserial.h - hd44780_NTCUUserial i/o subclass for hd44780 library
-//  Copyright (c) 2013-2018  Bill Perry
+//  Copyright (c) 2013-2019  Bill Perry
 //
 // The API functionality provided by this library class is compatible
 // with the API functionality of the Arduino LiquidCrystal library.
@@ -201,7 +201,7 @@ private:
 			// Data which follows the FunctionSet command is considered as brightness data.
 			command(HD44780_FUNCTIONSET | _displayfunction);
 			// the dim value is 0-255 so divide by 64 to get a value 0-3
-			if (_write(3 - dimvalue / 64))
+			if (_write(3 - dimvalue / 64) == 0)
 				status = RV_EIO;
 			
 			display();
