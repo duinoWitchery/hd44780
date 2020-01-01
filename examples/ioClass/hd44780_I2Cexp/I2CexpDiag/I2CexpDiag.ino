@@ -2,7 +2,7 @@
 // ----------------------------------------------------------------------------
 // I2Cexpdiag - i2c LCD i/o expander backpack diagnostic tool
 // Created by Bill Perry 2016-06-17
-// Copyright 2016 - Under GPL v3
+// Copyright 2016-2020 - Under GPL v3
 // 
 // ----------------------------------------------------------------------------
 //

@@ -2,7 +2,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // vi:ts=4
 // ----------------------------------------------------------------------------
 // LCDLibTest - LCD library Test sketch
-// Copyright 2012-2017 Bill perry
+// Copyright 2012-2020 Bill perry
 // ---------------------------------------------------------------------------
 //
 //  LCDlibTest is free software: you can redistribute it and/or modify

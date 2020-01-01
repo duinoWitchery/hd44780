@@ -2,7 +2,7 @@
 // vi:ts=4
 // ----------------------------------------------------------------------------
 // LCDKeypadCheck - LCD keypad shield backlight circuitry test
-// Copyright 2013-2018 Bill Perry
+// Copyright 2013-2020 Bill Perry
 // bperrybap@opensource.billsworld.billandterrie.com
 // ---------------------------------------------------------------------------
 //

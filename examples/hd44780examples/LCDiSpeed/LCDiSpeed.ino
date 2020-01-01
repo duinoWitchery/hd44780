@@ -2,7 +2,7 @@ static const int dummyvar = 0; // dummy declaration for older broken IDEs!!!!
 // vi:ts=4
 // ----------------------------------------------------------------------------
 // LCDiSpeed - LCD Interface Speed test
-// Copyright 2012-2016 Bill perry
+// Copyright 2012-2020 Bill perry
 // ---------------------------------------------------------------------------
 //
 //  LCDiSpeed is free software: you can redistribute it and/or modify

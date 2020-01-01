@@ -28,6 +28,10 @@ Displays information on multiple displays at once.
 - `ReadWrite`<br>
 Demonstrates the ability to read data from the LCD.
 
+- `SoftwareWire`<br>
+Demonstrates how to use the SoftwareWire library to allow using different pins
+for SDA and SCL signals.
+
 - `UpTime`<br>
 Prints the amount of time since the Arduino has been reset.
 

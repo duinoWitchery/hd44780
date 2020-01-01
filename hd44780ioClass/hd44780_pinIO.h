@@ -1,7 +1,7 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
 //  hd44780_pinIO.h - hd44780_pinIO i/o subclass for hd44780 library
-//  Copyright (c) 2016-2018  Bill Perry
+//  Copyright (c) 2016-2020  Bill Perry
 // ---------------------------------------------------------------------------
 //
 //  This file is part of the hd44780 library

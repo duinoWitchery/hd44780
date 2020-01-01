@@ -1,7 +1,7 @@
 //  vi:ts=4
 // ---------------------------------------------------------------------------
 //  hd44780_NTCU165ECPB.h - hd44780_NTCU165ECPB i/o subclass for hd44780 library
-//  Copyright (c) 2016-2018  Bill Perry
+//  Copyright (c) 2016-2020  Bill Perry
 //
 // The API functionality provided by this library class is compatible
 // with the API functionality of the Arduino LiquidCrystal library.
@@ -28,7 +28,7 @@
 // Noritake CU165ECBP-T2J display.
 // The Noritake CU165ECBP-T2J display is a 16x1 line VFD display.
 // It is not a hd44780 display. So while this device is supported by hd44780,
-// it will not be capable of supporting all the hd44780 capalities.
+// it will not be capable of supporting all the hd44780 capabilities.
 // The subclass will do its best to emulatate hd44780 functions and map
 // them to equivalent functionality when possible but certain capabilities
 // will not be possible.
@@ -126,7 +126,7 @@ static const uint8_t CMD_STOREUDF = 0xFC; // begin user defined font (custom cha
                                    // 0xFC,<location (0-f)> 5 bytes of data
 
 // start of custom user defined font (UDF) characters
-// There are 16 UDF characters that shart here
+// There are 16 UDF characters that start here
 static const uint8_t UDF_BASE = 0x90; 
 
 
@@ -302,7 +302,7 @@ int iowrite(hd44780::iotype type, uint8_t value)
 // 110 is 12/16
 // 111 is 14/16
 //
-// Becauswe of this, an API dimvalue of 0 does not turn off the display
+// Becauswe of this, an API dimvalue of 0 does not turn off the display pixels
 // so the code must check for that and explicitly turn off the display if the
 // API dimvalue is zero.
 int iosetBacklight(uint8_t dimvalue) 
