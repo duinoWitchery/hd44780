@@ -15,6 +15,16 @@
 // [File]->Examples-> hd44780/hd44780examples/LCDiSpeed
 //
 
+// include LCD.h which is only in newLiquidCrystal
+// to force the IDE include path to use newLiquidCrystal instead
+// of LiquidCrystal
+// This works because even if the LiquidCrystal.h below causes the IDE to
+// add the bundled LiquidCrystal library for it, since the LCD.h will have
+// gotten the IDE to add the newLiquidCrystal library directory to the path
+// first.
+// 
+#include <LCD.h> 
+
 #include <LiquidCrystal.h>
 
 // ugliness to allow this sketch to locate the hd44780 example sketch
