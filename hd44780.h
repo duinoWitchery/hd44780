@@ -401,7 +401,7 @@ private:
 
 };
 
-// LED_BUILTIN define fixups for Teensy, ChipKit, and ESP8266 cores
+// LED_BUILTIN define fixups for Teensy, ChipKit, ESP8266, ESP32 cores
 #if !defined(LED_BUILTIN)
 
 #if defined(CORE_TEENSY)
@@ -410,9 +410,15 @@ private:
 #elif defined(ARDUINO_ARCH_ESP8266)
 #define LED_BUILTIN BUILTIN_LED
 
+// this is for cores that incorrectly used BUILTIN_LED instead of LED_BUILTIN
+// esp32 core does this, they have LED_BUILTIN but it is a const not a define
+// this works around that.
+#elif defined(BUILTIN_LED)
+#define LED_BUILTIN BUILTIN_LED
+
 // special check for pre 1.0.6 IDEs that didn't define LED_BUILTIN
 #elif (ARDUINO <  106 ) && ( defined(__AVR_ATmega328__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega32U4__))
-#define LED_BUILTIN 13 // bundled boards use pin 13 for builtin led
+#define LED_BUILTIN 13 // IDE bundled AVR boards use pin 13 for builtin led
 
 #elif defined(PIN_LED1) // chipkit
 #define LED_BUILTIN PIN_LED1
