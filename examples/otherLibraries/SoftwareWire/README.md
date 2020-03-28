@@ -13,3 +13,10 @@ These examples use the hd44780 library hd44780_I2Cexp i/o class using
 SoftwareWire instead of the Wire library.
 
 Note: using a software Wire library is not necessary on the esp8266 platform as the wire library on that platform already provides a mechanims to change the pins used for i2c.
+
+WARNING:
+The SoftWareWire developers made a major change to the library June 2018
+which is in the subsequent 1.5.1 release that causes it be unusable by
+the hd44780 library.
+Until this change is backed out, you will not be able to use 
+SoftWareWire beyond version 1.5.0 with the hd44780 library.
