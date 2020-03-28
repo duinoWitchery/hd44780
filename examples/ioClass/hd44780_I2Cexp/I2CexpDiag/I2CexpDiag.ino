@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.03.28 bperrybap  - tweak for ESP32 core
 // 2019.07.28 bperrybap  - clarified define to disable ESP8266 specific pin
 //                         decoding
 // 2018.10.16 bperrybap  - better shorted pin testing
@@ -185,11 +186,11 @@ hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
 const int LCD_ROWS = 2;
 const int LCD_COLS = 16;
 
-// If code has issues compiling for ESP8266 cores,
+// If code has issues compiling for ESP8266 / ESP32 cores,
 // and/or breaks in printDigitalPin() function,
 // turn on this define to disable
-// ESP8266 specific pin decoding
-//#define I2CEXPDIAG_CFG_NO_DECODE_ESP8266PINS
+// ESP specific pin decoding
+//#define I2CEXPDIAG_CFG_NO_DECODE_ESPXXXXPINS
 
 // if you have slow displays uncomment these defines
 // to override the default execution times.
@@ -743,15 +744,15 @@ void printDigitalPin(Print &outdev, int pin)
 	// On all cores, print the pin value
 	outdev.print(pin);
 
-#if defined(ARDUINO_ARCH_ESP8266)
-	// print GPIO# for all ESP8266 boards since that core uses GPIO bit numbers
+#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
+	// print GPIO# for all ESP8266 & ESP32 boards since those cores uses GPIO bit numbers
 	// as the pin number.
 	outdev.print(F(" (GPIO"));
 	outdev.print(pin);
 	outdev.print(')');
 #endif
 
-#if !defined(I2CEXPDIAG_CFG_NO_DECODE_ESP8266PINS)
+#if !defined(I2CEXPDIAG_CFG_NO_DECODE_ESPXXXXPINS)
 
 	// this next part is ugly.
 	// It is trying to convert the GPIO bit number back to a pin define name
@@ -850,7 +851,7 @@ void printDigitalPin(Print &outdev, int pin)
 		outdev.print(F(" P10"));
 #endif
 
-#endif // I2CEXPDIAG_CFG_NO_DECODE_ESP8266PINS
+#endif // I2CEXPDIAG_CFG_NO_DECODE_ESPXXXXPINS
 
 // print the analog pin if it matches the pin #
 #if defined(A0) || defined(PIN_A0)
