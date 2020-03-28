@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.1.0-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.1.1-green.svg?style=plastic)
 
 Licensing
 =========
@@ -222,7 +222,21 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
-[1.1.0] - 2019-08-11
+[1.1.1] - 2020-03-28
+ * Minor tweak to I2CexpDiag for ESP32 core
+ * Tweak to work around LED_BUILTIN define issue in ESP32 core
+ * examples no longer alter status code sent to fatalError() as it isn't necessary
+ * Detect incompatible version of SoftWareWire (version 1.5.1 broke things)
+ * Added LiquidCrystalFast and LiquidCrystal_PCF8574 to "otherLibraries" benchmark sketches.
+ * tweaked newLiquidCrystal LCDiSpeed sketch to better find NewLiquidCrystal library.
+ * updated library properties paragraph to mention noritake displays
+ * Updated copyright year
+ * Added examples and benchmarks for using SoftwareWire soft i2c library
+ * fixed return status bug in NTCUUserial iosetBacklight()
+ * Examples no longer modify/adjust return status values sent to fatalError()
+
+[1.1.0] - 2019-08-12
+ * update version info for 1.1.0 release
  * updates for reinitalization using begin() & init() and use of "new"
  * Added support for 1 and 2 lines/rows to setRowOffsets()
  * Added build tool note about using grip tool for viewing README.md file

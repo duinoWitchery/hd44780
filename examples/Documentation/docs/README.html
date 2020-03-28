@@ -73,7 +73,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/c28185de6b43fbc99a58889d5635f8a2b52343a7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e312e302d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/c28185de6b43fbc99a58889d5635f8a2b52343a7/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e312e302d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.1.0-green.svg?style=plastic" style="max-width:100%;"></a>
+<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/3e1e54f671d958d2f37aa0d102a9b34823ea26ab/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e312e312d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/3e1e54f671d958d2f37aa0d102a9b34823ea26ab/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e312e312d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.1.1-green.svg?style=plastic" style="max-width:100%;"></a>
 </h1>
 <h1>
 <a id="user-content-licensing" class="anchor" href="#licensing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Licensing</h1>
@@ -467,8 +467,23 @@ It provides hd44780 library information as well as links to further information 
 </ul>
 <h2>
 <a id="user-content-changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CHANGELOG</h2>
-<p>[1.1.0] - 2019-08-11</p>
+<p>[1.1.1] - 2020-03-28</p>
 <ul>
+<li>Minor tweak to I2CexpDiag for ESP32 core</li>
+<li>Tweak to work around LED_BUILTIN define issue in ESP32 core</li>
+<li>examples no longer alter status code sent to fatalError() as it isn't necessary</li>
+<li>Detect incompatible version of SoftWareWire (version 1.5.1 broke things)</li>
+<li>Added LiquidCrystalFast and LiquidCrystal_PCF8574 to "otherLibraries" benchmark sketches.</li>
+<li>tweaked newLiquidCrystal LCDiSpeed sketch to better find NewLiquidCrystal library.</li>
+<li>updated library properties paragraph to mention noritake displays</li>
+<li>Updated copyright year</li>
+<li>Added examples and benchmarks for using SoftwareWire soft i2c library</li>
+<li>fixed return status bug in NTCUUserial iosetBacklight()</li>
+<li>Examples no longer modify/adjust return status values sent to fatalError()</li>
+</ul>
+<p>[1.1.0] - 2019-08-12</p>
+<ul>
+<li>update version info for 1.1.0 release</li>
 <li>updates for reinitalization using begin() &amp; init() and use of "new"</li>
 <li>Added support for 1 and 2 lines/rows to setRowOffsets()</li>
 <li>Added build tool note about using grip tool for viewing README.md file</li>
