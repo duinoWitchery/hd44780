@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.05.13 bperrybap  - removed ifdef check for INPUT_PULLUP
 // 2020.03.28 bperrybap  - tweak for ESP32 core
 // 2019.07.28 bperrybap  - clarified define to disable ESP8266 specific pin
 //                         decoding
@@ -168,10 +169,6 @@
 #include <Wire.h>
 #include <hd44780.h>
 #include <hd44780ioClass/hd44780_I2Cexp.h> // i2c expander i/o class header
-
-#ifndef INPUT_PULLUP
-#error Sketch requires INPUT_PULLUP which is not supported by this IDE/core version
-#endif
 
 // ============================================================================
 // user configurable options below this point
@@ -989,34 +986,23 @@ void showSystemConfig(void)
  */
 int pullupOnPin(uint8_t pin)
 {
+int status;
 
 	// test to see if pin is pulled/stuck low
-#ifdef INPUT_PULLUP
+	// Arduino 1.0 didn't support INPUT_PULLUP
+	// it was added in the next release 1.0.1
+	// the code used to check for INPUT_PULLUP macro
+	// and work around it
+	// but many cores didn't use a macro so this check caused issues
+	// now the code will simply fail to compile ungracefully if the symbol doesn't exist
+
 	pinMode(pin, INPUT_PULLUP);
 	delay(20);
 	if(digitalRead(pin) == LOW)
-		return(-1); // pin appears to be driven low
-#else
-	// this is more complicated that it should be because
-	// Arduino 1.0 didn't support INPUT_PULLUP
-	// it was added in the next release 1.0.1
-	// but this code *should* still work even on 1.0 or if the pin
-	// doesn't have a built in pullup.
 	{
-	int t = 0;
-		pinMode(pin, INPUT);
-		digitalWrite(pin, HIGH); // try to turn on pullup
-		delay(20);
-		for(int i = 0; i< 5; i++) // loop in case pin is floating
-		{
-			if(digitalRead(pin) == LOW)
-				t++;
-			delay(2);
-		}
-		if(t == 5)
-			return(-1); // pin appears to be driven low
+		status = -1; // pin appears to be driven low
+		goto leave;
 	}
-#endif
 
 	// test to see if high is an external pullup
 	pinMode(pin, OUTPUT);
@@ -1025,9 +1011,14 @@ int pullupOnPin(uint8_t pin)
 	pinMode(pin,INPUT);
 	delayMicroseconds(10);
 	if(digitalRead(pin) == HIGH)
-		return(0); // pin appears to have external pullup
+		status = 0; // pin appears to have external pullup
+	else
+		status = 1; // pin appears to NOT have an external pullup
 
-	return(1); // pin appears to NOT have an external pullup
+leave:
+	pinMode(pin,INPUT); // ensure pin is left in input mode
+	return(status);
+
 }
 /*
  * test of two pins are shorted together
