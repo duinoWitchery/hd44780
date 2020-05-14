@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.05.14 bperrybap  - check for F_CPU define
 // 2020.05.13 bperrybap  - removed ifdef check for INPUT_PULLUP
 // 2020.03.28 bperrybap  - tweak for ESP32 core
 // 2019.07.28 bperrybap  - clarified define to disable ESP8266 specific pin
@@ -960,7 +961,12 @@ void showSystemConfig(void)
 #endif
 
 	Serial.print(F("F_CPU: "));
+// just in case the core does not define this
+#ifdef F_CPU
 	Serial.println(F_CPU);
+#else
+	Serial.println("undefined");
+#endif
 
 	Serial.println(hline);
 
