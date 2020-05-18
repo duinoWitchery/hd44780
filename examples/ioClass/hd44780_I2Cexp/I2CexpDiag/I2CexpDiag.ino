@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.05.18 bperrybap  - reduced defualt max displays to 4 to save memory
 // 2020.05.18 bperrybap  - hack workaround for RogerClarks STM32 cores
 // 2020.05.14 bperrybap  - check for F_CPU define
 // 2020.05.13 bperrybap  - removed ifdef check for INPUT_PULLUP
@@ -178,7 +179,11 @@
 
 // Uncomment and use this line instead of the one below if you have a SYDZ backpack
 //hd44780_I2Cexp lcd[1]={{I2Cexp_ADDR_UNKNOWN, I2Cexp_BOARD_SYDZ}}; // to run on a single SYDZ based backpack
-hd44780_I2Cexp lcd[16]; // auto locate & configure up to 16 displays
+
+// set maximum number of displays to auto locate & configure
+// this can be any number between 1 and 16
+// this was reduced from 16 to allow running on AVRs with smaller RAM
+hd44780_I2Cexp lcd[4];
 
 // All displays will be assumed to be 16x2
 // Even if display is larger the sketch should still work correctly
@@ -368,7 +373,9 @@ int nopullups;
 	}
 	Serial.println(hline);
 
-	Serial.println(F("Scanning i2c bus for all lcd displays"));
+	Serial.print(F("Scanning i2c bus for all lcd displays ("));
+	Serial.print(sizeof(lcd)/sizeof(hd44780_I2Cexp));
+	Serial.println(F(" max)"));
 
 	/*
 	 * Locate all the displays by attempting to intialize each one
