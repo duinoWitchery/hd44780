@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.05.18 bperrybap  - hack workaround for RogerClarks STM32 cores
 // 2020.05.14 bperrybap  - check for F_CPU define
 // 2020.05.13 bperrybap  - removed ifdef check for INPUT_PULLUP
 // 2020.03.28 bperrybap  - tweak for ESP32 core
@@ -214,6 +215,24 @@ const int LCD_COLS = 16;
 #define SDA _DTWI0_SDA_PIN
 #define SCL _DTWI0_SCL_PIN
 #endif
+#endif
+
+// Create SDA and SCL defines for RogerClark's STM32 platform.
+// https://github.com/rogerclarkmelbourne/Arduino_STM32
+// Note, this is total BULLSHIT as I offered a fix for this and he refused to
+// even accept this as an issue.
+// https://github.com/rogerclarkmelbourne/Arduino_STM32/issues/777
+// Roger's platform does have SDA and SCL defines but they are currently
+// in SoftWire.h so they only exist when SoftWire.h is included.
+// While they should always exist, I made an alternative
+// suggestion to move them to utility/WireBase.h so at least they
+// would exist when either Wire.h or SoftWire.h was included.
+//
+// This hack includes SoftWire.h on that platform just to get the symbols
+// NOTE:
+// there is no Wire library support in Roger's STM32F2 core
+#if defined(ARDUINO_ARCH_STM32F1) || defined(ARDUINO_ARCH_STM32F4)
+#include <SoftWire.h>
 #endif
 
 /*
@@ -946,10 +965,24 @@ void showSystemConfig(void)
 #endif
 
 #endif
-#if defined(ARDUINO_BOARD)
+
+// only print board name if platform hands it to us
+#if defined(ARDUINO_BOARD) || defined(BOARD_NAME)
 	Serial.print(F("Arduino Board: "));
-	Serial.println(ARDUINO_BOARD);
+#if defined(ARDUINO_BOARD)
+	Serial.print(ARDUINO_BOARD);
+#if defined(ARDUINO_VARIANT)
+	Serial.print(F(" Arduino Variant: "));
+	Serial.print(ARDUINO_VARIANT);
 #endif
+#elif defined(BOARD_NAME)
+	Serial.print(BOARD_NAME);
+#else
+	Serial.print(F("unknown"));
+#endif
+	Serial.println();
+#endif
+
 #if defined(__AVR__)
 	Serial.print(F("CPU ARCH: AVR - "));
 #elif defined(__arm__)
@@ -958,10 +991,15 @@ void showSystemConfig(void)
 	Serial.print(F("CPU ARCH: pic32 - "));
 #elif defined(ARDUINO_ARCH_ESP8266)
 	Serial.print(F("CPU ARCH: ESP8266 - "));
+#elif defined(ARDUINO_ARCH_ESP32)
+	Serial.print(F("CPU ARCH: ESP32 - "));
+#elif defined(ARDUINO_ARCH_STM32)
+	Serial.print(F("CPU ARCH: STM32 - "));
 #endif
 
 	Serial.print(F("F_CPU: "));
 // just in case the core does not define this
+// (like cores in RogerClark's STM32 platform)
 #ifdef F_CPU
 	Serial.println(F_CPU);
 #else
