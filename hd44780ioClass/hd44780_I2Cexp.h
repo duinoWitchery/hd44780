@@ -41,7 +41,7 @@
 // hd44780_I2Cexp lcdA; // autolocate/autoconfigure for lcd instance 0
 // hd44780_I2Cexp lcdB; // autolocate/autoconfigure for lcd instance 1
 //
-// hd44780_I2Cexp lcd(addr, chiptype,    rs,[rw],en,d4,d5,d6,d7,bl,blpol);
+// hd44780_I2Cexp lcd(addr, chiptype,    rs,[rw],en,d4,d5,d6,d7,bl,blLevel);
 // hd44780_I2Cexp lcd(0x20, I2Cexp_MCP23008,1,2,3,4,5,6,7,HIGH);   // no rw support
 // hd44780_I2Cexp lcd(0x27, I2Cexp_PCF8574, 0,1,2,4,5,6,7,3,HIGH); // with rw support
 //
@@ -120,7 +120,7 @@
 // which will be set to LOW but ignored by the LCD on those boards.
 // This means that the unused pin on the i/o expander cannot be used as an input
 //
-//									expType, rs[,rw],en,d4,d5,d6,d7[,bl, blpol]
+//									expType, rs[,rw],en,d4,d5,d6,d7[,bl, blLevel]
 #define I2Cexp_BOARD_LCDXIO        I2Cexp_PCF8574, 4,5,6,0,1,2,3 // ElectroFun default (no backlight control)
 #define I2Cexp_BOARD_LCDXIOnBL     I2Cexp_PCF8574, 4,5,6,0,1,2,3,7,LOW // Electrofun & PNP transistor for BL
 

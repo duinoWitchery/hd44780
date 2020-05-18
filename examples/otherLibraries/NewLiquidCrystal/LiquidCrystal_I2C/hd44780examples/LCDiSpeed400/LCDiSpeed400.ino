@@ -16,6 +16,7 @@
 //
 
 #include <Wire.h>
+#include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 
 // ugliness to allow this sketch to locate the hd44780 example sketch
@@ -36,8 +37,11 @@
 
 // declare the lcd object
 // Note: The i2c address and pin mappings must match the backpack
+// The pin mapping selected matches the "LiquidCrystal_I2C" library
+// in the IDE library manager.
 const uint8_t i2cAddr = 0x27;
-const int rs=0, rw=1, en=2, db4=4, db5=5, db6=6, db7=7, bl=3, blpol=POSITIVE;
+const int rs=0, rw=1, en=2, db4=4, db5=5, db6=6, db7=7, bl=3;
+typeof(POSITIVE) blpol=POSITIVE; // backlight polarity level
 LiquidCrystal_I2C lcd(i2cAddr, en, rw, rs, db4, db5, db6, db7, bl, blpol);
 
 // tell the hd44780 sketch the lcd object has been declared
