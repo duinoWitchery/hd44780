@@ -179,6 +179,7 @@ void setup(void)
 //
 #elif defined(LiquidCrystal_I2C_h) && !defined(_I2CIO_H_)
 	lcd.init();
+	lcd.backlight(); // LiquidCrystal_I2C does not turn on backlight by default.
 #else
 	lcd.begin(LCD_COLS, LCD_ROWS);
 #endif
