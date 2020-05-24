@@ -180,6 +180,8 @@ void setup(void)
 #elif defined(LiquidCrystal_I2C_h) && !defined(_I2CIO_H_)
 	lcd.init();
 	lcd.backlight(); // LiquidCrystal_I2C does not turn on backlight by default.
+#elif defined(LCDISPEED_CALL_CUSTOM_LCDINIT)
+	custom_LCDinit(); // code is in LCDiSpeed wrapper sketch (this is FUGLY!!!)
 #else
 	lcd.begin(LCD_COLS, LCD_ROWS);
 #endif
