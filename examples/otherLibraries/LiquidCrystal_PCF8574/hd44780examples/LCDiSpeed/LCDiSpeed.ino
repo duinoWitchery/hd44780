@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// LCDiSpeed - LCD Interface Speed test for LiquidCrystal_I2C library
+// LCDiSpeed - LCD Interface Speed test for LiquidCrystal_PCF8574 library
 // ----------------------------------------------------------------------------
 // This sketch is a wrapper sketch for the hd44780 library example LCDiSpeed.
 // Note:
@@ -23,17 +23,28 @@
 #include <hd44780.h>
 #undef hd44780_h // undefine this so the example sketch does not think hd44780 is being used.
 
+// cols and rows don't have to be exact to still get accurate transfer numbers
+#define LCD_COLS 16
+#define LCD_ROWS 2
 
 // declare the lcd object
 // Note: The i2c address must match the backpack address
 // and the library only works with certain backpacks
 const uint8_t i2cAddr = 0x27;
-#define LCD_COLS 16
-#define LCD_ROWS 2
 LiquidCrystal_PCF8574 lcd(i2cAddr);
 
 // tell the hd44780 sketch the lcd object has been declared
 #define HD44780_LCDOBJECT
+
+// tell lcd hd44780 sketch to call custom customLCDinit() for initialization
+#define LCDISPEED_CALL_CUSTOM_LCDINIT
+
+// have to use custom initialzation for this library
+void custom_LCDinit(void)
+{
+	lcd.begin(LCD_COLS, LCD_ROWS);
+	lcd.setBacklight(0xff);	
+}
 
 // include the hd44780 library LCDiSpeed sketch source code
 #include <examples/hd44780examples/LCDiSpeed/LCDiSpeed.ino>
