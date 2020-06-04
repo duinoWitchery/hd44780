@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.1.1-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.2.0-green.svg?style=plastic)
 
 Licensing
 =========
@@ -222,7 +222,19 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[1.2.0] - 2020-06-03
+ * added SDA/SCL pin output decodes for STM32 platform
+ * Fixes to LCDiSpeed examples for LiquidCrystal_PCF8574
+ * Added LiquidCrystalIO support for LCDiSpeed benchmarks
+ * Tweak to LCDiSpeed examples for newLiquidCrystal LiquidCrystal_I2C to fix compilation issue
+ * LCDiSpeed tweak to ensure backlight is on for LiquidCrystal_I2C library.
+ * I2CexpDiag reduced the maximum default lcd devices to 4 to save RAM
+ * I2CexpDiag hack workaround for RogerClarks STM32 platform
+ * I2CexpDiag print "undefined" for F_CPU when F_CPU not defined
+ * Removed INPUT_PULLUP check I2CexpDiag
+
 [1.1.1] - 2020-03-28
+ * update version info for 1.1.1 release
  * Minor tweak to I2CexpDiag for ESP32 core
  * Tweak to work around LED_BUILTIN define issue in ESP32 core
  * examples no longer alter status code sent to fatalError() as it isn't necessary

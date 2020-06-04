@@ -73,7 +73,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/3e1e54f671d958d2f37aa0d102a9b34823ea26ab/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e312e312d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/3e1e54f671d958d2f37aa0d102a9b34823ea26ab/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e312e312d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.1.1-green.svg?style=plastic" style="max-width:100%;"></a>
+<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/02a60f270e944d0219d26f513bad8f91ecb77cd9/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e322e302d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/02a60f270e944d0219d26f513bad8f91ecb77cd9/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e322e302d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.2.0-green.svg?style=plastic" style="max-width:100%;"></a>
 </h1>
 <h1>
 <a id="user-content-licensing" class="anchor" href="#licensing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Licensing</h1>
@@ -467,8 +467,21 @@ It provides hd44780 library information as well as links to further information 
 </ul>
 <h2>
 <a id="user-content-changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CHANGELOG</h2>
+<p>[1.2.0] - 2020-06-03</p>
+<ul>
+<li>added SDA/SCL pin output decodes for STM32 platform</li>
+<li>Fixes to LCDiSpeed examples for LiquidCrystal_PCF8574</li>
+<li>Added LiquidCrystalIO support for LCDiSpeed benchmarks</li>
+<li>Tweak to LCDiSpeed examples for newLiquidCrystal LiquidCrystal_I2C to fix compilation issue</li>
+<li>LCDiSpeed tweak to ensure backlight is on for LiquidCrystal_I2C library.</li>
+<li>I2CexpDiag reduced the maximum default lcd devices to 4 to save RAM</li>
+<li>I2CexpDiag hack workaround for RogerClarks STM32 platform</li>
+<li>I2CexpDiag print "undefined" for F_CPU when F_CPU not defined</li>
+<li>Removed INPUT_PULLUP check I2CexpDiag</li>
+</ul>
 <p>[1.1.1] - 2020-03-28</p>
 <ul>
+<li>update version info for 1.1.1 release</li>
 <li>Minor tweak to I2CexpDiag for ESP32 core</li>
 <li>Tweak to work around LED_BUILTIN define issue in ESP32 core</li>
 <li>examples no longer alter status code sent to fatalError() as it isn't necessary</li>
