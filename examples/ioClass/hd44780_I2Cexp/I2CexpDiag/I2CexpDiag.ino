@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.06.03 bperrybap  - added SDA/SCL pin output decodes for STM32 platform
 // 2020.05.18 bperrybap  - reduced defualt max displays to 4 to save memory
 // 2020.05.18 bperrybap  - hack workaround for RogerClarks STM32 cores
 // 2020.05.14 bperrybap  - check for F_CPU define
@@ -877,6 +878,218 @@ void printDigitalPin(Print &outdev, int pin)
 
 #endif // I2CEXPDIAG_CFG_NO_DECODE_ESPXXXXPINS
 
+// Special ugly code for Roger's maple/stm32duino cores
+// They don't define SDA or SCL at all but code
+// above gets them from SoftWire
+// Since they are #define symbols that reverence other PXX symbols
+// we will print define string instead of its value
+#if defined(ARDUINO_ARCH_STM32F1) || defined(ARDUINO_ARCH_STM32F4)
+	if(pin == SDA)
+		outdev.print(F(" " define2str(SDA))); // print define string not its final value
+	if(pin == SCL)
+		outdev.print(F(" " define2str(SCL))); // print define string not its final value
+#endif
+
+//////////////////////////////////////////////////////////////////////////
+// code for STM32 platform defines
+#if defined(ARDUINO_ARCH_STM32)
+#if defined(PA0)
+	if(pin == PA0)
+		outdev.print(F(" PA0"));
+#endif
+#if defined(PA1)
+	if(pin == PA1)
+		outdev.print(F(" PA1"));
+#endif
+#if defined(PA2)
+	if(pin == PA2)
+		outdev.print(F(" PA2"));
+#endif
+#if defined(PA3)
+	if(pin == PA3)
+		outdev.print(F(" PA3"));
+#endif
+#if defined(PA4)
+	if(pin == PA4)
+		outdev.print(F(" PA4"));
+#endif
+#if defined(PA5)
+	if(pin == PA5)
+		outdev.print(F(" PA5"));
+#endif
+#if defined(PA6)
+	if(pin == PA6)
+		outdev.print(F(" PA6"));
+#endif
+#if defined(PA7)
+	if(pin == PA7)
+		outdev.print(F(" PA7"));
+#endif
+#if defined(PA8)
+	if(pin == PA8)
+		outdev.print(F(" PA8"));
+#endif
+#if defined(PA9)
+	if(pin == PA9)
+		outdev.print(F(" PA9"));
+#endif
+#if defined(PA10)
+	if(pin == PA10)
+		outdev.print(F(" PA10"));
+#endif
+#if defined(PA11)
+	if(pin == PA11)
+		outdev.print(F(" PA11"));
+#endif
+#if defined(PA12)
+	if(pin == PA12)
+		outdev.print(F(" PA12"));
+#endif
+#if defined(PA13)
+	if(pin == PA13)
+		outdev.print(F(" PA13"));
+#endif
+#if defined(PA14)
+	if(pin == PA14)
+		outdev.print(F(" PA14"));
+#endif
+#if defined(PA15)
+	if(pin == PA15)
+		outdev.print(F(" PA15"));
+#endif
+#if defined(PB0)
+	if(pin == PB0)
+		outdev.print(F(" PB0"));
+#endif
+#if defined(PB1)
+	if(pin == PB1)
+		outdev.print(F(" PB1"));
+#endif
+#if defined(PB2)
+	if(pin == PB2)
+		outdev.print(F(" PB2"));
+#endif
+#if defined(PB3)
+	if(pin == PB3)
+		outdev.print(F(" PB3"));
+#endif
+#if defined(PB4)
+	if(pin == PB4)
+		outdev.print(F(" PB4"));
+#endif
+#if defined(PB5)
+	if(pin == PB5)
+		outdev.print(F(" PB5"));
+#endif
+#if defined(PB6)
+	if(pin == PB6)
+		outdev.print(F(" PB6"));
+#endif
+#if defined(PB7)
+	if(pin == PB7)
+		outdev.print(F(" PB7"));
+#endif
+#if defined(PB8)
+	if(pin == PB8)
+		outdev.print(F(" PB8"));
+#endif
+#if defined(PB9)
+	if(pin == PB9)
+		outdev.print(F(" PB9"));
+#endif
+#if defined(PB10)
+	if(pin == PB10)
+		outdev.print(F(" PB10"));
+#endif
+#if defined(PB11)
+	if(pin == PB11)
+		outdev.print(F(" PB11"));
+#endif
+#if defined(PB12)
+	if(pin == PB12)
+		outdev.print(F(" PB12"));
+#endif
+#if defined(PB13)
+	if(pin == PB13)
+		outdev.print(F(" PB13"));
+#endif
+#if defined(PB14)
+	if(pin == PB14)
+		outdev.print(F(" PB14"));
+#endif
+#if defined(PB15)
+	if(pin == PB15)
+		outdev.print(F(" PB15"));
+#endif
+#if defined(PC0)
+	if(pin == PC0)
+		outdev.print(F(" PC0"));
+#endif
+#if defined(PC1)
+	if(pin == PC1)
+		outdev.print(F(" PC1"));
+#endif
+#if defined(PC2)
+	if(pin == PC2)
+		outdev.print(F(" PC2"));
+#endif
+#if defined(PC3)
+	if(pin == PC3)
+		outdev.print(F(" PC3"));
+#endif
+#if defined(PC4)
+	if(pin == PC4)
+		outdev.print(F(" PC4"));
+#endif
+#if defined(PC5)
+	if(pin == PC5)
+		outdev.print(F(" PC5"));
+#endif
+#if defined(PC6)
+	if(pin == PC6)
+		outdev.print(F(" PC6"));
+#endif
+#if defined(PC7)
+	if(pin == PC7)
+		outdev.print(F(" PC7"));
+#endif
+#if defined(PC8)
+	if(pin == PC8)
+		outdev.print(F(" PC8"));
+#endif
+#if defined(PC9)
+	if(pin == PC9)
+		outdev.print(F(" PC9"));
+#endif
+#if defined(PC10)
+	if(pin == PC10)
+		outdev.print(F(" PC10"));
+#endif
+#if defined(PC11)
+	if(pin == PC11)
+		outdev.print(F(" PC11"));
+#endif
+#if defined(PC12)
+	if(pin == PC12)
+		outdev.print(F(" PC12"));
+#endif
+#if defined(PC13)
+	if(pin == PC13)
+		outdev.print(F(" PC13"));
+#endif
+#if defined(PC14)
+	if(pin == PC14)
+		outdev.print(F(" PC14"));
+#endif
+#if defined(PC15)
+	if(pin == PC15)
+		outdev.print(F(" PC15"));
+#endif
+
+#endif // ARDUINO_ARCH_STM32
+//////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
 // print the analog pin if it matches the pin #
 #if defined(A0) || defined(PIN_A0)
 	if(pin == A0)
@@ -942,6 +1155,7 @@ void printDigitalPin(Print &outdev, int pin)
 	if(pin == A15)
 		outdev.print(F(" A15"));
 #endif
+//////////////////////////////////////////////////////////////////////////
 
 	return;
 }
