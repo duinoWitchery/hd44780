@@ -49,7 +49,7 @@
 // hd44780_I2Cexp lcd(0x20, I2Cexp_BOARD_ADAFRUIT292); // specific backpack at 0x20
 // hd44780_I2Cexp lcd(0x38, I2Cexp_BOARD_SYDZ);        // specific backpack at 0x38
 //
-// hd44780_I2Cexp lcdcanned-entry);
+// hd44780_I2Cexp lcd(canned-entry);
 // hd44780_I2Cexp lcd(I2Cexp_BOARD_SYDZ); // locate specific backpack
 //
 //
@@ -63,6 +63,7 @@
 // ---------------------------------------------------------------------------
 // History
 //
+// 2020.06.13  bperrybap - fixed constructor issue for MCP23008 canned entries
 // 2018.08.06  bperrybap - removed TinyWireM work around (TinyWireM was fixed)
 // 2017.12.23  bperrybap - added LiquidCrystal_I2C compatible constructor
 // 2017.05.12  bperrybap - now requires IDE 1.0.1 or newer
@@ -206,6 +207,23 @@ hd44780_I2Cexp(I2CexpType type, uint8_t rs, uint8_t rw, uint8_t en,
 {
    config(0, type, rs, rw, en, d4, d5, d6, d7, bl, blLevel); // auto locate i2c address
 }
+
+// Auto locate but with explicit config no r/w control with backlight control
+hd44780_I2Cexp(I2CexpType type, uint8_t rs, uint8_t en,
+				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7,
+				uint8_t bl, uint8_t blLevel)
+{
+   config(0, type, rs, 0xff, en, d4, d5, d6, d7, bl, blLevel); // auto locate i2c address
+}
+
+// Auto locate but with explicit config no r/w control with no backlight control
+hd44780_I2Cexp(I2CexpType type, uint8_t rs, uint8_t en,
+				uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
+{
+   config(0, type, rs, 0xff, en, d4, d5, d6, d7); // auto locate i2c address
+}
+
+
 
 
 // -- undocumented LiquidCrystal_I2C compatible constructor
