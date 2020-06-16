@@ -63,6 +63,7 @@
 // ---------------------------------------------------------------------------
 // History
 //
+// 2020.06.16  bperrybap - tweak to MCP23008 auto config for Adafruit #292 board
 // 2020.06.13  bperrybap - fixed constructor issue for MCP23008 canned entries
 // 2018.08.06  bperrybap - removed TinyWireM work around (TinyWireM was fixed)
 // 2017.12.23  bperrybap - added LiquidCrystal_I2C compatible constructor
@@ -1068,6 +1069,11 @@ uint8_t rs, rw, en, d4, d5, d6, d7, bl, blLevel;
  * pulled high, when the port is in input mode with pullups enabled.
  * GP0 is not stable without pullups as it is not connected to anything.
  * GP7 will pull down from the emitter of the NPN transistor.
+ * It has been seen that the combination of some #292 backpacks and LCD panels
+ * have a backlight that will alter the voltage to the p7 pin just eough that
+ * it doesn't read as a low when the pullup is enabled.
+ * So at least for now, the pullup on bit 7 will not be enabled
+ * during the probing.
  *
  * On the WIDEKH board,
  * GP6 should pull down from the emitter of the NPN transistor.
@@ -1111,7 +1117,8 @@ uint8_t blLevel;
 
 	Wire.beginTransmission(_addr);
 	Wire.write(6); // point to GPPU
-	Wire.write(0xff); // turn on pullups
+	// turn on pullups, except bit 7 which is backlight transistor on #292
+	Wire.write(0x7f);
 	Wire.endTransmission();
 
 	/*
