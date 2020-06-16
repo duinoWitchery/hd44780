@@ -151,6 +151,7 @@
 // -----------------------------------------------------------------------
 // 
 // History
+// 2020.06.16 bperrybap  - report begin() status when it fails
 // 2020.06.03 bperrybap  - added SDA/SCL pin output decodes for STM32 platform
 // 2020.05.18 bperrybap  - reduced defualt max displays to 4 to save memory
 // 2020.05.18 bperrybap  - hack workaround for RogerClarks STM32 cores
@@ -384,14 +385,22 @@ int nopullups;
 	for(NumLcd = 0; NumLcd < (int) (sizeof(lcd)/sizeof(hd44780_I2Cexp)); NumLcd++)
 	{
 	char buf[16];
+	int status;
 		// set custom exectution times if configured
 #if defined(LCD_CHEXECTIME) && defined(LCD_INSEXECTIME)
 		lcd[NumLcd].setExecTimes(LCD_CHEXECTIME, LCD_INSEXECTIME);
 #endif
 
 		// If begin fails, then assume we have no more displays
-		if(lcd[NumLcd].begin(LCD_ROWS, LCD_COLS) != 0)
+		if((status = lcd[NumLcd].begin(LCD_ROWS, LCD_COLS)) != 0)
+		{
+			if(NumLcd == 0)
+			{
+				Serial.print("LCD 0 begin() failed: ");
+				Serial.println(status);
+			}
 			break;
+		}
 
 		setWorkingLCD(NumLcd); // mark LCD as "working"
 
