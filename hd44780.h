@@ -81,8 +81,8 @@
 #include <inttypes.h>
 #include <Print.h>
 
-#define HD44780_VERSION		10200
-#define HD44780_VERSIONSTR	"1.2.0"
+#define HD44780_VERSION		10201
+#define HD44780_VERSIONSTR	"1.2.1"
 
 class hd44780 : public Print
 {

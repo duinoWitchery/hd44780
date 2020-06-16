@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.2.0-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.2.1-green.svg?style=plastic)
 
 Licensing
 =========
@@ -222,7 +222,13 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[1.2.1] - 2020-06-15
+ * I2CexpDiag - report initialization failure status code
+ * hd44780_I2Cexp: tweak to MCP23008 auto config for Adafruit #292 board
+ * hd44780_I2Cexp: fixed constructor issue for MCP23008 canned entries
+
 [1.2.0] - 2020-06-03
+ * update version info for 1.2.0 release
  * added SDA/SCL pin output decodes for STM32 platform
  * Fixes to LCDiSpeed examples for LiquidCrystal_PCF8574
  * Added LiquidCrystalIO support for LCDiSpeed benchmarks
