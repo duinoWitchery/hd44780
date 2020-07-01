@@ -67,6 +67,8 @@ The library currenly comes with the following i/o subclasses:
 
 * `hd44780_NTCU165ECPB` control Noritake CU165ECBP-T2J LCD display over SPI
 
+* `hd44780_NTCU20025ECPB_pinIO` control Noritake CU20025ECPB using direct Arduino pin connections
+
 * `hd44780_NTCUUserial` control Noritake CU-U Series VFD display in serial mode
 
 * `hd44780_pinIO` control LCD using direct Arduino Pin connections
@@ -76,14 +78,18 @@ Installation
 For generic information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
 https://www.arduino.cc/en/Guide/Libraries
 
-For ease of installation it is recommended to use an IDE that supports the library mananager which was implemented in IDE version 1.6.2
+For ease of proper installation the preferred method of installing the library is to use the library mananager.
+The use of importing a .zip file is highly discouraged unless using an IDE verions prior to version 1.6.2
 
 ### Installation using Library manager (IDE 1.6.2 and later)
-In the IDE, Simply click on [Sketch]->Include Library->Manage Libraries...<br>
+In the IDE, Simply click on:<br>
+**[Sketch]->Include Library->Manage Libraries...**<br>
+or<br>
+**[Tools]->Manage Libraries...**<br>
 Then search for "Extensible hd44780" to locate the library and install it.<br>
 There is no need to uninstall or modify any other LCD libary that may have already been installed.
 
-### Installation using zip file w/o library manager (IDE 1.6.1 and earlier)
+#### Installation using zip file w/o library manager (IDE 1.6.1 and earlier)
 Installation requires downloading a zip image and
 then, depending on the version of the IDE you can either install it from the IDE or install it manually by unziping the file into your sketchbook libraries.
 

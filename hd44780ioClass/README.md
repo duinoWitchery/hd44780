@@ -14,6 +14,8 @@ Each i/o class has its own .h file.
 * `hd44780_I2Clcd` control LCD with native i2c interface (PCF2116, PCF2119x, etc...)
 
 * `hd44780_NTCU165ECPB` control Noritake CU165ECBP-T2J LCD display over SPI
+ 
+* `hd44780_NTCU20025ECPB_pinIO` control Noritake CU20025ECPB using direct Arduino pin connections
 
 * `hd44780_NTCUUserial` control Noritake CU-U Series VFD display in serial mode
 
