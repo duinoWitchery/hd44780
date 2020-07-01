@@ -59,7 +59,7 @@ as not doing proper level shifting or incorrectly hooking things up can damage t
 
 The library currenly comes with the following i/o subclasses:
 
-* `hd44780_pinIO` control LCD using direct Arduino Pin connections
+* `hd44780_HC1627_I2C` control LCD with native i2c interface (Tsingtek Display HC1627)
 
 * `hd44780_I2Cexp` control LCD using i2c i/o exapander backpack (PCF8574 or MCP23008)
 
@@ -69,6 +69,7 @@ The library currenly comes with the following i/o subclasses:
 
 * `hd44780_NTCUUserial` control Noritake CU-U Series VFD display in serial mode
 
+* `hd44780_pinIO` control LCD using direct Arduino Pin connections
 
 Installation
 ============
