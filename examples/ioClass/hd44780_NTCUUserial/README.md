@@ -19,6 +19,9 @@ Demonstrates automatic linewrap functionality
 - `ReadWrite`<br>
 Demonstrates the ability to read data from the VFD.
 
+- `Serial2LCD`<br>
+Displays a message read from the serial port on the lcd.
+
 - `UpTime`<br>
 Prints the amount of time since the Arduino has been reset.
 

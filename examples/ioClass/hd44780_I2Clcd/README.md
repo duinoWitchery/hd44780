@@ -15,6 +15,9 @@ Demonstrates using custom characters
 - `LineWrap`<br>
 Demonstrates automatic linewrap functionality
 
+- `Serial2LCD`<br>
+Displays a message read from the serial port on the lcd.
+
 - `UpTime`<br>
 Prints the amount of time since the Arduino has been reset.
 
