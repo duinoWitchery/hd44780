@@ -73,7 +73,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/b7a0327d4657372a4346b35c97c967b1552efc93/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e322e312d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/b7a0327d4657372a4346b35c97c967b1552efc93/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e322e312d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.2.1-green.svg?style=plastic" style="max-width:100%;"></a>
+<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/bd12871390ecb82f28f713064ce64ceb6a729a72/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e332e302d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/bd12871390ecb82f28f713064ce64ceb6a729a72/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e332e302d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.3.0-green.svg?style=plastic" style="max-width:100%;"></a>
 </h1>
 <h1>
 <a id="user-content-licensing" class="anchor" href="#licensing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Licensing</h1>
@@ -135,7 +135,7 @@ as not doing proper level shifting or incorrectly hooking things up can damage t
 <p>The library currenly comes with the following i/o subclasses:</p>
 <ul>
 <li>
-<p><code>hd44780_pinIO</code> control LCD using direct Arduino Pin connections</p>
+<p><code>hd44780_HC1627_I2C</code> control LCD with native i2c interface (Tsingtek Display HC1627)</p>
 </li>
 <li>
 <p><code>hd44780_I2Cexp</code> control LCD using i2c i/o exapander backpack (PCF8574 or MCP23008)</p>
@@ -147,21 +147,31 @@ as not doing proper level shifting or incorrectly hooking things up can damage t
 <p><code>hd44780_NTCU165ECPB</code> control Noritake CU165ECBP-T2J LCD display over SPI</p>
 </li>
 <li>
+<p><code>hd44780_NTCU20025ECPB_pinIO</code> control Noritake CU20025ECPB using direct Arduino pin connections</p>
+</li>
+<li>
 <p><code>hd44780_NTCUUserial</code> control Noritake CU-U Series VFD display in serial mode</p>
+</li>
+<li>
+<p><code>hd44780_pinIO</code> control LCD using direct Arduino Pin connections</p>
 </li>
 </ul>
 <h1>
 <a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h1>
 <p>For generic information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
 <a href="https://www.arduino.cc/en/Guide/Libraries" rel="nofollow">https://www.arduino.cc/en/Guide/Libraries</a></p>
-<p>For ease of installation it is recommended to use an IDE that supports the library mananager which was implemented in IDE version 1.6.2</p>
+<p>For ease of proper installation the preferred method of installing the library is to use the library mananager.
+The use of importing a .zip file is highly discouraged unless using an IDE verions prior to version 1.6.2</p>
 <h3>
 <a id="user-content-installation-using-library-manager-ide-162-and-later" class="anchor" href="#installation-using-library-manager-ide-162-and-later" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation using Library manager (IDE 1.6.2 and later)</h3>
-<p>In the IDE, Simply click on [Sketch]-&gt;Include Library-&gt;Manage Libraries...<br>
+<p>In the IDE, Simply click on:<br>
+<strong>[Sketch]-&gt;Include Library-&gt;Manage Libraries...</strong><br>
+or<br>
+<strong>[Tools]-&gt;Manage Libraries...</strong><br>
 Then search for "Extensible hd44780" to locate the library and install it.<br>
 There is no need to uninstall or modify any other LCD libary that may have already been installed.</p>
-<h3>
-<a id="user-content-installation-using-zip-file-wo-library-manager-ide-161-and-earlier" class="anchor" href="#installation-using-zip-file-wo-library-manager-ide-161-and-earlier" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation using zip file w/o library manager (IDE 1.6.1 and earlier)</h3>
+<h4>
+<a id="user-content-installation-using-zip-file-wo-library-manager-ide-161-and-earlier" class="anchor" href="#installation-using-zip-file-wo-library-manager-ide-161-and-earlier" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation using zip file w/o library manager (IDE 1.6.1 and earlier)</h4>
 <p>Installation requires downloading a zip image and
 then, depending on the version of the IDE you can either install it from the IDE or install it manually by unziping the file into your sketchbook libraries.</p>
 <p><strong>NOTE</strong>: due to the way github creates its zip files, there is a manual step that must be done to rename the library directory created in your sketchbook libraries area.</p>
@@ -467,8 +477,13 @@ It provides hd44780 library information as well as links to further information 
 </ul>
 <h2>
 <a id="user-content-changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CHANGELOG</h2>
-<p>[1.2.1] - 2020-06-15</p>
+<p>[1.3.0] - 2020-07-01</p>
 <ul>
+<li>added hd44780_NTCU20025ECPB i/o class</li>
+<li>LCDlibTest example prints message if backlight/noBacklight/setBacklight not supported</li>
+<li>Added hd44780_HC1627_I2C i/o class</li>
+<li>Added Serial2LCD example</li>
+<li>update version info for 1.2.1 release</li>
 <li>I2CexpDiag - report initialization failure status code</li>
 <li>hd44780_I2Cexp: tweak to MCP23008 auto config for Adafruit #292 board</li>
 <li>hd44780_I2Cexp: fixed constructor issue for MCP23008 canned entries</li>

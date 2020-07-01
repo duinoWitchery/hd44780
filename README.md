@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.2.1-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.3.0-green.svg?style=plastic)
 
 Licensing
 =========
@@ -229,7 +229,12 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
-[1.2.1] - 2020-06-15
+[1.3.0] - 2020-07-01
+ * added hd44780_NTCU20025ECPB i/o class
+ * LCDlibTest example prints message if backlight/noBacklight/setBacklight not supported
+ * Added hd44780_HC1627_I2C i/o class
+ * Added Serial2LCD example
+ * update version info for 1.2.1 release
  * I2CexpDiag - report initialization failure status code
  * hd44780_I2Cexp: tweak to MCP23008 auto config for Adafruit #292 board
  * hd44780_I2Cexp: fixed constructor issue for MCP23008 canned entries
