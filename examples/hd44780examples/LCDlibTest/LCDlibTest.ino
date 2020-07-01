@@ -304,9 +304,26 @@ Serial.println("LCD initialized");
 	
 
 #ifdef SETBACKLIGHTCMD
+
+// If using hd44780 library check to see if controlling backlight is possible
+#if defined(hd44780_h)
+
+ 	// try to turn on the backlight
+ 	// if it fails then backlight control isn't possible
+	if(lcd.setBacklight(-1))
+	{
+#ifdef DEBUGPRINT
+Serial.println("LCD API 1.0 setBacklight() not supported");
+#endif
+		goto skip_dimmingBL;
+	}
+
+#endif
+
 #ifdef DEBUGPRINT
 Serial.println("Dimming Backlight");
 #endif
+
 	// Print a message to the LCD.
 	lcd.print("   Dimming BL");
 
@@ -330,7 +347,9 @@ Serial.println("Dimming Backlight");
 #ifdef DEBUGPRINT
 Serial.println("No LCD API 1.0 setBacklight() function");
 #endif
-#endif
+#endif // SETBACKLIGHTCMD
+
+skip_dimmingBL:
 
 // Need cursor functions here
 // ul cusor
@@ -364,6 +383,20 @@ Serial.println("No LCD API 1.0 setBacklight() function");
 #ifdef DEBUGPRINT
 Serial.println("Blinking Backlight");
 #endif
+// If using hd44780 library check to see if controlling backlight is possible
+#if defined(hd44780_h)
+
+ 	// try to turn on the backlight
+ 	// if it fails then backlight control isn't possible
+	if(lcd.setBacklight(-1))
+	{
+#ifdef DEBUGPRINT
+Serial.println("LCD API 1.0 backlight()/noBacklight() not supported");
+#endif
+		goto skip_blinkBL;
+	}
+
+#endif
 
 	lcd.home();
 	lcd.print("  Blinking BL");
@@ -384,7 +417,9 @@ Serial.println("Backlight On");
 #ifdef DEBUGPRINT
 Serial.println("No LCD API 1.0 backlight()/noBacklight() functions");
 #endif
-#endif
+#endif // BACKLIGHTCMDS
+
+skip_blinkBL:
 
 	lcd.home();
 	lcd.print(" Pixels on/off");
