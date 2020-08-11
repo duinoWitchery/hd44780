@@ -23,6 +23,8 @@
 //  SoftWareWire beyond version 1.5.0 with the hd44780 library.
 //  This sketh will do a check to try to detect the incompatibilty issue
 //  and will error off with a compiler error when detected.
+//  See this github issue for details:
+//  https://github.com/Testato/SoftwareWire/issues/28
 //
 // NOTE:
 // Using the SoftwareWire library is not necessary on the espXXXX platform as
