@@ -79,7 +79,7 @@ For generic information about Arduino libraries and how to isntall them consult 
 https://www.arduino.cc/en/Guide/Libraries
 
 For ease of proper installation, the preferred method of installing the library is to use the library manager.
-The use of importing a .zip file is highly discouraged unless using an IDE verions prior to version 1.6.2
+The use of importing a .zip file is highly discouraged unless using IDE versions prior to version 1.6.2
 
 ### Installation using Library manager (IDE 1.6.2 and later)
 In the IDE, Simply click on:<br>

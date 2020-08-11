@@ -90,13 +90,14 @@
 // Technical Information Links:
 // ============================
 //
+// https://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller
+//
 // hd44780 datasheet:
 //    http://fab.cba.mit.edu/classes/863.06/11.13/44780.pdf
 //    https://www.sparkfun.com/datasheets/LCD/HD44780.pdf
 //
 // hd44780 internal RAM addressing:
 //    http://web.alfredstate.edu/faculty/weimandn/lcd/lcd_addressing/lcd_addressing_index.html
-//    https://arduino-info.wikispaces.com/file/view/LCD+Addressing.pdf
 //
 // Arduino board Pinouts:
 //    Various Popular Arduino boards:
