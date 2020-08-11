@@ -29,6 +29,7 @@
 // with the functionality of the Arduino LiquidCrystal library.
 //
 //
+// 2020.08.01  bperrybap - removed calls to analogWrite() on ESP32 core (not supported)
 // 2019.08.11  bperrybap - fixed bug introduced by broken backlight check tweak
 // 2016.12.26  bperrybap - tweak to broken backlight check code
 // 2016.11.12  bperrybap - added code to safely handle broken backlight circuits
@@ -368,6 +369,10 @@ int iosetBacklight(uint8_t dimvalue)
 	// by detecting if the pin supports PWM and controlling the output manually
 	// when no PWM is available.
 
+	// NOTE: the ESP32 core does not have analogWrite() PWM support !
+	// so on ESP32 core, all you get is on/off
+#if !defined(ARDUINO_ARCH_ESP32)
+
 #if defined(digitalPinHasPWM)
    	// Newer 1.5x Arduino has a macro to check for PWM capability on a pin
 	if(digitalPinHasPWM(_bl))
@@ -391,7 +396,9 @@ int iosetBacklight(uint8_t dimvalue)
 
 	// No PWM support on pin, so
 	// dimvalue 0 is off, any other value is on
-	else if(((dimvalue) && (_blLevel == HIGH)) ||
+	else
+#endif
+	if(((dimvalue) && (_blLevel == HIGH)) ||
 			((dimvalue == 0) && (_blLevel == LOW)))
 	{
 		digitalWrite(_bl, HIGH);
@@ -436,7 +443,7 @@ void write4bits(uint8_t value)
 void pulseEnable(void)
 {
 	digitalWrite(_en, HIGH);
-#if defined (ARDUINO_ARCH_ESP8266)
+#if defined (ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
 	// the extra delay here is not for the LCD, it is to allow signal lines time
 	// to settle when using 3v esp modules with 5v LCDs.
 	// 3v outputs on 5v inputs is already a bit out of spec and
