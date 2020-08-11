@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.3.0-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.3.1-green.svg?style=plastic)
 
 Licensing
 =========
@@ -229,7 +229,15 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[1.3.1] - 2020-08-10
+ * hd44780_pinIO examples updated to support lcdkeypad on espduino32
+ * hd44780_I2Cexp SoftwareWire example has link to version 1.5.1 issue
+ * hd44780_pinIO updates for esp32 platform. ESP32 does not support analogWrite()
+ * Minor documentation upates
+ * fixed typo in main README file
+
 [1.3.0] - 2020-07-01
+ * update version info for 1.3.0 release
  * added hd44780_NTCU20025ECPB i/o class
  * LCDlibTest example prints message if backlight/noBacklight/setBacklight not supported
  * Added hd44780_HC1627_I2C i/o class

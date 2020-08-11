@@ -73,7 +73,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/bd12871390ecb82f28f713064ce64ceb6a729a72/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e332e302d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/bd12871390ecb82f28f713064ce64ceb6a729a72/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e332e302d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.3.0-green.svg?style=plastic" style="max-width:100%;"></a>
+<a id="user-content-hd44780-extensible-hd44780-lcd-library-" class="anchor" href="#hd44780-extensible-hd44780-lcd-library-" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a><code>hd44780</code> Extensible hd44780 LCD library <a href="https://camo.githubusercontent.com/c1278248cc7da187e3a78607d6c1ba78f6b6d07f/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e332e312d677265656e2e7376673f7374796c653d706c6173746963" target="_blank" rel="nofollow"><img src="https://camo.githubusercontent.com/c1278248cc7da187e3a78607d6c1ba78f6b6d07f/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f56657273696f6e2d312e332e312d677265656e2e7376673f7374796c653d706c6173746963" alt="hd44780Version" data-canonical-src="https://img.shields.io/badge/Version-1.3.1-green.svg?style=plastic" style="max-width:100%;"></a>
 </h1>
 <h1>
 <a id="user-content-licensing" class="anchor" href="#licensing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Licensing</h1>
@@ -160,8 +160,8 @@ as not doing proper level shifting or incorrectly hooking things up can damage t
 <a id="user-content-installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h1>
 <p>For generic information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
 <a href="https://www.arduino.cc/en/Guide/Libraries" rel="nofollow">https://www.arduino.cc/en/Guide/Libraries</a></p>
-<p>For ease of proper installation the preferred method of installing the library is to use the library mananager.
-The use of importing a .zip file is highly discouraged unless using an IDE verions prior to version 1.6.2</p>
+<p>For ease of proper installation, the preferred method of installing the library is to use the library manager.
+The use of importing a .zip file is highly discouraged unless using IDE versions prior to version 1.6.2</p>
 <h3>
 <a id="user-content-installation-using-library-manager-ide-162-and-later" class="anchor" href="#installation-using-library-manager-ide-162-and-later" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation using Library manager (IDE 1.6.2 and later)</h3>
 <p>In the IDE, Simply click on:<br>
@@ -477,8 +477,17 @@ It provides hd44780 library information as well as links to further information 
 </ul>
 <h2>
 <a id="user-content-changelog" class="anchor" href="#changelog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>CHANGELOG</h2>
+<p>[1.3.1] - 2020-08-10</p>
+<ul>
+<li>hd44780_pinIO examples updated to support lcdkeypad on espduino32</li>
+<li>hd44780_I2Cexp SoftwareWire example has link to version 1.5.1 issue</li>
+<li>hd44780_pinIO updates for esp32 platform. ESP32 does not support analogWrite()</li>
+<li>Minor documentation upates</li>
+<li>fixed typo in main README file</li>
+</ul>
 <p>[1.3.0] - 2020-07-01</p>
 <ul>
+<li>update version info for 1.3.0 release</li>
 <li>added hd44780_NTCU20025ECPB i/o class</li>
 <li>LCDlibTest example prints message if backlight/noBacklight/setBacklight not supported</li>
 <li>Added hd44780_HC1627_I2C i/o class</li>
