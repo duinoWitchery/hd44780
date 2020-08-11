@@ -80,6 +80,11 @@
 #if defined (ARDUINO_ARCH_ESP8266)
 const int rs=D8, en=D9, db4=D4, db5=D5, db6=D6, db7=D7; // for esp8266 devices
 const int pin_BL = D10; // arduino pin wired to LCD backlight circuit
+#elif defined(ARDUINO_ARCH_ESP32)
+// esp32 espduino32 D1 R32 (uno form factor)
+// note: GPIO12 needs a pulldown resistor
+const int rs=12, en=13, db4=17, db5=16, db6=27, db7=14;
+const int pin_BL=5; // gpio pin # wired to LCD backlight circuit
 #else
 const int rs = 8; // arduino pin wired to LCD RS
 const int en = 9; // arduino pin wired to LCD EN
@@ -237,6 +242,8 @@ void safeBlink(int pin, int count)
  */
 void softBlink(int pin, int count)
 {
+// note: esp32 core does not support analogWrite()
+#if !defined(ARDUINO_ARCH_ESP32)
 	// soft blink the backlight by ramping down then back up
 	pinMode(pin, OUTPUT);
 	for(int times = 0; times < count; times++)
@@ -252,4 +259,5 @@ void softBlink(int pin, int count)
 			delay(50);
 		}
 	}
+#endif
 }
