@@ -502,7 +502,7 @@ int rval = 0;
 	 * and will be honored by waitReady() used in the i/o class.
 	 */
 	if(!(_displayfunction & HD44780_8BITMODE))
-		command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
+		command4bit(HD44780_FUNCTIONSET|HD44780_4BITMODE);
 
 	/*
 	 * At this point the LCD is in 8 bit mode for 8 bit host interfaces,
