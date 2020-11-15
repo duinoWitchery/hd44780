@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2020-11-14  bperrybap - fixed timing issue in begin() on VERY fast processors like ESP using pinIO
 // 2019.08.11  bperrybap - updates for reinitalization using begin() & init() and use of "new" 
 // 2019.05.30  bperrybap - updates to support use of "new" for lcd objects
 // 2019.02.03  bperrybap - fatalError(errcode), accept negative errcode values
@@ -442,7 +443,7 @@ int rval = 0;
 	/*
 	 * Note:
 	 * The initialization sequence below uses special hd44780 internal API
-	 * 4 bit commands.
+	 * for 4 bit commands.
 	 * Internal 4 bit commands are commands that are sent to the LCD using
 	 * only a single strobe of EN even if the host h/w interface is 4 bit only.
 	 * In other words it is indicating that only the upper 4 bits need to be
@@ -475,17 +476,18 @@ int rval = 0;
 	 *
 	 * Note that delay() is used here vs delayMicroSeconds() as delay()
 	 * on later versions of Arduino core code calls some scheduling functions
-	 * to potentially allow other code to execute during this time period.
+	 * like yield() to potentially allow other code to execute during this time period.
 	 *
 	 * delay() can be used because this code is never called from a constructor
+	 *
 	 */
-	iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_8BITMODE);
+	command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
 	delay(5); // wait 5ms vs 4.1ms, some are slower than spec
 
-	iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_8BITMODE);
+	command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
 	delay(1); // wait 1ms vs 100us
     
-	iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_8BITMODE);
+	command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
 	delay(1); // wait 1ms vs 100us
 
 	/*
@@ -495,9 +497,12 @@ int rval = 0;
 	 * goto 4bit mode command is sent as another special internal
 	 * "4bit" command because the 4bit only host talks 4 bits and the LCD
 	 * isn't in 4 bit mode yet.
+	 * Note: there is no need for a delay *after* command4bit() since
+	 * it uses markStart(_insExecTime) to indicate the instruction time
+	 * and will be honored by waitReady() used in the i/o class.
 	 */
 	if(!(_displayfunction & HD44780_8BITMODE))
-		iowrite(HD44780_IOcmd4bit, HD44780_FUNCTIONSET|HD44780_4BITMODE);
+		command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
 
 	/*
 	 * At this point the LCD is in 8 bit mode for 8 bit host interfaces,

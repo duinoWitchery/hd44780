@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2020-11-14  bperrybap - created internal command4bit() for begin() function
 // 2019.08.11  bperrybap - support for 1 and 2 lines in setRowOffsets()
 // 2018.03.23  bperrybap - bumped default instruction time from 37us to 38us
 // 2017.12.23  bperrybap - added LCD API 1.0 init() function
@@ -398,6 +399,14 @@ private:
 	uint32_t _insExecTime;	// time in Us of execution time for instructions or data
 	uint32_t _startTime;	// 'start' time of last thing sent to LCD (cmd or data)
 	uint32_t _execTime;		// execution time in Us of last thing sent to LCD (cmd or data)
+
+	// internal API function to send only upper 4 bits of byte on LCD DB4 to DB7 pins
+	int command4bit(uint8_t value)
+	{
+	int status = iowrite(HD44780_IOcmd4bit, value);
+		markStart(_insExecTime);
+		return(status);
+	}
 
 };
 
