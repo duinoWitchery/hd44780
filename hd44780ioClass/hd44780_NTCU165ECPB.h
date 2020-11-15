@@ -157,7 +157,8 @@ int status = 0;
 // this was added in IDE 1.06 and so if using an IDE older than that,
 // H/W spi will not be used
 // This requires that <SPI.h> be included prior to this header 
-#if defined(SPI_HAS_TRANSACTION)
+#if (defined(SPI_HAS_TRANSACTION) && !defined(ARDUINO_ARCH_ESP32)) || \
+	(defined(ARDUINO_ARCH_ESP32) && defined(_SPI_H_INCLUDED) && defined(SPI_HAS_TRANSACTION))
 	// check to see if h/w spi can be used
 	if((_data == MOSI) && (_clk == SCK))
 		SPI.begin();
@@ -329,7 +330,11 @@ void devicewrite(uint8_t value)
 {
 
 	// use h/w spi if we can
-#if defined(SPI_HAS_TRANSACTION)
+	// note: checking for SPI support (SPI.h included) is messy since
+	// ESP32 core always defines SPI_HAS_TRANSACTION even when SPI.h is not included
+
+#if (defined(SPI_HAS_TRANSACTION) && !defined(ARDUINO_ARCH_ESP32)) || \
+	(defined(ARDUINO_ARCH_ESP32) && defined(_SPI_H_INCLUDED) && defined(SPI_HAS_TRANSACTION))
 	if((_data == MOSI) && (_clk == SCK))
 	{
 		// NOTE: spec says 2Mhz is max, 4Mhz seems to work.
@@ -344,9 +349,38 @@ void devicewrite(uint8_t value)
 #endif
 	{
 		digitalWrite(_cs,LOW);	// select device
-		shiftOut(_data, _clk, MSBFIRST, value);
+		myshiftOut(_data, _clk, MSBFIRST, value);
 		delayMicroseconds(1);	// must delay at least 130ns before de-selecting
 	 	digitalWrite(_cs,HIGH);	// deselect device
+	}
+}
+
+// can't use standard shiftOut() on esp32 because it is too fast for display
+// 
+void myshiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val)
+{
+	uint8_t i;
+
+	for (i = 0; i < 8; i++)  {
+		if (bitOrder == LSBFIRST) {
+			digitalWrite(dataPin, val & 1);
+			val >>= 1;
+		} else {	
+			digitalWrite(dataPin, (val & 128) != 0);
+			val <<= 1;
+		}
+			
+// insert delay on super fast processors to slow down clock
+// and allow a bit of time for slew rate rise when using 3v processor with 5v logic
+#if (F_CPU > 40000000)
+		delayMicroseconds(1); // min pulse width is 230ns
+#endif
+		digitalWrite(clockPin, HIGH);
+
+#if (F_CPU > 40000000) // insert delay on super fast processors to slow down clock
+		delayMicroseconds(1); // min pulse width is 230ns
+#endif
+		digitalWrite(clockPin, LOW);		
 	}
 }
 
