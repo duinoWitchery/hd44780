@@ -75,7 +75,7 @@ The library currenly comes with the following i/o subclasses:
 
 Installation
 ============
-For generic information about Arduino libraries and how to isntall them consult the Arduino Libraries page:
+For generic information about Arduino libraries and how to install them consult the Arduino Libraries page:
 https://www.arduino.cc/en/Guide/Libraries
 
 For ease of proper installation, the preferred method of installing the library is to use the library manager.
@@ -111,7 +111,7 @@ The hd44780 sketchbook library must now be renamed. (see below)
 On these versions of the IDE, the install must be done manually.
 To install the library simply extract it into your sketchbook/libraries directory.
 If you don't know where you sketchbook/libraries directory is simply click on:
-[File]->Prefernces
+[File]->Preferences
 or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The location of your sketchbook directory will be in the text box.
 The zip image must be installed in a directory called "libraries" under that directory.<br>
@@ -126,7 +126,7 @@ The downloaded zip file and internal directory will have a name like hd44780-X.Y
 While the IDE will usually allow this to work, the proper name should be simply "hd44780" and not using its real name can cause issues in the future.<br>
 To rename the library directory, simply go to the sketchbook library location and rename it.
 If you don't know where you sketchbook/libraries directory is simply click on:
-[File]->Prefernces
+[File]->Preferences
 or from the keyboard type: &lt;ctrl&gt;comma (hold ctrl and press comma)
 The location of your sketchbook directory will be in the text box.<br>
 Use your favorite tool to rename it.
@@ -143,7 +143,7 @@ can be found in the examples.
 | --------------------------------------| --------------------------------------|
 | **LiquidCrystal API**                 | https://www.arduino.cc/en/Reference/LiquidCrystal |
 | init(...)                             | **not supported**
-| begin(cols, rows)                     | initialize communication interface and LCD<br> **hd44780 extension**: returns zero on success |
+| begin(cols, rows)                     | initialize communication interface and LCD<br>backlight is turned on if supported<br> **hd44780 extension**: returns zero on success |
 | clear()                               | clear the display and home the cursor<br> **hd44780 extension**: returns zero on success |
 | home()	                        | home the cursor<br> **hd44780 extension**: returns zero on success |
 | setCursor(col, row)                   | set cursor position<br> **hd44780 extension**: returns zero on success |

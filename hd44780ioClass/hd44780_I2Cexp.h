@@ -620,7 +620,7 @@ int iowrite(hd44780::iotype type, uint8_t value)
 		Wire.write(9); // point to GPIO
 	}
 	// send both nibbles in same i2c connection
-	write4bits( (value >> 4), type );  // send upper nibble
+	write4bits( (value >> 4), type );  // upper nibble
 
 	/*
 	 * "4 bit commands" are special.
@@ -634,7 +634,7 @@ int iowrite(hd44780::iotype type, uint8_t value)
 	{
 		write4bits( (value & 0x0F), type); // lower nibble, if not 4bit cmd
 	}
-	if(Wire.endTransmission())
+	if(Wire.endTransmission()) // send buffered bytes to the expander
 		return(hd44780::RV_EIO);
 
 	return(hd44780::RV_ENOERR);
