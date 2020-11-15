@@ -1,4 +1,4 @@
-# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.3.1-green.svg?style=plastic)
+# `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.3.2-green.svg?style=plastic)
 
 Licensing
 =========
@@ -229,7 +229,14 @@ It provides hd44780 library information as well as links to further information 
 CHANGELOG
 ----------------------
 
+[1.3.2] - 2020-11-15
+ * fixes to hd44780_NTCU165ECPB i/o class for SPI and s/w SPI for esp32
+ * fix bug (oops) in begin() created when fixing timing issue
+ * fixed a few typos in comments
+ * fixed timing issue in begin() on VERY fast processors like ESP using pinIO
+
 [1.3.1] - 2020-08-10
+ * update version info for 1.3.1 release
  * hd44780_pinIO examples updated to support lcdkeypad on espduino32
  * hd44780_I2Cexp SoftwareWire example has link to version 1.5.1 issue
  * hd44780_pinIO updates for esp32 platform. ESP32 does not support analogWrite()
