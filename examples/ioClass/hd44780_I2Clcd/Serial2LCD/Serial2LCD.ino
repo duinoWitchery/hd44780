@@ -16,6 +16,9 @@
 // It takes advantage of the hd44780 library automatic line
 // wrapping capability.
 // See the LineWrap sketch for details about line wrapping.
+// Characters are written to the LCD as they come in.
+// The LCD is cleared when a new message starts
+// <CR> or <LF> are used to mark the end of a message.
 //
 // NOTE:
 //	These devices usually need external pullups as they typically are not on
@@ -28,7 +31,7 @@
 // Configure LCD_COLS, LCD_ROWS and BAUDRATE if desired/needed
 // Expected behavior of the sketch:
 // - characters received from serial port are displayed on LCD
-// - CR and LF are ignored/dropped
+// - CR and LF mark end of message (will clear lcd when next message starts)
 //
 // If initialization of the LCD fails and the arduino supports a built in LED,
 // the sketch will simply blink the built in LED with the initalization error
@@ -71,7 +74,7 @@ hd44780_I2Clcd lcd;
 const int LCD_COLS = 16;
 const int LCD_ROWS = 2;
 
-const int BAUDRATE = 9600;
+const uint32_t BAUDRATE = 9600;
 
 void setup()
 {
@@ -105,35 +108,46 @@ int status;
 	// to the display bypassing any special character or line wrap processing.
 	lcd.lineWrap();
 
-	lcd.print("Serial2LCD"); 
-	if(LCD_ROWS > 1)
+	// auto format the display depending on geometry
+	if(LCD_ROWS < 2 || LCD_COLS < 16) // for 8x1, 8x2, 16x1
 	{
+		lcd.print("Ser2LCD "); 
+		if(LCD_COLS * LCD_ROWS > 8)	// see if more than 8 printable characters
+			lcd.print(BAUDRATE); // 16x1 prints on top line, 8x2 wraps to 2nd line
+	}
+	else // for multi line displays with 16+ chars/line
+	{
+		lcd.print("Serial2LCD "); 
+		lcd.print(LCD_COLS);
+		lcd.print('x');
+		lcd.print(LCD_ROWS);
 		lcd.setCursor(0,1);
-		lcd.print("Baud:");
 		lcd.print(BAUDRATE);
 	}
 }
 
 void loop()
 {
+static uint8_t needClear = 1; 
 
 	// check to see if characters available
 	// indicating a message is coming in
 	if (Serial.available())
 	{
-		// wait some time for rest of message to arrive
-		delay(100);
-
-		// Clear the display before showing the new message
-    	lcd.clear();
-
-		// print the message on the LCD
-		while (Serial.available() > 0)
+	char c;
+		c = Serial.read();
+		if(c == '\r' || c == '\n') // CR and LF characters mark end of message
 		{
-		char c;
-			c = Serial.read();
-			if(c != '\r' && c != '\n') // drop CR and LF characters
-				lcd.write(c);
+			needClear = 1; // clear screen before printing next character
 		}
-    }
+		else
+		{
+    		if(needClear) // clear screen if starting a new message
+			{
+				lcd.clear();
+				needClear = 0;
+			}
+			lcd.write(c);
+		}
+	}
 }
