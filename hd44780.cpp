@@ -1,7 +1,7 @@
 //  vi:ts=4
 // -----------------------------------------------------------------------
 //  hd44780.cpp - hd44780 base class
-//  Copyright (c) 2014-2020  Bill Perry
+//  Copyright (c) 2014-2021  Bill Perry
 //  (Derivative work of arduino.cc IDE LiquidCrystal library)
 //  Note:
 //    Original Copyrights for LiquidCrystal are a mess as originally none were
@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2020-01-02  bperrybap - check status for all commands performed in begin()
 // 2020-11-14  bperrybap - fixed timing issue in begin() on VERY fast processors like ESP using pinIO
 // 2019.08.11  bperrybap - updates for reinitalization using begin() & init() and use of "new" 
 // 2019.05.30  bperrybap - updates to support use of "new" for lcd objects
@@ -481,13 +482,16 @@ int rval = 0;
 	 * delay() can be used because this code is never called from a constructor
 	 *
 	 */
-	command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
+	if( (rval = command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE)) )
+		return rval;
 	delay(5); // wait 5ms vs 4.1ms, some are slower than spec
 
-	command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
+	if( (rval = command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE)) )
+		return rval;
 	delay(1); // wait 1ms vs 100us
     
-	command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE);
+	if( (rval = command4bit(HD44780_FUNCTIONSET|HD44780_8BITMODE)) )
+		return rval;
 	delay(1); // wait 1ms vs 100us
 
 	/*
@@ -502,7 +506,8 @@ int rval = 0;
 	 * and will be honored by waitReady() used in the i/o class.
 	 */
 	if(!(_displayfunction & HD44780_8BITMODE))
-		command4bit(HD44780_FUNCTIONSET|HD44780_4BITMODE);
+		if( (rval = command4bit(HD44780_FUNCTIONSET|HD44780_4BITMODE)) )
+			return rval;
 
 	/*
 	 * At this point the LCD is in 8 bit mode for 8 bit host interfaces,
@@ -511,7 +516,8 @@ int rval = 0;
 	 */
 
 	// set # lines, font size, etc.
-	command(HD44780_FUNCTIONSET | _displayfunction);  
+	if( (rval = command(HD44780_FUNCTIONSET | _displayfunction)) )
+		return rval;
 
 
 	// turn the display on with no cursor or blinking default
@@ -523,7 +529,8 @@ int rval = 0;
 	// Initialize to default text direction (for romance languages)
 	_displaymode = HD44780_ENTRYLEFT2RIGHT;
 	// set the entry mode
-	rval = command(HD44780_ENTRYMODESET | _displaymode);
+	if( (rval = command(HD44780_ENTRYMODESET | _displaymode)) )
+		return(rval);
 
 // FIXME
 #ifdef LATER
@@ -538,7 +545,11 @@ int rval = 0;
 		}
 	}
 #endif
-	backlight(); // turn on the backlight, if supported
+	// turn on the backlight, if supported
+	// note: not supporting backlight control does return a non zero status;
+	// however, it is not considered an initalization error for begin()
+	// so any issues with backight control are silently ignored.
+	backlight();
 
 	return(rval);
 }
