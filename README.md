@@ -1,5 +1,7 @@
 # `hd44780` Extensible hd44780 LCD library ![hd44780Version](https://img.shields.io/badge/Version-1.3.2-green.svg?style=plastic)
 
+## Clone of https://github.com/duinoWitchery/hd44780.git with modifications by TheLancashireman
+
 Licensing
 =========
 ![GPLv3Logo](https://www.gnu.org/graphics/gplv3-127x51.png)

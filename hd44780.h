@@ -200,6 +200,9 @@ public:
 	inline size_t _write(unsigned int value) { return(_write((uint8_t)value)); }
 	inline size_t _write(int value) { return(_write((uint8_t)value)); }
 
+// Optional character remapping
+	virtual uint8_t remap(uint8_t value) {	return value;	}	//optional
+
 	using Print::write; // for other Print Class write() functions
 	int cursor();
 	int noCursor();

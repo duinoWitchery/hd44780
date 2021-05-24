@@ -46,6 +46,7 @@
 // -----------------------------------------------------------------------
 // History
 //
+// 2021-05-24  dh        - added a function to remap characters, and a default identity map.
 // 2020-11-14  bperrybap - fixed timing issue in begin() on VERY fast processors like ESP using pinIO
 // 2019.08.11  bperrybap - updates for reinitalization using begin() & init() and use of "new" 
 // 2019.05.30  bperrybap - updates to support use of "new" for lcd objects
@@ -874,7 +875,7 @@ size_t hd44780::write(uint8_t value)
 {
 size_t rval;
 
-	rval = _write(value);
+	rval = _write(remap(value));
 	if(_wraplines)
 	{
 		// currently only works for left to right mode
