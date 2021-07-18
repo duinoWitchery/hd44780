@@ -16,7 +16,6 @@ Note: using a software Wire library is not necessary on the esp8266 platform as 
 
 WARNING:
 The SoftWareWire developers made a major change to the library June 2018
-which is in the subsequent 1.5.1 release that causes it be unusable by
+which is in the 1.5.1 release that causes it to be unusable by
 the hd44780 library.
-Until this change is backed out, you will not be able to use 
-SoftWareWire beyond version 1.5.0 with the hd44780 library.
+This change was backed out in version 1.6.0

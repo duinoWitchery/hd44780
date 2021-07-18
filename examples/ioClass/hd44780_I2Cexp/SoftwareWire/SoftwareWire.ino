@@ -7,8 +7,8 @@
 // This example code is unlicensed and is released into the public domain
 // ----------------------------------------------------------------------------
 //
-// Demonstrates how to use the SoftwareWire library to allow using different
-// Arduino pins for SDA and SCL signals.
+// Demonstrates how to use the SoftwareWire library instead of the Wire library
+// to allow using different Arduino pins for SDA and SCL signals.
 //
 // Sketch prints "Hello, World!" on the lcd
 //
@@ -17,10 +17,9 @@
 //
 // WARNING:
 //  The SoftWareWire developers made a major change to the library June 2018
-//  which is in the subsequent 1.5.1 release that causes it be unusable by
+//  which is in the 1.5.1 release that causes it to be unusable by
 //  the hd44780 library.
-//  Until this change is backed out, you will not be able to use 
-//  SoftWareWire beyond version 1.5.0 with the hd44780 library.
+//  This change was backed out in version 1.6.0
 //  This sketh will do a check to try to detect the incompatibilty issue
 //  and will error off with a compiler error when detected.
 //  See this github issue for details:

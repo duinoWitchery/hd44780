@@ -19,7 +19,7 @@
 #include <SoftwareWire.h>
 // Check for "new" SoftwareWire that breaks things
 #if defined(TwoWire_h)
-#error incompatible version of SoftwareWire library (use version 1.5.0)
+#error incompatible version of SoftwareWire library (can not use Wire virtualization)
 #endif
 
 const int sda=SDA, scl=SCL; // use same pins as h/w i2c
