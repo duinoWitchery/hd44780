@@ -154,7 +154,8 @@ int status;
 	 * interfaces should be the constructor
 	 * So we go ahead and call it here.
 	 */
-	Wire.begin();
+	
+  useCustomPins ? Wire.begin(sdaPin, sclPin) : Wire.begin();
 
 	/*
 	 * If i2c address was not specified go try to locate device
