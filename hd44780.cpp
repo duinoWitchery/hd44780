@@ -553,6 +553,14 @@ int hd44780::home()
 	return(command(HD44780_RETURNHOME));  // set cursor position to 0,0
 }
 
+// Use custom I2C pins different from hardware ones
+void hd44780::setCustomPins(uint8_t sda_pin, uint8_t scl_pin)
+{
+	sdaPin = sda_pin;
+	sclPin = scl_pin;
+	useCustomPins = true;
+}
+
 // setRowOffsets:
 //
 // Create a row/line offset table of addresses for each row/line
