@@ -267,7 +267,6 @@ hd44780_I2Cexp(uint8_t i2c_addr, I2CexpType type, uint8_t rs, uint8_t en,
 }
 
 
-
 // ============================================
 // === library specific diagnostic function ===
 // ============================================
@@ -328,6 +327,7 @@ int getProp(I2CexpProp propID)
 	}
 }
 
+
 private:
 // ====================
 // === private data ===
@@ -346,6 +346,7 @@ uint8_t _d7;			// I2C chip IO pin mask for data d7 pin
 uint8_t _bl;			// I2C chip IO pin mask for Backlight
 uint8_t _blLevel;		// backlight active control level HIGH/LOW
 uint8_t _blCurState;	// Current IO pin state mask for Backlight
+
 
 // ==================================================
 // === hd44780 i/o subclass virtual i/o functions ===
@@ -375,7 +376,10 @@ static uint8_t AutoInst;
 	 * hd44780 i/o interfaces should be the constructor
 	 * So we go ahead and call it here.
 	 */
-	Wire.begin();
+
+
+  useCustomPins ? Wire.begin(sdaPin, sclPin) : Wire.begin();
+
 
 	// auto locate i2c expander and magically detect pin mappings
 
