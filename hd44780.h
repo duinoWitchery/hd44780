@@ -179,6 +179,17 @@ public:
 	// returns 0 on success, non zero on initalization failure
 	int begin(uint8_t cols, uint8_t rows, uint8_t charsize = HD44780_5x8DOTS);
 
+
+	//=======================
+	//=== custom I2C pins ===
+	//=======================
+	uint8_t sdaPin;
+	uint8_t sclPin;
+	
+	bool useCustomPins = false;
+	void setCustomPins(uint8_t sda_pin, uint8_t scl_pin);
+
+
 #if 0
 	// init ()
 	// This version will NEVER be implemented in this class as it is
